@@ -1,0 +1,236 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>خريطة عالم آرين</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Amiri:wght@400;700&display=swap">
+<style>
+/* Layout: one framed parchment sheet, legend beneath. Single deliberate look (aged map), both host themes. */
+:root {
+  --desk: #2b2219;
+  --paper: #efe2bf;
+  --ink: #4a3a28;
+  --ink-soft: #7a6448;
+  --seal: #8e2f24;
+  --display: "Aref Ruqaa", "Amiri", serif;
+  --body: "Amiri", "Times New Roman", serif;
+  color-scheme: dark;
+}
+body { background: var(--desk); color: var(--paper); font-family: var(--body); }
+main {
+  max-width: 1240px; margin: 0 auto;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 20px;
+}
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0; text-wrap: balance; }
+.note { color: #cdb98f; font-size: 1.05rem; margin: 0; }
+.sheet { position: relative; border: 10px solid #5a4530; outline: 2px solid #a88a5c; outline-offset: -16px; background: #14262c; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+.sheet canvas, .sheet svg { display: block; width: 100%; height: auto; }
+.sheet svg { position: absolute; inset: 0; height: 100%; }
+.lbl { font-family: var(--body); fill: #f6ecd2; stroke: #1b231f; stroke-width: 4px; paint-order: stroke; stroke-linejoin: round; }
+.place { font-size: 24px; font-weight: 700; }
+.region { font-size: 30px; font-family: var(--display); letter-spacing: 2px; fill: #e6d8b4; }
+.sea { font-size: 28px; font-family: var(--display); fill: rgba(214,232,226,.7); stroke: none; letter-spacing: 3px; }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 28px; margin: 0; padding: 0; list-style: none; font-size: 1.1rem; }
+.legend li { min-width: 0; }
+.legend b { color: #f3dfae; }
+.legend span { color: #cdb98f; }
+</style>
+
+<main dir="rtl" lang="ar">
+  <header>
+    <h1>خريطة عالم آرين</h1>
+    <p class="note">نسخة تجريبية. الأسماء مؤقتة حتى تصل أسماء اللعبة.</p>
+  </header>
+
+  <div class="sheet">
+    <canvas id="map" width="1200" height="800" aria-hidden="true"></canvas>
+    <svg viewBox="0 0 1200 800" role="img" aria-label="خريطة عالم آرين: قارة رئيسية وجزيرتان">
+      <!-- road: capital to hatchery to shadow fortress -->
+      <path d="M560 450 Q600 390 612 318 M560 450 Q700 430 850 392 M560 450 Q450 520 330 592" fill="none" stroke="#f0e2c0" stroke-width="2.5" stroke-dasharray="7 6" opacity=".85"/>
+
+      <!-- capital: castle -->
+      <g transform="translate(560 450)" fill="#4a3a28">
+        <rect x="-16" y="-14" width="32" height="18"/>
+        <rect x="-20" y="-26" width="9" height="30"/><rect x="11" y="-26" width="9" height="30"/>
+        <rect x="-5" y="-34" width="10" height="20"/>
+        <path d="M0 -34 v-12 l12 4 -12 4" fill="#8e2f24"/>
+      </g>
+      <text class="lbl place" x="560" y="486" text-anchor="middle">مدينة الحارس</text>
+
+      <!-- dragon hatchery: egg -->
+      <g transform="translate(612 306)">
+        <ellipse rx="10" ry="13" fill="#8e2f24" stroke="#4a3a28" stroke-width="2"/>
+        <path d="M-9 -2 l5 3 4 -4 4 4 5 -3" fill="none" stroke="#efe2bf" stroke-width="1.6"/>
+      </g>
+      <text class="lbl place" x="612" y="344" text-anchor="middle">مفقس التنانين</text>
+
+      <!-- shadow fortress -->
+      <g transform="translate(850 392)" fill="#2e241a">
+        <path d="M-14 6 v-22 l7 -8 7 8 7 -8 7 8 v22 z"/>
+      </g>
+      <text class="lbl place" x="850" y="426" text-anchor="middle">قلعة الظل</text>
+
+      <!-- port -->
+      <g transform="translate(330 592)" fill="none" stroke="#4a3a28" stroke-width="3" stroke-linecap="round">
+        <path d="M0 -14 v24 M-9 2 q9 12 18 0 M-6 -8 h12"/>
+      </g>
+      <text class="lbl place" x="330" y="628" text-anchor="middle">ميناء النوارس</text>
+
+      <!-- sages tower on east isle -->
+      <g transform="translate(1012 236)" fill="#4a3a28">
+        <rect x="-5" y="-22" width="10" height="28"/><path d="M-8 -22 l8 -12 8 12z"/>
+      </g>
+      <text class="lbl place" x="1012" y="262" text-anchor="middle">برج الحكماء</text>
+
+      <text class="lbl region" x="520" y="226" text-anchor="middle">جبال الرماد</text>
+      <text class="lbl region" x="300" y="452" text-anchor="middle">غابة الهمس</text>
+      <text class="lbl region" x="800" y="610" text-anchor="middle">كثبان الذهب</text>
+      <text class="lbl region" x="1012" y="296" text-anchor="middle" style="font-size:20px">جزيرة الفجر</text>
+      <text class="lbl region" x="186" y="684" text-anchor="middle" style="font-size:22px">جزر النسيان</text>
+
+      <text class="sea" x="1030" y="520" text-anchor="middle">بحر السكون</text>
+      <text class="sea" x="130" y="420" text-anchor="middle">المحيط الغربي</text>
+
+      <!-- cartouche -->
+      <g transform="translate(200 86)">
+        <rect x="-150" y="-44" width="300" height="80" fill="#efe2bf" stroke="#4a3a28" stroke-width="2"/>
+        <rect x="-143" y="-37" width="286" height="66" fill="none" stroke="#4a3a28" stroke-width="1"/>
+        <text x="0" y="0" text-anchor="middle" style="font-family:var(--display);font-size:34px;fill:#4a3a28;font-weight:700">آرين</text>
+        <text x="0" y="24" text-anchor="middle" style="font-family:var(--body);font-size:16px;fill:#7a6448">أرض سليل الحارس العظيم</text>
+      </g>
+
+      <!-- compass -->
+      <g transform="translate(1110 700)" stroke="#d9c79d" stroke-width="1.5">
+        <circle r="44" fill="none"/><circle r="38" fill="none" stroke-dasharray="2 4"/>
+        <path d="M0 -56 L9 0 L0 56 L-9 0 Z" fill="#efe2bf"/>
+        <path d="M0 -56 L9 0 L-9 0 Z" fill="#8e2f24"/>
+        <path d="M-56 0 L0 -9 L56 0 L0 9 Z" fill="#efe2bf"/>
+        <text y="-62" text-anchor="middle" stroke="none" fill="#efe2bf" style="font-family:var(--body);font-size:18px;font-weight:700">ش</text>
+      </g>
+
+      <!-- scale bar -->
+      <g transform="translate(860 760)" fill="#efe2bf">
+        <rect width="40" height="7"/><rect x="40" width="40" height="7" fill="none" stroke="#efe2bf"/><rect x="80" width="40" height="7"/>
+        <text x="60" y="-6" text-anchor="middle" style="font-family:var(--body);font-size:15px">ثلاثة أيام سيراً</text>
+      </g>
+    </svg>
+  </div>
+
+  <ul class="legend">
+    <li><b>مدينة الحارس</b> <span>· مركز البلدة (TownHub)</span></li>
+    <li><b>مفقس التنانين</b> <span>· في قلب جبال الرماد</span></li>
+    <li><b>قلعة الظل</b> <span>· معقل فصيل معادٍ</span></li>
+    <li><b>ميناء النوارس</b> <span>· بوابة الجزر الجنوبية</span></li>
+    <li><b>برج الحكماء</b> <span>· على جزيرة الفجر</span></li>
+    <li><b>الخط الأحمر المتقطع</b> <span>· طرق السفر</span></li>
+  </ul>
+</main>
+
+<script>
+(() => {
+  const W = 1200, H = 800;
+  // seeded PRNG so the map is identical on every load
+  function rng(s) { return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const R = rng(1977);
+  const grid = n => { const a = new Float32Array((n + 1) * (n + 1)); for (let i = 0; i < a.length; i++) a[i] = R(); return { n, a }; };
+  const octA = [grid(6), grid(12), grid(24), grid(48)];
+  const octB = [grid(5), grid(10), grid(20), grid(40)];
+  function sample(g, x, y) {
+    const fx = x / W * g.n, fy = y / H * g.n, ix = Math.floor(fx), iy = Math.floor(fy);
+    const tx = fx - ix, ty = fy - iy, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+    const N = g.n + 1, i = iy * N + ix, A = g.a;
+    const a = A[i], b = A[i + 1], c = A[i + N], d = A[i + N + 1];
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  }
+  const fbm = (o, x, y) => (sample(o[0], x, y) + sample(o[1], x, y) * .5 + sample(o[2], x, y) * .25 + sample(o[3], x, y) * .125) / 1.875;
+  const blob = (x, y, cx, cy, rx, ry) => { const dx = (x - cx) / rx, dy = (y - cy) / ry; return Math.exp(-(dx * dx + dy * dy) * 1.6); };
+  function ridge(x, y) { // closeness to the mountain spine
+    const ax = 380, ay = 240, bx = 660, by = 320, vx = bx - ax, vy = by - ay;
+    const t = Math.max(0, Math.min(1, ((x - ax) * vx + (y - ay) * vy) / (vx * vx + vy * vy)));
+    const d = Math.hypot(x - ax - t * vx, y - ay - t * vy);
+    return Math.exp(-((d / 55) ** 2));
+  }
+  const height = (x, y) => blob(x, y, 560, 420, 360, 260) + blob(x, y, 1010, 240, 130, 110) * .9
+    + blob(x, y, 190, 660, 110, 90) * .85 + blob(x, y, 820, 640, 160, 110) * .6
+    + (fbm(octA, x, y) - .5) * .55 - .42;
+  const isMountain = (x, y, n) => ridge(x, y) + (n - .5) * .6 > .55;
+  const isForest = (x, y, n) => blob(x, y, 300, 450, 170, 130) + (n - .5) * .5 > .55;
+  const isDesert = (x, y, n) => blob(x, y, 800, 610, 170, 110) + (n - .5) * .5 > .55;
+
+  const octC = [grid(24), grid(48), grid(96), grid(192)];
+  const cv = document.getElementById('map'), ctx = cv.getContext('2d');
+  const img = ctx.createImageData(W, H), px = img.data;
+  const H_ = new Float32Array(W * H), M = new Float32Array(W * H), E = new Float32Array(W * H), D = new Float32Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const k = y * W + x, h = height(x, y), n = fbm(octB, x, y), d = fbm(octC, x, y);
+    H_[k] = h; M[k] = n; D[k] = d;
+    // elevation for shading: base land + mountain spine + fine detail
+    E[k] = h > 0 ? h + ridge(x, y) * (.5 + n) * .9 + (d - .5) * .3 : h;
+  }
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  const ramp = [[0, [184, 170, 118]], [.05, [104, 124, 62]], [.3, [126, 130, 70]], [.6, [128, 102, 68]], [.95, [168, 158, 142]], [1.3, [232, 228, 220]]];
+  function landColor(e) {
+    for (let i = 1; i < ramp.length; i++) if (e < ramp[i][0]) return lerp(ramp[i - 1][1], ramp[i][1], (e - ramp[i - 1][0]) / (ramp[i][0] - ramp[i - 1][0]));
+    return ramp[ramp.length - 1][1];
+  }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const k = y * W + x, h = H_[k], n = M[k], d = D[k];
+    let c;
+    if (h < 0) {
+      const t = Math.min(1, -h * 2.4);
+      c = lerp([74, 112, 104], [20, 40, 48], t);
+      if (h > -.025) c = lerp([150, 170, 140], c, -h / .025);
+      const w = (d - .5) * 22; c = [c[0] + w, c[1] + w, c[2] + w];
+    } else if (h < .012) c = [44, 40, 30];
+    else {
+      const x0 = Math.max(0, x - 1), x1 = Math.min(W - 1, x + 1), y0 = Math.max(0, y - 1), y1 = Math.min(H - 1, y + 1);
+      const hx = E[y * W + x1] - E[y * W + x0], hy = E[y1 * W + x] - E[y0 * W + x];
+      const shade = Math.max(.5, Math.min(1.5, 1 + (hx + hy) * 26)); // light from top-left
+      c = landColor(E[k]);
+      if (isForest(x, y, n)) c = lerp(c, [50, 76, 36], .65 + (d - .5) * .6);
+      else if (isDesert(x, y, n)) c = lerp(c, [204, 166, 102], .75);
+      const m = (d - .5) * 28;
+      c = [c[0] * shade + m, c[1] * shade + m, c[2] * shade + m];
+    }
+    const grain = (R() - .5) * 8, i = k * 4;
+    px[i] = c[0] + grain; px[i + 1] = c[1] + grain; px[i + 2] = c[2] + grain; px[i + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+
+  const at = (x, y) => { const k = (y | 0) * W + (x | 0); return [H_[k], M[k]]; };
+  // dense tree canopies, back to front so they overlap like stamps
+  const trees = [];
+  for (let i = 0; i < 9000; i++) {
+    const x = 5 + R() * (W - 10), y = 5 + R() * (H - 10), [h, n] = at(x, y);
+    if (h > .05 && isForest(x, y, n)) trees.push([x, y]);
+    else if (h > .08 && !isMountain(x, y, n) && !isDesert(x, y, n) && R() < .02) trees.push([x, y]);
+  }
+  trees.sort((a, b) => a[1] - b[1]);
+  for (const [x, y] of trees) {
+    const r = 2.6 + R() * 2;
+    ctx.fillStyle = 'rgba(15,22,10,.45)'; ctx.beginPath(); ctx.arc(x + 1.5, y + 1.5, r, 0, 7); ctx.fill();
+    ctx.fillStyle = R() < .5 ? '#3b5a2a' : '#46682f'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(170,190,110,.45)'; ctx.beginPath(); ctx.arc(x - r * .35, y - r * .35, r * .45, 0, 7); ctx.fill();
+  }
+  // sparse peak highlights on the spine
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 260; i++) {
+    const x = 5 + R() * (W - 10), y = 5 + R() * (H - 10), [h, n] = at(x, y);
+    if (h < .06 || !isMountain(x, y, n)) continue;
+    const s = 5 + R() * 6;
+    ctx.strokeStyle = 'rgba(255,250,235,.55)'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(x - s * .7, y + s * .3); ctx.lineTo(x, y - s * .6); ctx.stroke();
+    ctx.strokeStyle = 'rgba(30,22,14,.5)';
+    ctx.beginPath(); ctx.moveTo(x, y - s * .6); ctx.lineTo(x + s * .7, y + s * .3); ctx.stroke();
+  }
+  // vignette
+  const g = ctx.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, W * .72);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.55)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+})();
+</script>
+
+</body></html>

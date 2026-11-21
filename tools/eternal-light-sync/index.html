@@ -1,0 +1,88 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Eternal Light Sync</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap">
+<style>
+/* layout: one column, the current line large in the middle, a tap pad you can hit without looking */
+:root {
+  --bg: #F7EDD6; --fg: #33295A; --muted: #7A6E96; --gold: #D9A21B; --card: #FFF8E8; --line: #E4D3AE;
+  --f: 'Baloo Bhaijaan 2', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1E1C3A; --fg: #F3EAD6; --muted: #A79FC4; --gold: #F2C94C; --card: #2A2850; --line: #3D3A6B; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #1E1C3A; --fg: #F3EAD6; --muted: #A79FC4; --gold: #F2C94C; --card: #2A2850; --line: #3D3A6B; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--f); font-size: 17px; }
+main { max-width: 760px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+h1 { margin: 0; font-size: 1.8rem; font-weight: 800; text-wrap: balance; }
+.how { margin: 0; color: var(--muted); line-height: 1.6; }
+.bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+button { font: inherit; font-weight: 700; border-radius: 12px; border: 2px solid var(--fg); background: var(--card); color: var(--fg); padding: 8px 16px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+#clock { font-variant-numeric: tabular-nums; font-size: 1.3rem; font-weight: 700; margin-left: auto; }
+#pad { min-height: 190px; border-radius: 20px; border: 3px solid var(--gold); background: var(--card); display: grid; place-content: center; text-align: center; gap: 6px; padding: 18px; user-select: none; touch-action: manipulation; }
+#pad.flash { background: var(--gold); color: #33295A; }
+#next { font-size: 1.5rem; font-weight: 800; text-wrap: balance; }
+#nextAr { direction: rtl; color: var(--muted); font-size: 1.1rem; }
+#hint { color: var(--muted); font-size: .9rem; }
+ol { margin: 0; padding-left: 2.2em; display: grid; gap: 2px; max-height: 300px; overflow: auto; border-top: 1px solid var(--line); padding-top: 8px; }
+li { color: var(--muted); }
+li.done { color: var(--fg); }
+li span { font-variant-numeric: tabular-nums; color: var(--gold); font-weight: 700; margin-right: 8px; }
+#out { display: grid; gap: 8px; }
+textarea { width: 100%; box-sizing: border-box; min-height: 90px; font-family: ui-monospace, monospace; font-size: 13px; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+@media (prefers-reduced-motion: reduce) { #pad { transition: none; } }
+</style>
+<main>
+  <h1>Eternal Light Sync</h1>
+  <p class="how">Press Play, then tap the pad (or press Space) at the moment each line <b>starts being sung</b>. Made a mistake? Press Undo, it also rewinds the song 5 seconds. When you finish, press Copy and paste the result to Claude.</p>
+  <div class="bar">
+    <button id="play">Play</button>
+    <button id="undo">Undo</button>
+    <button id="restart">Start over</button>
+    <span id="clock">0:00.0</span>
+  </div>
+  <div id="pad" role="button" tabindex="0" aria-label="Tap when the next line starts">
+    <div id="hint">Next line</div>
+    <div id="next"></div>
+    <div id="nextAr"></div>
+  </div>
+  <ol id="list"></ol>
+  <div id="out">
+    <textarea id="result" readonly aria-label="Timings to send to Claude"></textarea>
+    <div class="bar"><button id="copy">Copy timings</button><span id="copied" class="how"></span></div>
+  </div>
+  <audio id="song" src="song.mp3" preload="auto"></audio>
+</main>
+<script>
+const LINES = [["In the silence of the desert under ancient skies,", "في سكون الصحراء تحت سماءٍ قديمة"], ["A gentle voice spoke truth, opening searching eyes.", "صوتٌ رقيقٌ نطق بالحق، ففتح العيون الباحثة"], ["From the Cave of Hira to the night of divine grace,", "من غار حراء إلى ليلة الفضل الإلهي"], ["Miracles unfolded for the healing of the human race.", "تجلّت المعجزات شفاءً للبشرية"], ["Water flowed like rivers from his blessed hands,", "تدفّق الماء أنهارًا من يديه المباركتين"], ["A message of mercy across the desert sands.", "رسالةُ رحمةٍ عبر رمال الصحراء"], ["The moon split open in the silent night,", "انشقّ القمر في الليل الساكن"], ["A living miracle—the Quran of eternal light.", "معجزةٌ حيّة، القرآنُ نورٌ خالد"], ["Salla Allahu 'alayhi wa sallam.", "صلى الله عليه وسلم"], ["A handful of food fed a crowd so grand,", "حفنةٌ من الطعام أطعمت جمعًا كبيرًا"], ["Blessings overflowing at his soft command.", "وفاضت البركة بأمره اللطيف"], ["The crying palm tree wept when he walked away,", "بكى جذعُ النخلة حين ابتعد عنه"], ["Until his tender touch brought its grief to stay.", "حتى سكّنت لمستُه الحانية حزنه"], ["Water flowed like rivers from his blessed hands,", "تدفّق الماء أنهارًا من يديه المباركتين"], ["A message of mercy across the desert sands.", "رسالةُ رحمةٍ عبر رمال الصحراء"], ["The moon split open in the silent night,", "انشقّ القمر في الليل الساكن"], ["A living miracle—the Quran of eternal light.", "معجزةٌ حيّة، القرآنُ نورٌ خالد"], ["Salla Allahu 'alayhi wa sallam.", "صلى الله عليه وسلم"], ["Through Isra and Mi'raj, beyond the stars so high,", "في الإسراء والمعراج، فوق النجوم العالية"], ["Ascending through the heavens to the limit of the sky.", "صاعدًا في السماوات إلى منتهاها"], ["Yet greater than the physical signs of long ago,", "وأعظمُ من الآيات الحسية في الزمن البعيد"], ["Is the guidance in our hearts that continues to grow.", "هدايةٌ في قلوبنا تكبر كل يوم"], ["Water flowed like rivers from his blessed hands,", "تدفّق الماء أنهارًا من يديه المباركتين"], ["A message of mercy across the desert sands.", "رسالةُ رحمةٍ عبر رمال الصحراء"], ["The moon split open in the silent night,", "انشقّ القمر في الليل الساكن"], ["A living miracle—the Quran of eternal light.", "معجزةٌ حيّة، القرآنُ نورٌ خالد"], ["Salla Allahu 'alayhi wa sallam.", "صلى الله عليه وسلم"], ["Salla Allahu 'alayhi wa sallam.", "صلى الله عليه وسلم"], ["Peace be upon the teacher of peace,", "السلام على معلّم السلام"], ["Whose everlasting light will never cease.", "الذي لا ينطفئ نوره أبدًا"], ["Salla Allahu 'alayhi wa sallam.", "صلى الله عليه وسلم"], ["Salla Allahu 'alayhi wa sallam.", "صلى الله عليه وسلم"]];
+const a = document.getElementById('song'), list = document.getElementById('list');
+let taps = [];
+const fmt = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')}`;
+LINES.forEach(([en]) => { const li = document.createElement('li'); li.innerHTML = '<span></span>'; li.append(en); list.append(li); });
+function render() {
+  const i = taps.length, done = i >= LINES.length;
+  document.getElementById('next').textContent = done ? 'All lines done' : LINES[i][0];
+  document.getElementById('nextAr').textContent = done ? '' : LINES[i][1];
+  [...list.children].forEach((li, j) => { li.classList.toggle('done', j < i); li.firstChild.textContent = j < i ? fmt(taps[j]) : ''; });
+  if (i) list.children[Math.min(i, LINES.length - 1)].scrollIntoView({ block: 'nearest' });
+  document.getElementById('result').value = taps.map((t, j) => `${j + 1} ${t.toFixed(2)}`).join('\n');
+}
+function tap() {
+  if (a.paused || taps.length >= LINES.length) return;
+  taps.push(a.currentTime); render();
+  const p = document.getElementById('pad'); p.classList.add('flash'); setTimeout(() => p.classList.remove('flash'), 120);
+}
+document.getElementById('pad').addEventListener('pointerdown', (e) => { e.preventDefault(); tap(); });
+document.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); tap(); } });
+document.getElementById('play').onclick = (e) => { if (a.paused) { a.play(); e.target.textContent = 'Pause'; } else { a.pause(); e.target.textContent = 'Play'; } };
+document.getElementById('undo').onclick = () => { if (!taps.length) return; const t = taps.pop(); a.currentTime = Math.max(0, t - 5); render(); };
+document.getElementById('restart').onclick = () => { taps = []; a.currentTime = 0; render(); };
+document.getElementById('copy').onclick = async () => {
+  const r = document.getElementById('result');
+  try { await navigator.clipboard.writeText(r.value); document.getElementById('copied').textContent = 'Copied'; }
+  catch { r.select(); document.getElementById('copied').textContent = 'Select all and copy'; }
+};
+setInterval(() => { document.getElementById('clock').textContent = fmt(a.currentTime); }, 100);
+render();
+</script>
+
+</body></html>

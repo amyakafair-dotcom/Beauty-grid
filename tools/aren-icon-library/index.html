@@ -1,0 +1,322 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>مكتبة أيقونات آرين</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Aref+Ruqaa:wght@700&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: armory catalogue. Search + category chips on top, icon grid, a sticky inspector at the start side. One deliberate dark look. */
+:root {
+  --bg: #131516;
+  --panel: #1b1e1f;
+  --tile: #222628;
+  --line: #30373a;
+  --fg: #ece5d4;
+  --muted: #9ba39e;
+  --brass: #d7a747;
+  --brass-ink: #1c1608;
+  --ui: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --display: "Aref Ruqaa", "Amiri", serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--ui); font-size: 14px; }
+.wrap { max-width: 1400px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+h1 { font-family: var(--display); color: var(--brass); font-size: clamp(1.7rem, 3.6vw, 2.4rem); margin: 0; text-wrap: balance; }
+.count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.search { flex: 1 1 280px; display: flex; gap: 8px; }
+input[type=search], select { height: 40px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; padding: 0 12px; min-width: 0; }
+input[type=search] { flex: 1; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { height: 32px; padding: 0 12px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); color: inherit; font: inherit; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+.main { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: start; }
+.inspector { position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.preview { width: 100%; aspect-ratio: 1; max-width: 260px; justify-self: center; background: repeating-conic-gradient(#262a2c 0 25%, #1f2325 0 50%) 0 0/24px 24px; border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
+.preview svg { width: 86%; height: 86%; }
+.iname { font-size: 18px; font-weight: 600; margin: 0; overflow-wrap: anywhere; direction: ltr; text-align: end; }
+.credit { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; }
+.credit a { color: var(--brass); }
+.ctl { display: grid; grid-template-columns: 80px 1fr; gap: 8px 10px; align-items: center; }
+input[type=color] { width: 100%; height: 32px; border: 1px solid var(--line); border-radius: 6px; background: none; padding: 0; }
+.seg { display: flex; gap: 4px; flex-wrap: wrap; }
+.seg button { flex: 1; min-width: 52px; height: 32px; background: var(--tile); border: 1px solid var(--line); border-radius: 6px; color: inherit; font: inherit; cursor: pointer; }
+.seg button[aria-pressed="true"] { border-color: var(--brass); color: var(--brass); }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn { height: 36px; padding: 0 12px; background: var(--tile); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; cursor: pointer; }
+.btn.primary { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); font-weight: 600; }
+.btn:hover { border-color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 8px; min-width: 0; }
+.tile { position: relative; aspect-ratio: 1; background: var(--tile); border: 1px solid var(--line); border-radius: 10px; display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--fg); }
+.tile svg { width: 62%; height: 62%; fill: currentColor; }
+.tile:hover { border-color: var(--muted); }
+.tile[aria-pressed="true"] { border-color: var(--brass); color: var(--brass); }
+.tile .fav { position: absolute; top: 4px; inset-inline-start: 6px; font-size: 11px; color: var(--brass); }
+.more { justify-self: center; }
+.empty { color: var(--muted); padding: 30px 0; text-align: center; grid-column: 1 / -1; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+details { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 600; }
+.authors { columns: 3 220px; margin: 12px 0 0; padding: 0; list-style: none; line-height: 1.9; }
+.authors a { color: var(--brass); }
+.authors .lic { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.toast { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--tile); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; z-index: 5; }
+.note { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.7; }
+@media (max-width: 820px) {
+  .main { grid-template-columns: 1fr; }
+  .inspector { position: static; }
+  .preview { max-width: 180px; }
+}
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+  <header>
+    <h1>مكتبة أيقونات آرين</h1>
+    <span class="count" id="count">جارٍ التحميل…</span>
+    <div class="search">
+      <input type="search" id="q" placeholder="ابحث: سيف، تنين، جرعة، shield…" aria-label="بحث">
+      <select id="author" aria-label="الفنان"><option value="">كل الفنانين</option></select>
+    </div>
+  </header>
+  <div class="chips" id="chips" role="toolbar" aria-label="الفئات"></div>
+
+  <div class="main">
+    <aside class="inspector" aria-label="الأيقونة المحددة">
+      <div class="preview" id="preview"></div>
+      <div>
+        <p class="iname" id="iname">—</p>
+        <p class="credit" id="credit"></p>
+      </div>
+      <div class="ctl">
+        <span>الأيقونة</span><input type="color" id="fg" value="#f2e6c9" aria-label="لون الأيقونة">
+        <span>الخلفية</span><input type="color" id="bg" value="#5a3a22" aria-label="لون الخلفية">
+        <span>الشكل</span>
+        <div class="seg" id="shape">
+          <button data-v="none">بدون</button><button data-v="square">مربع</button><button data-v="rounded" aria-pressed="true">مستدير</button><button data-v="circle">دائرة</button>
+        </div>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="savePng" hidden>حفظ PNG</button>
+        <button class="btn" id="saveSvg" hidden>حفظ SVG</button>
+        <button class="btn" id="copySvg">نسخ SVG</button>
+        <button class="btn" id="favBtn">☆ أضف للمجموعة</button>
+      </div>
+      <button class="btn" id="copyCredit">نسخ سطر الحقوق</button>
+      <div style="border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px">
+        <strong id="favCount">مجموعتي: 0</strong>
+        <div class="btns">
+          <button class="btn" id="showFav">عرض المجموعة</button>
+          <button class="btn" id="exportFav" hidden>تصدير المجموعة JSON</button>
+          <button class="btn" id="copyFavCredits">نسخ حقوق المجموعة</button>
+        </div>
+        <p class="note">ملف التصدير يحوي الأيقونات وأسماء فنانيها، جاهز للعبة آرين ولمرسم الخرائط.</p>
+      </div>
+    </aside>
+
+    <section style="display:grid;gap:12px;min-width:0">
+      <div class="grid" id="grid" aria-live="polite"></div>
+      <button class="btn more" id="more" hidden>عرض المزيد</button>
+    </section>
+  </div>
+
+  <details>
+    <summary>الحقوق والترخيص</summary>
+    <p class="note" style="margin-top:10px">الأيقونات من مشروع game-icons.net. معظمها بترخيص CC BY 3.0: استخدام حر حتى تجارياً، بشرط ذكر اسم الفنان في عملك، مثلاً في شاشة حقوق اللعبة. أيقونات Viscious Speed و Zeromancer بترخيص CC0 بلا شروط.</p>
+    <ul class="authors" id="authors"></ul>
+  </details>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+// from the repository's license.txt
+const AUTH = {
+  'lorc': ['Lorc', 'http://lorcblog.blogspot.com'], 'delapouite': ['Delapouite', 'http://delapouite.com'], 'john-colburn': ['John Colburn', 'http://ninmunanmu.com'],
+  'felbrigg': ['Felbrigg', 'http://blackdogofdoom.blogspot.co.uk'], 'john-redman': ['John Redman', 'http://www.uniquedicetowers.com'], 'carl-olsen': ['Carl Olsen', 'https://twitter.com/unstoppableCarl'],
+  'sbed': ['Sbed', 'http://opengameart.org/content/95-game-icons'], 'priorblue': ['PriorBlue'], 'willdabeast': ['Willdabeast', 'http://wjbstories.blogspot.com'],
+  'viscious-speed': ['Viscious Speed', 'http://viscious-speed.deviantart.com', 'CC0'], 'lord-berandas': ['Lord Berandas', 'http://berandas.deviantart.com'],
+  'irongamer': ['Irongamer', 'http://ecesisllc.wix.com/home'], 'heavenly-dog': ['HeavenlyDog', 'http://www.gnomosygoblins.blogspot.com'], 'lucasms': ['Lucas'],
+  'faithtoken': ['Faithtoken', 'http://fungustoken.deviantart.com'], 'skoll': ['Skoll'], 'andymeneely': ['Andy Meneely', 'http://www.se.rit.edu/~andy/'], 'cathelineau': ['Cathelineau'],
+  'kier-heyl': ['Kier Heyl'], 'aussiesim': ['Aussiesim'], 'sparker': ['Sparker', 'http://citizenparker.com'], 'zeromancer': ['Zeromancer', '', 'CC0'], 'rihlsul': ['Rihlsul'],
+  'quoting': ['Quoting'], 'guard13007': ['Guard13007', 'https://guard13007.com'], 'darkzaitzev': ['DarkZaitzev', 'http://darkzaitzev.deviantart.com'], 'spencerdub': ['SpencerDub'],
+  'generalace135': ['GeneralAce135'], 'zajkonur': ['Zajkonur'], 'catsu': ['Catsu'], 'starseeker': ['Starseeker'], 'pepijn-poolman': ['Pepijn Poolman'],
+  'pierre-leducq': ['Pierre Leducq'], 'caro-asercion': ['Caro Asercion'], 'seregacthtuf': ['SeregaCthtuf'],
+};
+const authorInfo = slug => { const a = AUTH[slug] || [slug.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase())]; return { name: a[0], url: a[1] || '', lic: a[2] || 'CC BY 3.0' }; };
+
+const AR = {
+  'سيف': ['sword'], 'فأس': ['axe'], 'قوس': ['bow'], 'سهم': ['arrow'], 'رمح': ['spear', 'lance'], 'خنجر': ['dagger', 'knife'], 'مطرقة': ['hammer'], 'صولجان': ['mace', 'scepter'],
+  'درع': ['shield', 'armor'], 'خوذة': ['helm'], 'تاج': ['crown'], 'خاتم': ['ring'], 'قلادة': ['necklace', 'amulet'], 'جرعة': ['potion', 'flask'], 'كتاب': ['book'], 'لفافة': ['scroll'],
+  'عصا': ['staff', 'wand'], 'بلورة': ['crystal', 'orb'], 'جوهرة': ['gem', 'jewel'], 'ذهب': ['gold'], 'عملة': ['coin'], 'كنز': ['treasure', 'chest'], 'صندوق': ['chest', 'box'],
+  'مفتاح': ['key'], 'باب': ['door', 'gate'], 'قلعة': ['castle', 'fort'], 'برج': ['tower'], 'بيت': ['house', 'home'], 'كهف': ['cave'], 'جبل': ['mountain'], 'شجرة': ['tree'],
+  'غابة': ['forest'], 'نار': ['fire', 'flame'], 'ماء': ['water', 'drop'], 'ثلج': ['snow', 'ice', 'frost'], 'برق': ['lightning', 'thunder'], 'ريح': ['wind', 'tornado'],
+  'شمس': ['sun'], 'قمر': ['moon'], 'نجم': ['star'], 'تنين': ['dragon', 'wyvern'], 'ثعبان': ['snake', 'serpent'], 'ذئب': ['wolf'], 'عنكبوت': ['spider'], 'جمجمة': ['skull'],
+  'عظم': ['bone'], 'شبح': ['ghost', 'spectre'], 'ساحر': ['wizard', 'mage', 'witch'], 'محارب': ['warrior', 'barbarian'], 'فارس': ['knight'], 'ملك': ['king'], 'ملكة': ['queen'],
+  'قلب': ['heart'], 'دم': ['blood'], 'سم': ['poison', 'venom'], 'عين': ['eye'], 'يد': ['hand', 'fist'], 'حصان': ['horse'], 'طائر': ['bird'], 'سمك': ['fish'], 'نسر': ['eagle'],
+  'أسد': ['lion'], 'دب': ['bear'], 'قط': ['cat'], 'كلب': ['dog'], 'بومة': ['owl'], 'خفاش': ['bat'], 'حشرة': ['bug', 'insect', 'beetle'], 'زهرة': ['flower', 'rose'],
+  'عشب': ['herb', 'grass', 'leaf'], 'فطر': ['mushroom'], 'خبز': ['bread'], 'لحم': ['meat', 'ham'], 'تفاح': ['apple'], 'كأس': ['goblet', 'cup', 'chalice'], 'زجاجة': ['bottle'],
+  'مصباح': ['lantern', 'lamp'], 'شمعة': ['candle'], 'خريطة': ['map'], 'بوصلة': ['compass'], 'سفينة': ['ship', 'boat'], 'عربة': ['cart', 'wagon'], 'علم': ['flag', 'banner'],
+  'طبل': ['drum'], 'بوق': ['horn'], 'قيثارة': ['harp', 'lyre'], 'نرد': ['dice', 'die'], 'ورق': ['card'], 'ساعة': ['clock', 'hourglass'], 'رمل': ['sand', 'hourglass'],
+  'حجر': ['stone', 'rock'], 'معول': ['pickaxe'], 'منجل': ['sickle', 'scythe'], 'سندان': ['anvil'], 'حذاء': ['boot'], 'قفاز': ['glove', 'gauntlet'], 'عباءة': ['cloak', 'cape'],
+  'رداء': ['robe'], 'حقيبة': ['bag', 'backpack', 'pouch'], 'سحر': ['magic', 'spell'], 'تعويذة': ['spell', 'rune'], 'رون': ['rune'], 'لعنة': ['curse'], 'شفاء': ['heal', 'health'],
+  'طاقة': ['energy'], 'قوة': ['strength', 'muscle', 'fist'], 'سرعة': ['speed', 'run', 'sprint'], 'هجوم': ['attack', 'strike', 'slash'], 'قتال': ['fight', 'battle', 'duel'],
+  'موت': ['death', 'tomb', 'grave'], 'روح': ['soul', 'spirit'], 'ملاك': ['angel'], 'شيطان': ['demon', 'devil'], 'وحش': ['monster', 'beast'], 'عملاق': ['giant', 'troll'],
+  'قزم': ['dwarf', 'goblin'], 'جني': ['genie', 'djinn'], 'مومياء': ['mummy'], 'زومبي': ['zombie'], 'مصاص': ['vampire'], 'سلاح': ['weapon', 'sword', 'gun'],
+  'مسدس': ['pistol'], 'قنبلة': ['bomb'], 'صاروخ': ['rocket'], 'بيضة': ['egg'], 'جناح': ['wing'], 'مخلب': ['claw'], 'ريشة': ['feather', 'quill'], 'حبل': ['rope'],
+  'سلسلة': ['chain'], 'قفل': ['lock', 'padlock'], 'سجن': ['prison', 'cage'], 'معبد': ['temple', 'shrine'], 'جسر': ['bridge'], 'نهر': ['river', 'wave'], 'بحر': ['wave', 'sea', 'ocean'],
+};
+const CATS = [
+  ['الكل', []],
+  ['أسلحة', ['sword', 'axe', 'bow', 'arrow', 'spear', 'dagger', 'mace', 'hammer', 'blade', 'crossbow', 'halberd', 'flail', 'scimitar', 'katana', 'trident']],
+  ['دروع وملابس', ['shield', 'armor', 'helm', 'boot', 'glove', 'gauntlet', 'cloak', 'robe', 'hat', 'mask', 'breastplate']],
+  ['سحر', ['magic', 'spell', 'potion', 'scroll', 'wand', 'staff', 'crystal', 'rune', 'orb', 'book', 'pentacle', 'aura']],
+  ['وحوش', ['dragon', 'skull', 'monster', 'beast', 'demon', 'ghost', 'zombie', 'spider', 'troll', 'goblin', 'orc', 'wyvern', 'kraken', 'griffin']],
+  ['حيوانات', ['horse', 'bird', 'fish', 'cat', 'dog', 'bear', 'lion', 'eagle', 'owl', 'wolf', 'snake', 'raven', 'deer', 'boar', 'camel']],
+  ['مبانٍ وأماكن', ['castle', 'tower', 'house', 'village', 'cave', 'temple', 'gate', 'door', 'bridge', 'fort', 'church', 'tent', 'well']],
+  ['طبيعة', ['tree', 'forest', 'flower', 'leaf', 'mountain', 'sun', 'moon', 'fire', 'water', 'cloud', 'rock', 'volcano', 'island']],
+  ['كنوز', ['gold', 'coin', 'chest', 'gem', 'ring', 'crown', 'treasure', 'key', 'jewel', 'necklace', 'amulet', 'trophy']],
+  ['طعام وشراب', ['bread', 'meat', 'apple', 'cheese', 'fruit', 'drink', 'wine', 'beer', 'carrot', 'egg', 'cake', 'pie']],
+  ['أدوات', ['pickaxe', 'shovel', 'lantern', 'rope', 'anvil', 'saw', 'map', 'compass', 'scale', 'hourglass', 'candle', 'bag', 'backpack']],
+];
+
+let DATA = null, results = [], shown = 0, sel = null, cat = 0, favOnly = false;
+const PAGE = 240;
+const style = { fg: '#f2e6c9', bg: '#5a3a22', shape: 'rounded' };
+let favs = new Set();
+try { favs = new Set(JSON.parse(localStorage.getItem('aren-icon-favs') || '[]')); } catch { favs = new Set(); }
+const saveFavs = () => { try { localStorage.setItem('aren-icon-favs', JSON.stringify([...favs])); } catch { /* storage blocked: the set stays in memory */ } };
+
+const nice = n => n.replace(/-/g, ' ');
+const keyOf = ic => DATA.authors[ic[1]] + '/' + ic[0];
+function svgFor(ic, st, size) {
+  const k = st.shape === 'none' ? 1 : .78, o = 256 * (1 - k);
+  const bg = st.shape === 'none' ? '' : st.shape === 'circle' ? `<circle cx="256" cy="256" r="256" fill="${st.bg}"/>` : `<rect width="512" height="512" rx="${st.shape === 'rounded' ? 80 : 0}" fill="${st.bg}"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"${size ? ` width="${size}" height="${size}"` : ''}>${bg}<path transform="translate(${o} ${o}) scale(${k})" fill="${st.fg}" d="${ic[2]}"/></svg>`;
+}
+function creditText(ic) { const a = authorInfo(DATA.authors[ic[1]]); return `Icon "${nice(ic[0])}" by ${a.name}${a.url ? ' (' + a.url + ')' : ''}, from game-icons.net, ${a.lic === 'CC0' ? 'CC0' : 'licensed under CC BY 3.0'}`; }
+
+function terms(q) {
+  q = q.trim().toLowerCase(); if (!q) return null;
+  if (/[؀-ۿ]/.test(q)) {
+    const out = new Set();
+    for (const [ar, en] of Object.entries(AR)) if (q.includes(ar) || ar.startsWith(q)) en.forEach(e => out.add(e));
+    return out.size ? [...out] : ['\u0000'];
+  }
+  return [q];
+}
+function filter() {
+  const t = terms($('q').value), au = $('author').value, ct = CATS[cat][1];
+  results = DATA.icons.filter(ic => {
+    if (au !== '' && ic[1] !== +au) return false;
+    if (favOnly && !favs.has(keyOf(ic))) return false;
+    if (ct.length && !ct.some(w => ic[0].includes(w))) return false;
+    if (t && !t.some(w => ic[0].includes(w))) return false;
+    return true;
+  });
+  shown = 0; $('grid').innerHTML = ''; renderMore();
+  $('count').textContent = `${results.length.toLocaleString('ar')} أيقونة${favOnly ? ' في مجموعتي' : ''} من ${DATA.icons.length.toLocaleString('ar')}`;
+  if (!results.length) $('grid').innerHTML = '<p class="empty">لا نتائج. جرّب كلمة أخرى، بالعربية أو الإنجليزية.</p>';
+}
+function renderMore() {
+  const frag = document.createDocumentFragment();
+  for (const ic of results.slice(shown, shown + PAGE)) {
+    const b = document.createElement('button'); b.className = 'tile'; b.title = nice(ic[0]); b.setAttribute('aria-label', nice(ic[0]));
+    b.setAttribute('aria-pressed', String(ic === sel));
+    b.innerHTML = `<svg viewBox="0 0 512 512" aria-hidden="true"><path d="${ic[2]}"/></svg>${favs.has(keyOf(ic)) ? '<span class="fav">★</span>' : ''}`;
+    b.onclick = () => { select(ic); for (const x of document.querySelectorAll('.tile[aria-pressed="true"]')) x.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-pressed', 'true'); };
+    frag.appendChild(b);
+  }
+  shown += PAGE; $('grid').appendChild(frag); $('more').hidden = shown >= results.length;
+}
+function select(ic) {
+  sel = ic;
+  $('preview').innerHTML = svgFor(ic, style);
+  $('iname').textContent = nice(ic[0]);
+  const a = authorInfo(DATA.authors[ic[1]]);
+  $('credit').innerHTML = '';
+  $('credit').append('الفنان: ');
+  if (a.url) { const l = document.createElement('a'); l.href = a.url; l.target = '_blank'; l.rel = 'noopener'; l.textContent = a.name; $('credit').append(l); } else $('credit').append(a.name);
+  $('credit').append(` · ${a.lic}`);
+  $('favBtn').textContent = favs.has(keyOf(ic)) ? '★ في المجموعة' : '☆ أضف للمجموعة';
+  if (matchMedia('(max-width: 820px)').matches) $('preview').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+function refreshPreview() { if (sel) $('preview').innerHTML = svgFor(sel, style); }
+
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400); }
+async function copy(text, ok) {
+  try { await navigator.clipboard.writeText(text); toast(ok); }
+  catch { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast(ok); } catch { toast('تعذر النسخ'); } ta.remove(); }
+}
+
+let downloads = null;
+(async () => {
+  try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch { downloads = null; }
+  if (downloads) for (const id of ['savePng', 'saveSvg', 'exportFav']) $(id).hidden = false;
+})();
+async function offer(filename, data) {
+  try { await downloads.save({ filename, data }); toast('تم الحفظ'); }
+  catch (e) { if (e?.code !== 'declined') toast('تعذر الحفظ: ' + (e?.code || 'خطأ')); }
+}
+function toPng(svg, size) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })), img = new Image();
+    img.onload = () => { const c = document.createElement('canvas'); c.width = c.height = size; c.getContext('2d').drawImage(img, 0, 0, size, size); URL.revokeObjectURL(url); c.toBlob(res, 'image/png'); };
+    img.onerror = rej; img.src = url;
+  });
+}
+
+/* wiring */
+$('q').addEventListener('input', () => { clearTimeout(filter.t); filter.t = setTimeout(filter, 120); });
+$('author').onchange = filter;
+$('more').onclick = renderMore;
+$('fg').oninput = e => { style.fg = e.target.value; refreshPreview(); };
+$('bg').oninput = e => { style.bg = e.target.value; refreshPreview(); };
+for (const b of $('shape').children) b.onclick = () => { style.shape = b.dataset.v; for (const x of $('shape').children) x.setAttribute('aria-pressed', String(x === b)); refreshPreview(); };
+$('copySvg').onclick = () => sel && copy(svgFor(sel, style), 'نُسخ كود SVG');
+$('copyCredit').onclick = () => sel && copy(creditText(sel), 'نُسخ سطر الحقوق');
+$('saveSvg').onclick = () => sel && offer(sel[0] + '.svg', svgFor(sel, style, 512));
+$('savePng').onclick = async () => { if (sel) offer(sel[0] + '.png', await toPng(svgFor(sel, style, 512), 512)); };
+$('favBtn').onclick = () => {
+  if (!sel) return; const k = keyOf(sel);
+  favs.has(k) ? favs.delete(k) : favs.add(k); saveFavs(); select(sel); updateFav();
+  const t = document.querySelector('.tile[aria-pressed="true"]'); if (t) { t.querySelector('.fav')?.remove(); if (favs.has(k)) t.insertAdjacentHTML('beforeend', '<span class="fav">★</span>'); }
+};
+function favIcons() { return DATA.icons.filter(ic => favs.has(keyOf(ic))); }
+function updateFav() { $('favCount').textContent = `مجموعتي: ${favs.size.toLocaleString('ar')}`; }
+$('showFav').onclick = () => { favOnly = !favOnly; $('showFav').textContent = favOnly ? 'عرض الكل' : 'عرض المجموعة'; filter(); };
+$('exportFav').onclick = () => {
+  const list = favIcons(); if (!list.length) { toast('المجموعة فارغة. أضف أيقونات أولاً.'); return; }
+  offer('aren-icons.json', JSON.stringify({ source: 'game-icons.net', style, icons: list.map(ic => ({ name: ic[0], author: authorInfo(DATA.authors[ic[1]]).name, license: authorInfo(DATA.authors[ic[1]]).lic, svg: svgFor(ic, style) })) }, null, 1));
+};
+$('copyFavCredits').onclick = () => {
+  const list = favIcons(); if (!list.length) { toast('المجموعة فارغة'); return; }
+  const by = {}; for (const ic of list) { const a = authorInfo(DATA.authors[ic[1]]).name; (by[a] = by[a] || []).push(nice(ic[0])); }
+  copy('Icons from game-icons.net (CC BY 3.0 unless noted)\n' + Object.entries(by).map(([a, n]) => `Icons made by ${a}: ${n.join(', ')}`).join('\n'), 'نُسخت حقوق المجموعة');
+};
+
+/* boot */
+CATS.forEach(([name], i) => {
+  const b = document.createElement('button'); b.className = 'chip'; b.textContent = name; b.setAttribute('aria-pressed', String(i === 0));
+  b.onclick = () => { cat = i; for (const x of $('chips').children) x.setAttribute('aria-pressed', String(x === b)); filter(); };
+  $('chips').appendChild(b);
+});
+updateFav();
+fetch('icons.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
+  DATA = d;
+  const counts = {}; for (const ic of d.icons) counts[ic[1]] = (counts[ic[1]] || 0) + 1;
+  d.authors.map((s, i) => [s, i]).sort((a, b) => counts[b[1]] - counts[a[1]]).forEach(([s, i]) => {
+    const a = authorInfo(s), o = document.createElement('option'); o.value = i; o.textContent = `${a.name} (${counts[i]})`; $('author').appendChild(o);
+    const li = document.createElement('li');
+    if (a.url) { const l = document.createElement('a'); l.href = a.url; l.target = '_blank'; l.rel = 'noopener'; l.textContent = a.name; li.append(l); } else li.append(a.name);
+    li.insertAdjacentHTML('beforeend', ` <span class="lic">${a.lic} · ${counts[i]}</span>`); $('authors').appendChild(li);
+  });
+  filter();
+  select(d.icons.find(ic => ic[0] === 'dragon-head') || d.icons[0]);
+}).catch(() => { $('count').textContent = 'تعذر تحميل الأيقونات. أعد تحميل الصفحة.'; });
+})();
+</script>
+
+</body></html>

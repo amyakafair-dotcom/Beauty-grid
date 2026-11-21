@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>آخر نبتة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+/* VOICE: gritty, quiet hope — soot and rust, one sunflower of colour
+   IDEA: a scavenger's field notebook page around a living diorama
+   PICTURE: the game itself — a hand-inked scrapyard garden, top of page
+   COLOUR and TYPE: soot #15120f, rust #7a5434, sunflower #e8b52e; Lalezar + Cairo
+   LAYOUT: modest title, game in a riveted housing, HUD above, short help below */
+:root{color-scheme:dark;--bg:#15120f;--ink:#ece2d0;--mut:#a89a85;--rust:#7a5434;--sun:#e8b52e;--leaf:#6fae3e}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Cairo,system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(16px,3vw,36px) max(4vw,12px)}
+h1{font:400 clamp(32px,5vw,48px)/1.05 Lalezar,Cairo,sans-serif;margin:0;color:var(--sun);letter-spacing:0}
+.sub{margin:4px 0 14px;color:var(--mut)}
+.hud{display:flex;flex-wrap:wrap;gap:6px 18px;padding:10px 14px;background:#211b15;border:2px solid #2f261d;border-bottom:0;border-radius:10px 10px 0 0;font-weight:700;font-size:15px}
+.hud b{color:var(--sun);font-weight:700}
+.frame{position:relative;border:3px solid #2f261d;border-radius:0 0 10px 10px;overflow:hidden;background:#000;box-shadow:0 12px 40px #0008}
+canvas{display:block;width:100%;aspect-ratio:960/524;touch-action:none;cursor:crosshair}
+#ov{position:absolute;inset:0;display:grid;place-items:center;background:#0d0b09cc;padding:16px;text-align:center}
+#ov.hide{display:none}
+#ov .card{max-width:440px}
+#ov h2{font:400 clamp(30px,6vw,52px)/1.05 Lalezar,sans-serif;margin:0 0 8px;color:var(--sun)}
+#ov p{margin:0 0 14px;color:var(--ink)}
+button{font:700 18px Cairo,sans-serif;min-height:48px;padding:0 30px;border-radius:8px;border:2px solid #1c1712;background:var(--sun);color:#1c1712;cursor:pointer}
+button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#1c1712e6;border:2px solid var(--rust);padding:6px 14px;border-radius:8px;font-weight:700;font-size:15px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.help{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px 24px;margin-top:16px;color:var(--mut);font-size:15px}
+.help strong{color:var(--ink)}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+@media(max-width:600px){.hud{font-size:13px;gap:4px 12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>آخر نبتة</h1>
+  <p class="sub">المدينة سقطت والحديقة ذبلت إلا نبتة واحدة. كل نبتة تُحييها تُعيد اللون إلى ساحة الخردة.</p>
+  <div class="hud" id="hud"></div>
+  <div class="frame">
+    <canvas id="g" width="960" height="524" aria-label="ساحة اللعب"></canvas>
+    <div id="toast"></div>
+    <div id="ov"><div class="card">
+      <h2 id="ovT">آخر نبتة</h2>
+      <p id="ovP">املأ الدلو من البراميل، اسقِ النباتات، اطرد الغربان، وازرع البذور في الصناديق. الفوز: سبع نباتات ناضجة.</p>
+      <button id="go">ابدأ</button>
+    </div></div>
+  </div>
+  <div class="help">
+    <div><strong>الحركة:</strong> الأسهم أو WASD، أو المس الأرض لتمشي إليها.</div>
+    <div><strong>التفاعل تلقائي:</strong> اقترب من البرميل لتملأ، ومن النبتة لتسقي، ومن الصندوق الفارغ لتزرع.</div>
+    <div><strong>المطر الحمضي:</strong> يحرق النباتات العطشى. التربة المبتلّة تحمي الجذور.</div>
+    <div><strong>الغربان:</strong> تنقر النباتات. اركض نحوها لتطردها. النباتات الناضجة تُسقط بذورًا.</div>
+  </div>
+</div>
+<script>
+{
+const W=960,H=524,cv=document.getElementById('g'),cx=cv.getContext('2d');
+const hud=document.getElementById('hud'),ov=document.getElementById('ov'),toastEl=document.getElementById('toast');
+const INK='#1c1712',rnd=Math.random;
+let R=Math.random;
+const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const j=a=>(R()-.5)*a;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+
+/* ---------- hand-inked drawing helpers ---------- */
+function poly(c,pts,fill,w=2,jit=1.5){c.beginPath();pts.forEach(([x,y],i)=>{x+=j(jit);y+=j(jit);i?c.lineTo(x,y):c.moveTo(x,y)});c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(w){c.lineWidth=w;c.strokeStyle=INK;c.stroke()}}
+function line(c,x1,y1,x2,y2,w=2,col=INK){c.beginPath();c.moveTo(x1+j(1),y1+j(1));c.quadraticCurveTo((x1+x2)/2+j(2),(y1+y2)/2+j(2),x2+j(1),y2+j(1));c.lineWidth=w;c.strokeStyle=col;c.stroke()}
+function ell(c,x,y,rx,ry,fill,w=2,rot=0){c.beginPath();c.ellipse(x+j(1),y+j(1),rx,ry,rot+j(.08),0,7);if(fill){c.fillStyle=fill;c.fill()}if(w){c.lineWidth=w;c.strokeStyle=INK;c.stroke()}}
+function rect(c,x,y,w,h,fill,lw=2){poly(c,[[x,y],[x+w,y],[x+w,y+h],[x,y+h]],fill,lw)}
+function plank(c,x,y,l,w,a,col){const ca=Math.cos(a),sa=Math.sin(a),px=-sa*w/2,py=ca*w/2,dx=ca*l/2,dy=sa*l/2;
+  poly(c,[[x-dx+px,y-dy+py],[x+dx+px,y+dy+py],[x+dx-px,y+dy-py],[x-dx-px,y-dy-py]],col,1.5,1)}
+function tire(c,x,y,s=1){ell(c,x,y,22*s,11*s,'#1d1b19',2);ell(c,x,y-2*s,11*s,4.5*s,'#3a332b',1.5)}
+
+/* ---------- the user's painted scene as backdrop ---------- */
+const img=new Image(),grey=document.createElement('canvas');grey.width=W;grey.height=H;
+function buildBg(){const g=grey.getContext('2d');g.drawImage(img,0,0,W,H);
+  try{const d=g.getImageData(0,0,W,H),a=d.data;for(let i=0;i<a.length;i+=4){const l=(a[i]*.3+a[i+1]*.59+a[i+2]*.11)*.62;a[i]=l*1.05;a[i+1]=l;a[i+2]=l*.92}g.putImageData(d,0,0)}catch(e){g.fillStyle='rgba(20,18,15,.55)';g.fillRect(0,0,W,H)}}
+/* ---------- game state ---------- */
+const SPOTS=[[609,436,1],[240,376],[330,287],[461,331],[583,372],[709,402],[829,343]];
+let S,state='menu',T=0,frame=0;
+const keys={};
+function reset(){
+  S={t:0,seeds:1,best:0,items:[],crows:[],crowT:10,firstCrow:true,
+    weather:'clear',wT:16,wSeq:['rain','clear','acid'],
+    P:{x:470,y:470,tx:null,ty:null,carry:0,cd:0,walk:0,f:1,dir:'down',moving:false,act:null},
+    barrels:[{x:122,y:268,lv:3},{x:860,y:290,lv:2}],
+    spots:SPOTS.map(([x,y,m])=>({x,y,main:!!m,p:null}))};
+  S.spots[0].p=newPlant(1.6,60);
+}
+const newPlant=(g=0,w=45)=>({growth:g,water:w,hp:100,alive:true,seedT:6});
+const plantH=(s)=>(8+s.p.growth*14)*(s.main?1.35:1);
+
+function toast(m){toastEl.textContent=m;toastEl.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>toastEl.classList.remove('on'),3200)}
+const WNAME={clear:'صافٍ',rain:'مطر',acid:'مطر حمضي'};
+
+function update(dt){
+  S.t+=dt;const day=Math.floor(S.t/45)+1,ph=(S.t%45)/45,night=ph>.72;
+  if(day>S.best){S.best=day;if(day>1)toast(`اليوم ${day} — الغربان أكثر جرأة`)}
+  /* weather */
+  if((S.wT-=dt)<=0){
+    const r=rnd();S.weather=S.wSeq.length?S.wSeq.shift():r<.45?'clear':r<.75?'rain':'acid';
+    S.wT=S.weather==='clear'?13+rnd()*10:9+rnd()*6;
+    if(S.weather==='rain')toast('مطر! البراميل تمتلئ');
+    if(S.weather==='acid')toast('مطر حمضي! اسقِ النباتات — التربة المبتلّة تحمي الجذور');
+  }
+  for(const b of S.barrels)b.lv=Math.min(5,b.lv+dt*(S.weather==='rain'?.35:.04));
+  /* player */
+  const P=S.P;let dx=(keys.ArrowLeft||keys.a?-1:0)+(keys.ArrowRight||keys.d?1:0),dy=(keys.ArrowUp||keys.w?-1:0)+(keys.ArrowDown||keys.s?1:0);
+  if(dx||dy)P.tx=null;else if(P.tx!=null){const ex=P.tx-P.x,ey=P.ty-P.y,l=Math.hypot(ex,ey);if(l<6)P.tx=null;else{dx=ex/l;dy=ey/l}}
+  if(P.act){P.act.t-=dt;if(P.act.t<=0)P.act=null;dx=dy=0}
+  const l=Math.hypot(dx,dy);P.moving=!!l;
+  if(l){P.x=clamp(P.x+dx/l*165*dt,40,920);P.y=clamp(P.y+dy/l*165*dt,290,505);P.walk+=dt*11;
+    if(Math.abs(dy)>Math.abs(dx)*1.2)P.dir=dy>0?'down':'up';else{P.dir='side';P.f=dx>0?1:-1}
+    if((P.dustT=(P.dustT||0)-dt)<=0){P.dustT=.12;fx(P.x+(rnd()-.5)*10,P.y-1,-dx/l*18+(rnd()-.5)*12,-6-rnd()*8,.55,'150,132,104',2.5+rnd()*2)}}
+  if(P.act&&P.act.k==='water'&&rnd()<.7)fx(P.x+P.f*31,P.y-40,P.f*(40+rnd()*30),-10-rnd()*20,.5,'110,180,235',1.7,1);
+  for(const q of FX){q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.g)q.vy+=320*dt;q.life-=dt}
+  for(let i=FX.length;i--;)if(FX[i].life<=0)FX.splice(i,1);
+  /* interactions */
+  if((P.cd-=dt)<=0)interact(P);
+  S.items=S.items.filter(it=>{if(dist(P,it)<32){S.seeds++;toast('بذرة! ازرعها في صندوق فارغ');return false}return true});
+  /* crows */
+  if((S.crowT-=dt)<=0&&!night){
+    S.crowT=Math.max(2.5,8-day*.8)+rnd()*3;
+    const alive=S.spots.filter(s=>s.p&&s.p.alive);
+    if(alive.length&&S.crows.length<1+day){
+      const s=alive[rnd()*alive.length|0];S.crows.push({x:rnd()<.5?-20:W+20,y:40+rnd()*90,s,state:'in',flap:0});
+      if(S.firstCrow){S.firstCrow=false;toast('غراب! اركض نحوه لتطرده')}
+    }
+  }
+  for(const c of S.crows){
+    c.flap+=dt*(c.state==='peck'?6:16);
+    if(c.state!=='out'){
+      const base={x:c.s.x,y:c.s.y};
+      if(!c.s.p||!c.s.p.alive||dist(P,c.state==='peck'?base:c)<55){c.state='out';c.vx=c.x<P.x?-1:1}
+    }
+    if(c.state==='in'){const tx=c.s.x+8,ty=c.s.y-6-plantH(c.s),ex=tx-c.x,ey=ty-c.y,d=Math.hypot(ex,ey);
+      if(d<5)c.state='peck';else{c.x+=ex/d*140*dt;c.y+=ey/d*140*dt}}
+    else if(c.state==='out'){c.x+=c.vx*220*dt;c.y-=200*dt}
+  }
+  S.crows=S.crows.filter(c=>c.y>-50);
+  /* plants */
+  for(const s of S.spots){const p=s.p;if(!p||!p.alive)continue;
+    p.water=clamp(p.water-dt*(S.weather==='acid'?4.5:2.4)+(S.weather==='rain'?dt*6:0),0,100);
+    let dmg=0;if(p.water<=0)dmg+=3;if(S.weather==='acid'&&p.water<30)dmg+=4;
+    dmg+=S.crows.filter(c=>c.state==='peck'&&c.s===s).length*6;
+    if(dmg)p.hp-=dmg*dt;else p.hp=Math.min(100,p.hp+dt*2);
+    if(p.water>0&&p.growth<4){p.growth=Math.min(4,p.growth+dt*.055*(night?.5:1));if(p.growth>=4)toast(s.main?'آخر نبتة أزهرت':'نبتة نضجت وستُسقط بذورًا')}
+    if(p.growth>=4&&(p.seedT-=dt)<=0){p.seedT=14;S.items.push({x:clamp(s.x+(rnd()-.5)*90,50,910),y:clamp(s.y+28+rnd()*25,295,505)})}
+    if(p.hp<=0){p.alive=false;toast(s.main?'ماتت آخر نبتة الأصلية… لكن البذور باقية':'ذبلت نبتة')}
+  }
+  /* end */
+  const grown=S.spots.filter(s=>s.p&&s.p.alive&&s.p.growth>=4).length;
+  if(grown===7)end(true);
+  else if(!S.spots.some(s=>s.p&&s.p.alive)&&!S.seeds&&!S.items.length)end(false);
+}
+function interact(P){
+  for(const b of S.barrels)if(dist(P,b)<50&&P.carry<3&&b.lv>=1){b.lv--;P.carry++;P.cd=.45;P.act={k:'fill',t:.4};P.dir='side';P.f=b.x>P.x?1:-1;return}
+  let best=null,bd=55;
+  for(const s of S.spots){const d=dist(P,s);if(d>=bd)continue;
+    if(s.p&&s.p.alive&&P.carry>0&&s.p.water<70){best=s;bd=d}
+    else if((!s.p||!s.p.alive)&&S.seeds>0){best=s;bd=d}}
+  if(!best)return;
+  P.dir='side';P.f=best.x>P.x?1:-1;
+  if(best.p&&best.p.alive){best.p.water=Math.min(100,best.p.water+45);P.carry--;P.act={k:'water',t:.6}}
+  else{best.p=newPlant();S.seeds--;toast('زرعت بذرة');P.act={k:'plant',t:.5}}
+  P.cd=.65;
+}
+function end(win){
+  state='end';const days=Math.floor(S.t/45)+1;
+  let rec=0;try{rec=+localStorage.getItem('lastPlantBest')||0;if(win&&(!rec||S.t<rec))localStorage.setItem('lastPlantBest',S.t.toFixed(0))}catch(e){}
+  document.getElementById('ovT').textContent=win?'الحديقة عادت':'ذبلت الحديقة';
+  document.getElementById('ovP').textContent=win?`سبع نباتات ناضجة في ${Math.round(S.t)} ثانية (اليوم ${days}).${rec?` أفضل وقت سابق: ${rec} ثانية.`:''}`:`صمدت حتى اليوم ${days}. حاول أن تبقي البراميل ممتلئة قبل المطر الحمضي.`;
+  document.getElementById('go').textContent='العب مجددًا';ov.classList.remove('hide');
+}
+
+/* ---------- drawing ---------- */
+function drawSpot(s){
+  const empty=!s.p||!s.p.alive;ell(cx,s.x,s.y-2,s.main?20:24,6,'#2a1e14',1.5);
+  if(empty&&S.seeds>0){cx.beginPath();cx.ellipse(s.x,s.y-2,30+Math.sin(T*4)*3,10,0,0,7);cx.lineWidth=2;cx.strokeStyle='rgba(232,181,46,.8)';cx.stroke()}
+}
+function leaf(x,y,d,col){cx.beginPath();cx.ellipse(x+d*.5,y-3,Math.abs(d)*.55,4.5,d>0?-.45:.45,0,7);cx.fillStyle=col;cx.fill();cx.lineWidth=1.5;cx.strokeStyle=INK;cx.stroke()}
+function drawPlant(s){
+  const p=s.p;if(!p)return;const g=p.growth,x=s.x,y=s.y-6,h=plantH(s);
+  if(!p.alive){line(cx,x,y,x+6,y-h*.6,2.5,'#6b5d4a');line(cx,x+3,y-h*.3,x-7,y-h*.45,1.5,'#6b5d4a');return}
+  const dry=p.water<=0,col=dry?'#8f7d3c':'#5c9a34',stem=dry?'#5f5428':'#2f5e1c';
+  const tx=x+(dry?9:0)+Math.sin(T*1.6+x)*2,ty=y-h;
+  cx.beginPath();cx.moveTo(x,y);cx.quadraticCurveTo(x+j(2),y-h/2,tx,ty);cx.lineWidth=3.5;cx.strokeStyle=INK;cx.stroke();cx.lineWidth=2;cx.strokeStyle=stem;cx.stroke();
+  const n=1+Math.floor(g*1.6);
+  for(let i=0;i<n;i++){const t=(i+1)/(n+1.2);leaf(x+(tx-x)*t,y-h*t,(i%2?1:-1)*(9+g*2.2)*(s.main?1.2:1),col)}
+  if(g>=4){
+    if(s.main){for(let i=0;i<12;i++){const a=i/12*6.283+T*.2;ell(cx,tx+Math.cos(a)*12,ty+Math.sin(a)*12,7,3.5,'#e8b52e',1.2,a)}ell(cx,tx,ty,8,8,'#5a3a1c',1.5)}
+    else for(const [ox,oy] of [[-8,h*.35],[7,h*.55],[-4,h*.7]])ell(cx,x+ox,y-oy,4.5,4.5,'#c8402a',1.3);
+  }else ell(cx,tx,ty,3+g,3+g,col,1.3);
+  const bx=x-17,by=s.y+(s.main?16:20);
+  cx.fillStyle='#000a';cx.fillRect(bx,by,34,8);
+  cx.fillStyle='#4aa3d8';cx.fillRect(bx+1,by+1,32*p.water/100,3);
+  cx.fillStyle=p.hp>50?'#7cc04a':p.hp>25?'#e0a030':'#d8452a';cx.fillRect(bx+1,by+4,32*p.hp/100,3);
+}
+function drawBarrel(b){
+  const {x,y}=b;cx.fillStyle='#000b';cx.fillRect(x-17,y+4,34,10);
+  for(let i=0;i<5;i++){cx.fillStyle=i<Math.floor(b.lv)?'#6cc0f0':'#333';cx.fillRect(x-15+i*6.4,y+6,5,6)}
+}
+/* clean ink helpers for the character (matches the painting's linework) */
+const FX=[];
+function fx(x,y,vx,vy,life,col,r,g=0){FX.push({x,y,vx,vy,life,max:life,col,r,g})}
+function shape(pts,fill,w=1.6){cx.beginPath();pts.forEach(([x,y],i)=>i?cx.lineTo(x,y):cx.moveTo(x,y));cx.closePath();cx.fillStyle=fill;cx.fill();if(w){cx.lineWidth=w;cx.lineJoin='round';cx.strokeStyle=INK;cx.stroke()}}
+function blob(x,y,rx,ry,fill,w=1.6,rot=0){cx.beginPath();cx.ellipse(x,y,rx,ry,rot,0,7);cx.fillStyle=fill;cx.fill();if(w){cx.lineWidth=w;cx.strokeStyle=INK;cx.stroke()}}
+function strk(pts,w,col=INK){cx.beginPath();pts.forEach(([x,y],i)=>i?cx.lineTo(x,y):cx.moveTo(x,y));cx.lineWidth=w;cx.lineCap='round';cx.lineJoin='round';cx.strokeStyle=col;cx.stroke()}
+function limb(a,b,w,col){strk([a,b],w+3);strk([a,b],w,col)}
+const C={coat:'#5d5b3b',coatD:'#46442c',pants:'#4a3f33',pantsD:'#362e25',boot:'#28211a',skin:'#c69a70',hood:'#4d4834',scarf:'#9a3b26',pack:'#6e4e30',roll:'#8b7b58',can:'#6f8487',brass:'#b08a3a',glove:'#3a3026'};
+function can(x,y,tilt){cx.save();cx.translate(x,y);cx.rotate(tilt);
+  shape([[-6,0],[6,0],[5,11],[-5,11]],C.can,1.4);strk([[-4,4],[4,4]],1,'#4e5f62');
+  strk([[5,3],[13,-3]],3.5);strk([[5,3],[13,-3]],1.8,C.can);blob(14,-4,2.2,1.6,'#4e5f62',1);
+  cx.beginPath();cx.arc(0,0,5,Math.PI,0);cx.lineWidth=1.6;cx.strokeStyle=INK;cx.stroke();cx.restore()}
+function drawPlayer(P){
+  const mv=P.moving,s=Math.sin(P.walk),act=P.act&&P.act.k;
+  const bob=mv?-Math.abs(Math.cos(P.walk))*2.2:Math.sin(T*2.2)*.6,cr=act==='plant'?7:act==='fill'?3:0,o=bob+cr;
+  cx.save();cx.translate(P.x,P.y);
+  blob(0,0,17,5,'rgba(0,0,0,.38)',0);
+  if(P.dir==='side'){
+    cx.scale(P.f,1);
+    const hipY=-24+cr,L=-hipY,leg=(a,col)=>{const fx_=Math.sin(a)*L,fy=hipY+Math.cos(a)*L;limb([0,hipY+bob],[fx_,fy],6.5,col);blob(fx_+3,fy-1,6.5,3.6,C.boot,1.4)};
+    const a=mv?s*.55:act==='plant'?.5:0;leg(-a,C.pantsD);
+    const sh=[-1,-42+o],aa=mv?-s*.6:0;
+    limb(sh,[sh[0]+Math.sin(-aa)*15,sh[1]+Math.cos(aa)*15],5,C.coatD);
+    shape([[-15,-48+o],[-4,-48+o],[-4,-23+o],[-15,-25+o]],C.pack);strk([[-15,-38+o],[-4,-38+o]],1.2);
+    blob(-9,-50+o,8,4,C.roll,1.4);strk([[-13,-51+o],[-18,-62+o]],2.5,'#77706a');
+    leg(a,C.pants);
+    shape([[-8,-47+o],[7,-47+o],[11,-20+o],[-10,-20+o]],C.coat);
+    shape([[-8,-47+o],[-3,-47+o],[-4,-20+o],[-10,-20+o]],C.coatD,0);
+    shape([[1,-36+o],[7,-36+o],[8,-29+o],[1,-29+o]],'#7a5a3a',1.1);strk([[-10,-26+o],[11,-26+o]],2.5,'#2e241b');
+    for(let y=-44;y<-22;y+=5)strk([[-7,y+o],[-9,y+3+o]],.8,'#2e2b1c');
+    const ft=Math.sin(T*8+P.walk)*2;strk([[-3,-46+o],[-13-(mv?5:1),-41+o+ft]],4,C.scarf);
+    blob(0,-46+o,7,3,C.scarf,1.4);
+    blob(1,-54+o,9.5,9.5,C.hood);blob(4.5,-53+o,5.5,6.5,C.skin,1.3);
+    strk([[6.5,-54+o],[7.5,-54+o]],1.8);strk([[9,-51+o],[10.5,-50+o]],1.2);
+    strk([[-6,-60+o],[6,-60+o]],1.6,'#2e241b');blob(3,-60+o,3.2,2.6,C.brass,1.2);blob(3,-60+o,1.6,1.3,'#8fb2b5',0);
+    let hand,tilt=0;
+    if(act==='water'){hand=[17,-37+o];tilt=.75}else if(act==='fill'){hand=[15,-22+o];tilt=.3}else if(act==='plant'){hand=[15,-10+cr];tilt=0}
+    else hand=[2+Math.sin(aa)*13,-42+o+Math.cos(aa)*15];
+    limb([1,-42+o],hand,5,C.coat);blob(hand[0],hand[1],2.8,2.8,C.glove,1.2);
+    if(act==='plant')blob(hand[0]+2,hand[1]+3,2,1.5,'#c9a46a',1);else can(hand[0]+3,hand[1]+1,tilt);
+  }else{
+    const up=P.dir==='up',l1=mv?Math.max(0,s)*4:0,l2=mv?Math.max(0,-s)*4:0;
+    limb([-4,-24+o],[-5,-l1],6.5,C.pants);limb([4,-24+o],[5,-l2],6.5,C.pantsD);
+    blob(-5,-l1-1,5,3.6,C.boot,1.4);blob(5,-l2-1,5,3.6,C.boot,1.4);
+    const sw=mv?s*4:0;
+    limb([-9,-43+o],[-11,-28+o+sw],5,C.coatD);limb([9,-43+o],[11,-28+o-sw],5,C.coat);
+    shape([[-9,-47+o],[9,-47+o],[12,-20+o],[-12,-20+o]],C.coat);
+    shape([[3,-47+o],[9,-47+o],[12,-20+o],[5,-20+o]],C.coatD,0);
+    strk([[-12,-26+o],[12,-26+o]],2.5,'#2e241b');
+    if(up){shape([[-10,-48+o],[10,-48+o],[9,-24+o],[-9,-24+o]],C.pack);blob(0,-50+o,10,4,C.roll,1.4);strk([[-5,-38+o],[5,-38+o]],1.2);strk([[6,-50+o],[10,-63+o]],2.5,'#77706a')}
+    else{shape([[-5,-36+o],[1,-36+o],[1,-29+o],[-5,-29+o]],'#7a5a3a',1.1);strk([[0,-47+o],[0,-27+o]],1,'#2e2b1c')}
+    blob(0,-46+o,8,3.2,C.scarf,1.4);if(!up)strk([[3,-45+o],[5,-36+o+Math.sin(T*8)*1.5]],4,C.scarf);
+    blob(0,-55+o,9.5,9.5,C.hood);
+    if(up){strk([[-9,-58+o],[9,-58+o]],1.6,'#2e241b');blob(-4,-59+o,2.4,2,C.brass,1)}
+    else{blob(0,-53+o,6,6.5,C.skin,1.3);strk([[-2.5,-54+o],[-2,-54+o]],2);strk([[2,-54+o],[2.5,-54+o]],2);
+      strk([[-8,-60+o],[8,-60+o]],1.6,'#2e241b');blob(-3.5,-60+o,2.8,2.4,C.brass,1.1);blob(3.5,-60+o,2.8,2.4,C.brass,1.1);blob(-3.5,-60+o,1.3,1.1,'#8fb2b5',0);blob(3.5,-60+o,1.3,1.1,'#8fb2b5',0)}
+    blob(11,-28+o-sw,2.8,2.8,C.glove,1.2);if(!up)can(14,-26+o-sw,0);
+  }
+  cx.restore();
+}
+function drawCrow(c){
+  const pk=c.state==='peck',f=Math.sin(c.flap);
+  cx.save();cx.translate(c.x,c.y);
+  cx.scale(pk?-1:(c.state==='out'?c.vx:(c.s.x-c.x>=0?1:-1)),1);
+  if(pk){const hb=Math.max(0,Math.sin(c.flap*1.4))*5;
+    strk([[-2,4],[-3,10]],1.4);strk([[2,4],[4,10]],1.4);
+    shape([[-8,-1],[-19,3],[-18,7],[-8,4]],'#15130f',1.3);
+    blob(0,0,10,6,'#1f1c18',1.5);shape([[-7,-3],[6,-3],[-11,4]],'#2c2823',1);
+    blob(8,-5+hb,5,4.5,'#1f1c18',1.4);shape([[12,-7+hb],[19,-3+hb],[12,-3+hb]],'#5a5040',1);blob(9,-6+hb,1,1,'#d8d0b0',0);
+  }else{const w=f*9;
+    shape([[-2,-1],[-5,-9-w],[-1,-13-w],[3,-11-w],[6,-1]],'#2a2621',1.2);
+    shape([[-12,-1],[-20,2],[-19,5],[-11,3]],'#15130f',1.2);
+    blob(0,0,10,4.5,'#1f1c18',1.4);blob(9,-2,4.5,4,'#1f1c18',1.3);shape([[12,-3],[18,-1],[12,0]],'#5a5040',1);blob(10,-3,.9,.9,'#d8d0b0',0);
+    shape([[-3,0],[-7,10+w],[-2,13+w],[3,11+w],[6,1]],'#1b1814',1.2);
+  }
+  cx.restore();
+}
+function render(){
+  R=rng(Math.floor(performance.now()/140));
+  cx.drawImage(grey,0,0);
+  if(!S)return;
+  const k=S.spots.filter(s=>s.p&&s.p.alive).reduce((a,s)=>a+.25+.75*s.p.growth/4,0)/7;
+  cx.globalAlpha=clamp(k,0,1);cx.drawImage(img,0,0,W,H);cx.globalAlpha=1;
+  const ph=(S.t%45)/45,dark=Math.min(clamp((ph-.68)/.06,0,1),clamp((1-ph)/.04,0,1))*.6;
+  if(S.weather!=='clear'){cx.fillStyle=S.weather==='acid'?'rgba(120,170,40,.13)':'rgba(40,60,90,.16)';cx.fillRect(0,0,W,H)}
+  S.barrels.forEach(drawBarrel);S.spots.forEach(drawSpot);
+  for(const it of S.items){ell(cx,it.x,it.y,5,3.5,'#c9a46a',1.3);ell(cx,it.x,it.y-7+Math.sin(T*4)*2,2,2,'#e8b52e',0)}
+  [...S.spots.filter(s=>s.p),{P:S.P,y:S.P.y}].sort((a,b)=>a.y-b.y).forEach(o=>o.P?drawPlayer(o.P):drawPlant(o));
+  for(const q of FX){cx.globalAlpha=q.life/q.max;cx.fillStyle=`rgb(${q.col})`;cx.beginPath();cx.arc(q.x,q.y,q.r*(q.g?1:1.6-q.life/q.max),0,7);cx.fill()}cx.globalAlpha=1;
+  S.crows.forEach(drawCrow);
+  if(S.weather!=='clear'){cx.beginPath();for(let i=0;i<130;i++){const x=rnd()*W,y=rnd()*H;cx.moveTo(x,y);cx.lineTo(x-4,y+14)}
+    cx.lineWidth=1.2;cx.strokeStyle=S.weather==='acid'?'rgba(160,230,80,.55)':'rgba(180,200,220,.5)';cx.stroke()}
+  if(dark>0){const g=cx.createRadialGradient(S.P.x,S.P.y-20,30,S.P.x,S.P.y-20,260);g.addColorStop(0,`rgba(10,14,30,${dark*.25})`);g.addColorStop(1,`rgba(10,14,30,${dark})`);cx.fillStyle=g;cx.fillRect(0,0,W,H)}
+}
+function drawHud(){
+  const day=Math.floor(S.t/45)+1,ph=(S.t%45)/45,grown=S.spots.filter(s=>s.p&&s.p.alive&&s.p.growth>=4).length;
+  hud.innerHTML=`<span>اليوم <b>${day}</b>${ph>.72?' (ليل)':''}</span><span>الطقس: <b>${WNAME[S.weather]}</b></span><span>الدلو: <b>${S.P.carry}/3</b></span><span>البذور: <b>${S.seeds}</b></span><span>ناضجة: <b>${grown}/7</b></span>`;
+}
+
+/* ---------- loop & input ---------- */
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;T+=dt;
+  if(state==='play')update(dt);
+  render();if(S&&++frame%6===0)drawHud();
+  requestAnimationFrame(loop);
+}
+document.getElementById('go').addEventListener('click',()=>{reset();state='play';ov.classList.add('hide');toast('اسقِ آخر نبتة — املأ الدلو من البرميل');cv.focus()});
+addEventListener('keydown',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=true;if(state==='play'&&e.key.startsWith('Arrow'))e.preventDefault()});
+addEventListener('keyup',e=>{keys[e.key.length===1?e.key.toLowerCase():e.key]=false});
+let drag=false;
+const aim=e=>{if(state!=='play')return;const r=cv.getBoundingClientRect();S.P.tx=(e.clientX-r.left)/r.width*W;S.P.ty=(e.clientY-r.top)/r.height*H};
+cv.addEventListener('pointerdown',e=>{drag=true;aim(e)});
+cv.addEventListener('pointermove',e=>{if(drag)aim(e)});
+addEventListener('pointerup',()=>drag=false);
+reset();
+img.onload=()=>{buildBg();drawHud();requestAnimationFrame(loop)};img.src='scene.jpg';
+}
+</script>
+</body>
+</html>

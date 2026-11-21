@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>آخر نبتة</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#cca274}canvas{width:100%;height:100%;display:block;touch-action:none;outline:none}</style>
+<script src="https://cdn.jsdelivr.net/npm/babylonjs@7.54.3/babylon.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/babylonjs-gui@7.54.3/babylon.gui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/babylonjs-loaders@7.54.3/babylonjs.loaders.min.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+{
+var canvas = document.getElementById("c");
+var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+// آخر نبتة — نسخة بأشكال مفصّلة لـ Babylon.js Playground
+// التحكم: WASD أو الأسهم، أو اضغط على الأرض للمشي (يعمل على الجوال). اسحب لتدوير الكاميرا.
+// الهدف: انقل الماء من البرميل الأزرق إلى النبتة قبل أن تذبل، واحذر من العاصفة الرملية.
+
+var createScene = function () {
+  const scene = new BABYLON.Scene(engine);
+  const sandC = new BABYLON.Color3(0.8, 0.64, 0.46);
+  scene.clearColor = new BABYLON.Color4(sandC.r, sandC.g, sandC.b, 1);
+  scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
+  scene.fogColor = sandC;
+  scene.fogDensity = 0.015;
+  scene.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://assets.babylonjs.com/environments/environmentSpecular.env", scene);
+  scene.environmentIntensity = 0.5;
+
+  const cam = new BABYLON.ArcRotateCamera("cam", -Math.PI / 2, 1.05, 20, BABYLON.Vector3.Zero(), scene);
+  cam.attachControl(canvas, true);
+  cam.inputs.removeByType("ArcRotateCameraKeyboardMoveInput");
+  cam.lowerRadiusLimit = 8; cam.upperRadiusLimit = 35; cam.upperBetaLimit = 1.35;
+
+  new BABYLON.HemisphericLight("sky", new BABYLON.Vector3(0, 1, 0), scene).intensity = 0.45;
+  const sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-1, -1.6, 0.8), scene);
+  sun.position = new BABYLON.Vector3(25, 40, -20);
+  sun.intensity = 2.2;
+  const shadows = new BABYLON.ShadowGenerator(2048, sun);
+  shadows.useBlurExponentialShadowMap = true;
+  shadows.blurKernel = 16;
+  const glow = new BABYLON.GlowLayer("glow", scene);
+  glow.intensity = 0.6;
+
+  // ---------- المواد ----------
+  const pbr = (n, r, g, b, metal, rough) => {
+    const m = new BABYLON.PBRMaterial(n, scene);
+    m.albedoColor = new BABYLON.Color3(r, g, b);
+    m.metallic = metal; m.roughness = rough;
+    return m;
+  };
+  const M = {
+    rust: pbr("rust", 0.42, 0.2, 0.1, 0.5, 0.85),
+    rustDark: pbr("rustDark", 0.25, 0.14, 0.09, 0.6, 0.9),
+    paintBlue: pbr("paintBlue", 0.28, 0.38, 0.45, 0.3, 0.7),
+    paintOlive: pbr("paintOlive", 0.36, 0.38, 0.22, 0.3, 0.75),
+    paintRed: pbr("paintRed", 0.5, 0.18, 0.14, 0.3, 0.7),
+    rubber: pbr("rubber", 0.06, 0.06, 0.06, 0, 0.95),
+    chrome: pbr("chrome", 0.6, 0.6, 0.6, 1, 0.35),
+    glass: pbr("glass", 0.05, 0.08, 0.1, 0.2, 0.1),
+    wood: pbr("wood", 0.45, 0.33, 0.2, 0, 0.9),
+    deadWood: pbr("deadWood", 0.3, 0.24, 0.18, 0, 1),
+    rock: pbr("rock", 0.55, 0.47, 0.38, 0, 1),
+    sand: pbr("sand", 0.74, 0.58, 0.4, 0, 1),
+    clay: pbr("clay", 0.62, 0.32, 0.2, 0, 0.9),
+    water: pbr("water", 0.2, 0.5, 0.85, 0, 0.45),
+    leaf: pbr("leaf", 0.3, 0.6, 0.22, 0, 0.6),
+    petal: pbr("petal", 0.95, 0.45, 0.6, 0, 0.5),
+  };
+  M.petal.emissiveColor = new BABYLON.Color3(0.5, 0.15, 0.25);
+  const paints = [M.paintBlue, M.paintOlive, M.paintRed, M.rust];
+
+  const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 80, height: 80 }, scene);
+  ground.material = M.sand;
+  ground.receiveShadows = true;
+
+  const solids = [];
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const cast = node => node.getChildMeshes(false).concat(node instanceof BABYLON.AbstractMesh ? [node] : [])
+    .forEach(m => { shadows.addShadowCaster(m); m.receiveShadows = true; });
+  const part = (mesh, parent, mat, x, y, z) => { mesh.parent = parent; mesh.material = mat; mesh.position.set(x, y, z); return mesh; };
+
+  // ---------- مولّدات الأشكال ----------
+  function tire(parent, x, y, z) {
+    const t = new BABYLON.TransformNode("tire", scene); t.parent = parent; t.position.set(x, y, z);
+    part(BABYLON.MeshBuilder.CreateTorus("rub", { diameter: 0.9, thickness: 0.35, tessellation: 24 }, scene), t, M.rubber, 0, 0, 0);
+    part(BABYLON.MeshBuilder.CreateCylinder("rim", { diameter: 0.55, height: 0.25, tessellation: 16 }, scene), t, M.chrome, 0, 0, 0);
+    t.rotation.z = Math.PI / 2;
+    return t;
+  }
+
+  function wreckCar(x, z) {
+    const c = new BABYLON.TransformNode("car", scene);
+    const paint = paints[Math.floor(Math.random() * paints.length)];
+    part(BABYLON.MeshBuilder.CreateBox("chassis", { width: 2, height: 0.7, depth: 4.2 }, scene), c, paint, 0, 0.75, 0);
+    const cabin = part(BABYLON.MeshBuilder.CreateBox("cabin", { width: 1.8, height: 0.75, depth: 2 }, scene), c, paint, 0, 1.45, -0.3);
+    cabin.scaling.x = 0.95;
+    part(BABYLON.MeshBuilder.CreateBox("winF", { width: 1.6, height: 0.55, depth: 0.05 }, scene), c, M.glass, 0, 1.45, 0.72).rotation.x = -0.35;
+    part(BABYLON.MeshBuilder.CreateBox("winS1", { width: 0.05, height: 0.5, depth: 1.6 }, scene), c, M.glass, 0.88, 1.47, -0.3);
+    part(BABYLON.MeshBuilder.CreateBox("winS2", { width: 0.05, height: 0.5, depth: 1.6 }, scene), c, M.glass, -0.88, 1.47, -0.3);
+    const hood = part(BABYLON.MeshBuilder.CreateBox("hood", { width: 1.9, height: 0.08, depth: 1.3 }, scene), c, M.rustDark, 0, 1.25, 1.75);
+    hood.rotation.x = -rnd(0.3, 0.9); // غطاء محرك مفتوح ومكسور
+    part(BABYLON.MeshBuilder.CreateBox("bumper", { width: 2.1, height: 0.2, depth: 0.2 }, scene), c, M.chrome, 0, 0.55, 2.15);
+    [[-1, 1.3], [1, 1.3], [-1, -1.4], [1, -1.4]].forEach(([wx, wz], i) => { if (Math.random() > 0.25 || i < 2) tire(c, wx, 0.45, wz); });
+    c.position.set(x, rnd(-0.25, 0), z);
+    c.rotation.set(rnd(-0.06, 0.06), rnd(0, Math.PI * 2), rnd(-0.12, 0.12));
+    cast(c); solids.push({ x, z, r: 2.1 });
+  }
+
+  function drum(x, z, mat, standing) {
+    const d = new BABYLON.TransformNode("drum", scene);
+    part(BABYLON.MeshBuilder.CreateCylinder("body", { diameter: 1, height: 1.4, tessellation: 20 }, scene), d, mat, 0, 0, 0);
+    [-0.45, 0, 0.45].forEach(y => part(BABYLON.MeshBuilder.CreateTorus("rib", { diameter: 1.02, thickness: 0.06, tessellation: 24 }, scene), d, M.rustDark, 0, y, 0));
+    part(BABYLON.MeshBuilder.CreateCylinder("cap", { diameter: 0.15, height: 0.08 }, scene), d, M.chrome, 0.25, 0.72, 0);
+    if (standing) d.position.set(x, 0.7, z);
+    else { d.position.set(x, 0.5, z); d.rotation.set(Math.PI / 2, rnd(0, 6), 0); }
+    cast(d); solids.push({ x, z, r: 0.8 });
+    return d;
+  }
+
+  function crate(x, z) {
+    const c = new BABYLON.TransformNode("crate", scene), s = rnd(0.9, 1.5);
+    part(BABYLON.MeshBuilder.CreateBox("core", { size: s * 0.96 }, scene), c, M.wood, 0, 0, 0);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1])
+      part(BABYLON.MeshBuilder.CreateBox("edge", { width: 0.12, height: s, depth: 0.12 }, scene), c, M.deadWood, sx * s / 2, 0, sz * s / 2);
+    [-0.3, 0, 0.3].forEach(y => part(BABYLON.MeshBuilder.CreateBox("plank", { width: s + 0.02, height: 0.08, depth: s + 0.02 }, scene), c, M.deadWood, 0, y * s, 0));
+    c.position.set(x, s / 2, z); c.rotation.y = rnd(0, 6);
+    if (Math.random() < 0.3) { c.rotation.z = 0.4; c.position.y += 0.15; }
+    cast(c); solids.push({ x, z, r: s * 0.75 });
+  }
+
+  function rock(x, z) {
+    const r = BABYLON.MeshBuilder.CreateIcoSphere("rock", { radius: rnd(0.5, 1.6), subdivisions: 3, updatable: true }, scene);
+    const p = r.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    const seed = rnd(0, 100);
+    for (let i = 0; i < p.length; i += 3) {
+      const n = 1 + 0.18 * Math.sin(p[i] * 3 + seed) * Math.cos(p[i + 2] * 4 + seed) + rnd(-0.05, 0.05);
+      p[i] *= n; p[i + 1] *= n * 0.65; p[i + 2] *= n;
+    }
+    r.updateVerticesData(BABYLON.VertexBuffer.PositionKind, p);
+    r.createNormals(true); r.convertToFlatShadedMesh();
+    r.material = M.rock; r.position.set(x, 0.15, z); r.rotation.y = rnd(0, 6);
+    cast(r); solids.push({ x, z, r: r.getBoundingInfo().boundingSphere.radius * 0.8 });
+  }
+
+  function branch(parent, len, rad, depth) {
+    const b = BABYLON.MeshBuilder.CreateCylinder("br", { height: len, diameterTop: rad * 1.2, diameterBottom: rad * 2, tessellation: 7 }, scene);
+    b.parent = parent; b.material = M.deadWood; b.position.y = len / 2;
+    const tip = new BABYLON.TransformNode("tip", scene); tip.parent = b; tip.position.y = len / 2;
+    if (depth > 0) for (let i = 0; i < 2 + (depth > 1 ? 1 : 0); i++) {
+      const j = new BABYLON.TransformNode("j", scene); j.parent = tip;
+      j.rotation.set(rnd(0.4, 0.9), i * 2.1 + rnd(-0.3, 0.3), 0);
+      branch(j, len * 0.65, rad * 0.6, depth - 1);
+    }
+  }
+  function deadTree(x, z) {
+    const t = new BABYLON.TransformNode("tree", scene);
+    t.position.set(x, 0, z); t.rotation.set(rnd(-0.1, 0.1), rnd(0, 6), rnd(-0.1, 0.1));
+    branch(t, rnd(2.5, 3.5), 0.18, 3);
+    cast(t); solids.push({ x, z, r: 0.5 });
+  }
+
+  function fence(x, z, rotY) {
+    const f = new BABYLON.TransformNode("fence", scene);
+    for (let i = 0; i < 5; i++) {
+      const post = part(BABYLON.MeshBuilder.CreateBox("post", { width: 0.15, height: rnd(1.2, 1.7), depth: 0.15 }, scene), f, M.deadWood, i * 1.2, 0.7, 0);
+      post.rotation.z = rnd(-0.15, 0.15);
+      if (i < 4 && Math.random() > 0.2) {
+        const plank = part(BABYLON.MeshBuilder.CreateBox("rail", { width: 1.3, height: 0.12, depth: 0.05 }, scene), f, M.wood, i * 1.2 + 0.6, rnd(0.5, 1.1), 0.08);
+        plank.rotation.z = rnd(-0.25, 0.25);
+      }
+    }
+    f.position.set(x, 0, z); f.rotation.y = rotY;
+    cast(f);
+  }
+
+  // ---------- توزيع الخردة ----------
+  const BARREL = new BABYLON.Vector3(12, 0, 8);
+  const free = (x, z, r) => Math.hypot(x, z) > 7 && Math.hypot(x - BARREL.x, z - BARREL.z) > 4 &&
+    solids.every(o => Math.hypot(x - o.x, z - o.z) > o.r + r);
+  const spawn = (n, r, fn) => { for (let i = 0, t = 0; i < n && t < 300; t++) { const x = rnd(-34, 34), z = rnd(-34, 34); if (free(x, z, r)) { fn(x, z); i++; } } };
+  spawn(9, 2.5, wreckCar);
+  spawn(14, 1, (x, z) => drum(x, z, Math.random() < 0.5 ? M.rust : M.paintOlive, Math.random() < 0.5));
+  spawn(12, 1, crate);
+  spawn(18, 1.2, rock);
+  spawn(6, 1, deadTree);
+  spawn(10, 1.5, (x, z) => { const t = tire(null, x, 0.18, z); t.rotation.set(0, rnd(0, 6), 0); cast(t); solids.push({ x, z, r: 0.6 }); });
+  fence(-6, -9, 0.2); fence(4, 10, -0.4); fence(-12, 5, 1.6);
+
+  // حصى صغيرة كثيرة بنسخ رخيصة (thin instances)
+  const pebble = BABYLON.MeshBuilder.CreateIcoSphere("pebble", { radius: 0.12, subdivisions: 1 }, scene);
+  pebble.material = M.rock;
+  const mats = [];
+  for (let i = 0; i < 600; i++) {
+    const s = rnd(0.5, 1.8);
+    mats.push(BABYLON.Matrix.Compose(new BABYLON.Vector3(s, s * 0.6, s), BABYLON.Quaternion.RotationYawPitchRoll(rnd(0, 6), 0, 0), new BABYLON.Vector3(rnd(-38, 38), 0.03, rnd(-38, 38))));
+  }
+  const buf = new Float32Array(mats.length * 16);
+  mats.forEach((m, i) => m.copyToArray(buf, i * 16));
+  pebble.thinInstanceSetBuffer("matrix", buf, 16);
+
+  // ---------- برميل الماء + علامة ----------
+  const water = drum(BARREL.x, BARREL.z, M.water, true);
+  water.scaling.setAll(1.6); water.position.y = 1.12;
+  const ringMat = new BABYLON.StandardMaterial("ring", scene);
+  ringMat.emissiveColor = new BABYLON.Color3(0.3, 0.7, 1); ringMat.disableLighting = true;
+  const ring = BABYLON.MeshBuilder.CreateTorus("ring", { diameter: 3.4, thickness: 0.08, tessellation: 48 }, scene);
+  ring.position.set(BARREL.x, 0.05, BARREL.z); ring.material = ringMat;
+
+  // ---------- النبتة ----------
+  const pot = new BABYLON.TransformNode("pot", scene);
+  part(BABYLON.MeshBuilder.CreateCylinder("potBody", { diameterTop: 1.6, diameterBottom: 1.1, height: 1.2, tessellation: 24 }, scene), pot, M.clay, 0, 0.6, 0);
+  part(BABYLON.MeshBuilder.CreateTorus("potLip", { diameter: 1.65, thickness: 0.14, tessellation: 32 }, scene), pot, M.clay, 0, 1.2, 0);
+  part(BABYLON.MeshBuilder.CreateCylinder("soil", { diameter: 1.45, height: 0.05 }, scene), pot, pbr("soil", 0.2, 0.13, 0.08, 0, 1), 0, 1.15, 0);
+  cast(pot); solids.push({ x: 0, z: 0, r: 1 });
+
+  const plant = new BABYLON.TransformNode("plant", scene);
+  plant.position.y = 1.15;
+  const stemPath = [];
+  for (let i = 0; i <= 12; i++) { const t = i / 12; stemPath.push(new BABYLON.Vector3(Math.sin(t * 2.5) * 0.12, t * 1.6, Math.cos(t * 2) * 0.06 - 0.06)); }
+  part(BABYLON.MeshBuilder.CreateTube("stem", { path: stemPath, radiusFunction: (i) => 0.07 - i * 0.004, tessellation: 10 }, scene), plant, M.leaf, 0, 0, 0);
+
+  function leaf(len) { // ورقة منحنية من شريط (ribbon)
+    const L = [], C = [], R = [];
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10, w = Math.sin(Math.PI * t) * 0.18 * len, y = -0.35 * t * t * len, z = t * len;
+      L.push(new BABYLON.Vector3(-w, y + 0.03, z)); C.push(new BABYLON.Vector3(0, y, z)); R.push(new BABYLON.Vector3(w, y + 0.03, z));
+    }
+    return BABYLON.MeshBuilder.CreateRibbon("leaf", { pathArray: [L, C, R], sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
+  }
+  const leaves = [];
+  for (let i = 0; i < 10; i++) {
+    const t = 0.15 + i * 0.08, p = stemPath[Math.round(t * 12)];
+    const pivot = new BABYLON.TransformNode("lp", scene); pivot.parent = plant; pivot.position.copyFrom(p);
+    pivot.rotation.set(-0.5, i * 2.4, 0);
+    const l = leaf(0.9 - i * 0.04); l.parent = pivot; l.material = M.leaf;
+    leaves.push(pivot);
+  }
+  const flower = new BABYLON.TransformNode("flower", scene);
+  flower.parent = plant; flower.position.copyFrom(stemPath[12]);
+  for (let i = 0; i < 8; i++) {
+    const pv = new BABYLON.TransformNode("pp", scene); pv.parent = flower; pv.rotation.set(-1.1, i * Math.PI / 4, 0);
+    part(BABYLON.MeshBuilder.CreateSphere("petal", { diameterX: 0.22, diameterY: 0.04, diameterZ: 0.45, segments: 8 }, scene), pv, M.petal, 0, 0, 0.2);
+  }
+  part(BABYLON.MeshBuilder.CreateSphere("center", { diameter: 0.18 }, scene), flower, pbr("pollen", 0.95, 0.8, 0.2, 0, 0.6), 0, 0.03, 0);
+  flower.setEnabled(false);
+  cast(plant);
+
+  // ---------- اللاعب: شخصية متحركة جاهزة من مكتبة Babylon ----------
+  const player = new BABYLON.TransformNode("player", scene);
+  player.position.set(5, 0, -5);
+  const bucket = new BABYLON.TransformNode("bucket", scene);
+  bucket.parent = player; bucket.position.set(0.45, 0.75, 0.15);
+  part(BABYLON.MeshBuilder.CreateCylinder("bk", { diameterTop: 0.42, diameterBottom: 0.3, height: 0.4, tessellation: 16 }, scene), bucket, M.chrome, 0, 0, 0);
+  part(BABYLON.MeshBuilder.CreateCylinder("bw", { diameter: 0.38, height: 0.02 }, scene), bucket, M.water, 0, 0.17, 0);
+  cast(bucket);
+  let anim = {};
+  BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene).then(res => {
+    const root = res.meshes[0];
+    root.parent = player; root.scaling.scaleInPlace(0.1);
+    res.meshes.forEach(m => { shadows.addShadowCaster(m); });
+    anim = { walk: scene.getAnimationGroupByName("Walking"), idle: scene.getAnimationGroupByName("Idle") };
+    scene.animationGroups.forEach(a => a.stop());
+    anim.idle && anim.idle.start(true);
+  }).catch(() => { // بديل لو فشل التحميل
+    part(BABYLON.MeshBuilder.CreateCapsule("body", { height: 1.6, radius: 0.4 }, scene), player, M.paintBlue, 0, 0.8, 0);
+  });
+
+  // ---------- العاصفة: جزيئات رمل ----------
+  const dust = new BABYLON.ParticleSystem("dust", 4000, scene);
+  const dt0 = new BABYLON.DynamicTexture("dustTex", 64, scene, false); // نقطة ناعمة مرسومة بالكود
+  const g0 = dt0.getContext(), gr = g0.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+  g0.fillStyle = gr; g0.fillRect(0, 0, 64, 64); dt0.hasAlpha = true; dt0.update();
+  dust.particleTexture = dt0;
+  const emitPos = new BABYLON.Vector3();
+  dust.emitter = emitPos;
+  dust.createBoxEmitter(new BABYLON.Vector3(8, -0.5, 1), new BABYLON.Vector3(14, 0.5, -1), new BABYLON.Vector3(-25, 0, -25), new BABYLON.Vector3(-15, 6, 25));
+  dust.color1 = new BABYLON.Color4(0.9, 0.75, 0.55, 0.5); dust.color2 = new BABYLON.Color4(0.75, 0.6, 0.4, 0.3);
+  dust.colorDead = new BABYLON.Color4(0.8, 0.65, 0.45, 0);
+  dust.minSize = 0.1; dust.maxSize = 0.6; dust.minLifeTime = 2; dust.maxLifeTime = 4;
+  dust.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+  dust.emitRate = 40;
+  dust.start();
+
+  // ---------- الواجهة ----------
+  const ui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("ui");
+  const info = new BABYLON.GUI.TextBlock("info", "");
+  info.color = "white"; info.fontSize = 22; info.outlineWidth = 4; info.outlineColor = "#3b1f0f";
+  info.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP; info.top = "16px"; info.height = "120px";
+  ui.addControl(info);
+  const btn = BABYLON.GUI.Button.CreateSimpleButton("again", "العب من جديد");
+  btn.width = "200px"; btn.height = "54px"; btn.color = "white"; btn.background = "#c2564b"; btn.cornerRadius = 12;
+  btn.isVisible = false;
+  ui.addControl(btn);
+
+  // ---------- الحالة ----------
+  let health, growth, carrying, over, stormT, storming, target, moving = false;
+  const reset = () => {
+    health = 100; growth = 0; carrying = false; over = false; stormT = 15; storming = 0; target = null;
+    player.position.set(5, 0, -5); flower.setEnabled(false); btn.isVisible = false;
+  };
+  btn.onPointerUpObservable.add(reset);
+  reset();
+
+  const keys = {};
+  scene.onKeyboardObservable.add(k => { keys[k.event.key.toLowerCase()] = k.type === BABYLON.KeyboardEventTypes.KEYDOWN; });
+  scene.onPointerObservable.add(p => {
+    if (p.type !== BABYLON.PointerEventTypes.POINTERTAP) return;
+    const hit = scene.pick(scene.pointerX, scene.pointerY, m => m === ground);
+    if (hit.hit) target = hit.pickedPoint.clone();
+  });
+  const setMoving = v => {
+    if (v === moving || !anim.walk) { moving = v; return; }
+    moving = v;
+    if (v) { anim.idle && anim.idle.stop(); anim.walk.start(true, 1.2); }
+    else { anim.walk.stop(); anim.idle && anim.idle.start(true); }
+  };
+
+  scene.onBeforeRenderObservable.add(() => {
+    const dt = Math.min(engine.getDeltaTime() / 1000, 0.05), now = performance.now() / 1000;
+    ring.scaling.setAll(1 + Math.sin(now * 3) * 0.06);
+    if (!over) {
+      const fwd = player.position.subtract(cam.position); fwd.y = 0; fwd.normalize();
+      const right = new BABYLON.Vector3(fwd.z, 0, -fwd.x);
+      let dir = BABYLON.Vector3.Zero();
+      if (keys["w"] || keys["arrowup"]) dir.addInPlace(fwd);
+      if (keys["s"] || keys["arrowdown"]) dir.subtractInPlace(fwd);
+      if (keys["d"] || keys["arrowright"]) dir.addInPlace(right);
+      if (keys["a"] || keys["arrowleft"]) dir.subtractInPlace(right);
+      if (dir.lengthSquared() > 0) target = null;
+      else if (target) {
+        dir = target.subtract(player.position); dir.y = 0;
+        if (dir.length() < 0.3) { target = null; dir = BABYLON.Vector3.Zero(); }
+      }
+      setMoving(dir.lengthSquared() > 0);
+      if (moving) {
+        dir.normalize();
+        player.position.addInPlace(dir.scale(5 * (storming ? 0.6 : 1) * dt));
+        const want = Math.atan2(dir.x, dir.z);
+        let d = want - player.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
+        player.rotation.y += d * Math.min(1, dt * 12);
+      }
+      for (const o of solids) {
+        const dx = player.position.x - o.x, dz = player.position.z - o.z, d = Math.hypot(dx, dz), min = o.r + 0.4;
+        if (d < min && d > 0) { player.position.x = o.x + dx / d * min; player.position.z = o.z + dz / d * min; }
+      }
+      player.position.x = BABYLON.Scalar.Clamp(player.position.x, -37, 37);
+      player.position.z = BABYLON.Scalar.Clamp(player.position.z, -37, 37);
+
+      if (!carrying && BABYLON.Vector3.Distance(player.position, BARREL) < 2.9) carrying = true;
+      if (carrying && player.position.length() < 2.4) {
+        carrying = false; health = Math.min(100, health + 30); growth = Math.min(1, growth + 0.15);
+      }
+      bucket.setEnabled(carrying);
+
+      stormT -= dt;
+      if (stormT <= 0) { storming = 6; stormT = 20 + Math.random() * 6; }
+      if (storming) storming = Math.max(0, storming - dt);
+      emitPos.copyFrom(player.position);
+
+      health -= (storming ? 6 : 2.6 + growth * 2.4) * dt; // الذبول يتسارع كلما كبرت النبتة
+      plant.scaling.setAll(0.55 + growth * 1.1);
+      leaves.forEach((l, i) => l.setEnabled(growth >= i / 14));
+      plant.rotation.z = health < 35 ? 0.35 * (1 - health / 35) : Math.sin(now * 1.5) * 0.03;
+      M.leaf.albedoColor = BABYLON.Color3.Lerp(new BABYLON.Color3(0.45, 0.35, 0.15), new BABYLON.Color3(0.3, 0.6, 0.22), health / 100);
+
+      if (growth >= 1) { over = true; storming = 0; setMoving(false); flower.setEnabled(true); info.text = "النبتة أزهرت، أنقذت آخر نبتة"; btn.isVisible = true; }
+      else if (health <= 0) { over = true; storming = 0; setMoving(false); info.text = "ذبلت النبتة…"; btn.isVisible = true; }
+      else info.text = `صحة النبتة ${Math.ceil(health)} من 100   ·   النمو ${Math.round(growth * 100)} من 100\n` +
+        (carrying ? "معك ماء — ارجع للنبتة" : "اذهب للبرميل الأزرق لتأخذ الماء") +
+        (storming ? "\nعاصفة رملية" : "");
+    }
+    scene.fogDensity = BABYLON.Scalar.Lerp(scene.fogDensity, storming ? 0.08 : 0.015, dt * 2);
+    dust.emitRate = storming ? 2500 : 40;
+    cam.target = BABYLON.Vector3.Lerp(cam.target, player.position.add(new BABYLON.Vector3(0, 1, 0)), dt * 4);
+  });
+
+  return scene;
+};
+
+var scene = createScene();
+engine.runRenderLoop(function () { scene.render(); });
+addEventListener("resize", function () { engine.resize(); });
+}
+</script></body></html>

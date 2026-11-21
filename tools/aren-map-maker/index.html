@@ -1,0 +1,826 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>مرسم خرائط آرين</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Aref+Ruqaa:wght@400;700&family=Amiri:wght@400;700&family=Reem+Kufi:wght@500;700&family=Cairo:wght@600;800&family=El+Messiri:wght@600&family=Lalezar&family=Cinzel:wght@600&display=swap">
+<style>
+/* Layout: cartographer's workbench. Tool bar on top, context panel at the start side, map stage fills the rest. One deliberate dark look. */
+:root {
+  --bg: #121617;
+  --panel: #1a1f21;
+  --raise: #232a2c;
+  --line: #2e3739;
+  --fg: #ebe5d6;
+  --muted: #98a29d;
+  --brass: #d6a446;
+  --brass-ink: #1b1508;
+  --danger: #d0604e;
+  --ui: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --display: "Aref Ruqaa", "Amiri", serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--ui); font-size: 14px; overflow: hidden; }
+.app { height: 100%; display: grid; grid-template-rows: auto 1fr; }
+.bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--panel); border-bottom: 1px solid var(--line);
+}
+.brand { font-family: var(--display); font-size: 22px; font-weight: 700; color: var(--brass); margin-inline-end: 6px; white-space: nowrap; }
+.group { display: flex; flex-wrap: wrap; gap: 4px; }
+.sep { width: 1px; align-self: stretch; background: var(--line); }
+button, select, input, label.btn { font: inherit; color: inherit; }
+.tool, .act, label.btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px;
+  background: var(--raise); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; white-space: nowrap;
+}
+.tool svg, .act svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tool[aria-pressed="true"] { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+.tool:hover, .act:hover, label.btn:hover { border-color: var(--muted); }
+.act.danger { color: var(--danger); }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.work { min-height: 0; display: grid; grid-template-columns: 290px 1fr; }
+.panel { min-width: 0; overflow-y: auto; background: var(--panel); border-inline-end: 1px solid var(--line); padding: 14px; display: grid; align-content: start; gap: 18px; }
+.panel h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+.row { display: grid; grid-template-columns: 70px 1fr 40px; align-items: center; gap: 8px; margin-bottom: 8px; }
+.row output { font-variant-numeric: tabular-nums; color: var(--muted); text-align: end; }
+input[type=range] { width: 100%; accent-color: var(--brass); }
+input[type=text], select { width: 100%; height: 34px; padding: 0 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+input[type=color] { width: 100%; height: 30px; padding: 0; background: none; border: 1px solid var(--line); border-radius: 6px; }
+.chk { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; }
+.chk input { accent-color: var(--brass); width: 16px; height: 16px; }
+.swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.sw { aspect-ratio: 1; border-radius: 6px; border: 2px solid transparent; background-size: cover; cursor: pointer; position: relative; padding: 0; }
+.sw span { position: absolute; inset: auto 0 0; font-size: 10px; background: rgba(0,0,0,.6); border-radius: 0 0 4px 4px; padding: 1px 0; }
+.sw[aria-pressed="true"] { border-color: var(--brass); }
+.stamps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.st { aspect-ratio: 1; background: var(--raise) center/80% no-repeat; border: 2px solid var(--line); border-radius: 6px; cursor: pointer; padding: 0; }
+.st[aria-pressed="true"] { border-color: var(--brass); background-color: #2f2a1e; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 6px; }
+.hint { color: var(--muted); line-height: 1.7; margin: 0; font-size: 13px; }
+.stage { position: relative; min-width: 0; min-height: 0; background: #0b0f10; overflow: hidden; touch-action: none; }
+#view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
+.hud { position: absolute; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); inset-inline-start: 12px; display: flex; gap: 6px; align-items: center; background: rgba(18,22,23,.85); border: 1px solid var(--line); border-radius: 8px; padding: 4px; }
+.hud output { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; color: var(--muted); }
+.hud button { height: 28px; min-width: 28px; background: var(--raise); border: 1px solid var(--line); border-radius: 5px; cursor: pointer; }
+.toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--raise); border: 1px solid var(--line); padding: 8px 14px; border-radius: 8px; }
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .work { grid-template-columns: 1fr; grid-template-rows: 62vh auto; }
+  .stage { order: -1; }
+  .panel { border-inline-end: 0; border-top: 1px solid var(--line); }
+  .tool .lbl, .act .lbl, label.btn .lbl { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" dir="rtl" lang="ar">
+  <header class="bar">
+    <span class="brand">مرسم آرين</span>
+    <div class="group" role="toolbar" aria-label="الأدوات" id="tools">
+      <button class="tool" data-tool="land" title="رسم يابسة (B)"><svg viewBox="0 0 24 24"><path d="M3 17c3-6 6 1 9-5s6-3 9-1"/><path d="M3 21h18"/></svg><span class="lbl">يابسة</span></button>
+      <button class="tool" data-tool="sea" title="رسم ماء (W)"><svg viewBox="0 0 24 24"><path d="M2 9c2.5-2 4.5 2 7 0s4.5 2 7 0 4.5 2 6 0"/><path d="M2 15c2.5-2 4.5 2 7 0s4.5 2 7 0 4.5 2 6 0"/></svg><span class="lbl">ماء</span></button>
+      <button class="tool" data-tool="paint" title="فرشاة خامات (P)"><svg viewBox="0 0 24 24"><path d="M18 3l3 3-9 9-3-3z"/><path d="M9 12c-3 0-5 2-5 5 0 1-1 2-2 2 2 2 7 2 8-2l1-2"/></svg><span class="lbl">خامات</span></button>
+      <button class="tool" data-tool="unpaint" title="ممحاة خامات (E)"><svg viewBox="0 0 24 24"><path d="M16 3l5 5-11 11H5l-2-2z"/><path d="M9 9l6 6"/></svg><span class="lbl">ممحاة</span></button>
+      <button class="tool" data-tool="stamp" title="أختام (S)"><svg viewBox="0 0 24 24"><path d="M12 3l3 7H9z"/><path d="M5 21l4-8h6l4 8z"/></svg><span class="lbl">أختام</span></button>
+      <button class="tool" data-tool="text" title="نص (T)"><svg viewBox="0 0 24 24"><path d="M5 5h14M12 5v15M9 20h6"/></svg><span class="lbl">نص</span></button>
+      <button class="tool" data-tool="select" title="تحديد ونقل (V)"><svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 2-2 6z"/></svg><span class="lbl">تحديد</span></button>
+      <button class="tool" data-tool="pan" title="تحريك الخريطة (H أو مسافة)"><svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg><span class="lbl">تحريك</span></button>
+    </div>
+    <span class="sep"></span>
+    <div class="group">
+      <button class="act" id="undo" title="تراجع (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span class="lbl">تراجع</span></button>
+      <button class="act" id="redo" title="إعادة (Ctrl+Y)"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/></svg><span class="lbl">إعادة</span></button>
+    </div>
+    <span class="sep"></span>
+    <div class="group">
+      <button class="act" id="exportPng" hidden><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><span class="lbl">تصدير PNG</span></button>
+      <button class="act" id="saveProj" hidden><svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg><span class="lbl">حفظ مشروع</span></button>
+      <label class="btn" title="فتح ملف مشروع .json"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h6l2 2h10v10H3z"/></svg><span class="lbl">فتح مشروع</span><input type="file" id="openProj" accept=".json,application/json" hidden></label>
+      <button class="act danger" id="newMap"><svg viewBox="0 0 24 24"><path d="M5 3h9l5 5v13H5z"/><path d="M12 11v6M9 14h6"/></svg><span class="lbl" id="newLbl">خريطة جديدة</span></button>
+    </div>
+  </header>
+
+  <div class="work">
+    <aside class="panel" aria-label="خيارات الأداة">
+      <section id="pBrush">
+        <h2>الفرشاة</h2>
+        <div class="row"><label for="bSize">الحجم</label><input type="range" id="bSize" min="4" max="220" value="60"><output id="bSizeV">60</output></div>
+        <div class="row" id="opRow"><label for="bOp">الكثافة</label><input type="range" id="bOp" min="5" max="100" value="45"><output id="bOpV">45</output></div>
+      </section>
+
+      <section id="pTex">
+        <h2>الخامة</h2>
+        <div class="swatches" id="texList"></div>
+      </section>
+
+      <section id="pStamp">
+        <h2>الأختام</h2>
+        <div class="stamps" id="stampList"></div>
+        <div class="row" style="margin-top:10px"><label for="sSize">الحجم</label><input type="range" id="sSize" min="10" max="300" value="46"><output id="sSizeV">46</output></div>
+        <label class="chk"><input type="checkbox" id="scatter" checked> نثر عند السحب</label>
+        <div class="row"><label for="sGap">التباعد</label><input type="range" id="sGap" min="30" max="200" value="70"><output id="sGapV">70</output></div>
+      </section>
+
+      <section id="pText">
+        <h2 id="textTitle">نص جديد</h2>
+        <div class="row" style="grid-template-columns:70px 1fr"><label for="tVal">النص</label><input type="text" id="tVal" value="مدينة جديدة"></div>
+        <div class="row" style="grid-template-columns:70px 1fr"><label for="tFont">الخط</label>
+          <select id="tFont">
+            <option value="Aref Ruqaa">رقعة (Aref Ruqaa)</option>
+            <option value="Amiri">نسخ (Amiri)</option>
+            <option value="Reem Kufi">كوفي (Reem Kufi)</option>
+            <option value="El Messiri">المسيري</option>
+            <option value="Lalezar">لاله‌زار</option>
+            <option value="Cairo">القاهرة</option>
+            <option value="Cinzel">Cinzel (لاتيني)</option>
+          </select></div>
+        <div class="row"><label for="tSize">الحجم</label><input type="range" id="tSize" min="10" max="140" value="34"><output id="tSizeV">34</output></div>
+        <div class="row" style="grid-template-columns:70px 1fr 1fr"><span>الألوان</span><input type="color" id="tColor" value="#f6ecd2" aria-label="لون النص"><input type="color" id="tHalo" value="#1b231f" aria-label="لون الحد"></div>
+        <p class="hint">اكتب النص ثم انقر على الخريطة لوضعه.</p>
+      </section>
+
+      <section id="pSel">
+        <h2>العنصر المحدد</h2>
+        <p class="hint" id="selNone">انقر على ختم أو نص لتحديده، ثم اسحبه لنقله.</p>
+        <div id="selCtl" hidden>
+          <div class="row"><label for="selSize">الحجم</label><input type="range" id="selSize" min="8" max="320" value="50"><output id="selSizeV">50</output></div>
+          <div class="row"><label for="selRot">الدوران</label><input type="range" id="selRot" min="-180" max="180" value="0"><output id="selRotV">0</output></div>
+          <div class="btnrow">
+            <button class="act" id="selFlip">قلب</button>
+            <button class="act" id="selDup">نسخ</button>
+            <button class="act" id="selFront">للأمام</button>
+            <button class="act danger" id="selDel">حذف</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>العرض</h2>
+        <label class="chk"><input type="checkbox" id="oVig" checked> تظليل الأطراف</label>
+        <label class="chk"><input type="checkbox" id="oFrame" checked> إطار الخريطة</label>
+        <label class="chk"><input type="checkbox" id="oGrid"> شبكة</label>
+      </section>
+
+      <p class="hint" id="saveNote">يُحفظ عملك تلقائياً في هذا المتصفح.</p>
+    </aside>
+
+    <div class="stage" id="stage">
+      <canvas id="view" aria-label="لوحة الخريطة"></canvas>
+      <div class="hud">
+        <button id="zOut" aria-label="تصغير">−</button>
+        <output id="zVal">100%</output>
+        <button id="zIn" aria-label="تكبير">+</button>
+        <button id="zFit" aria-label="ملاءمة الشاشة">⤢</button>
+      </div>
+      <div class="toast" id="toast" hidden></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const MW = 1600, MH = 1000;
+const $ = id => document.getElementById(id);
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+
+/* ---------- seeded random + tileable noise ---------- */
+function rng(s) { return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function noiseTile(size, cells, R) {
+  const g = new Float32Array(cells * cells).map(() => R());
+  return (x, y) => {
+    const fx = x / size * cells, fy = y / size * cells, ix = Math.floor(fx), iy = Math.floor(fy);
+    const tx = fx - ix, ty = fy - iy, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+    const x0 = ix % cells, y0 = iy % cells, x1 = (x0 + 1) % cells, y1 = (y0 + 1) % cells;
+    const a = g[y0 * cells + x0], b = g[y0 * cells + x1], c = g[y1 * cells + x0], d = g[y1 * cells + x1];
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  };
+}
+
+/* ---------- textures (generated, tileable 256px) ---------- */
+const TEX = [
+  ['grass', 'عشب', [74, 98, 46], [128, 146, 72], .6],
+  ['meadow', 'مرج', [106, 128, 58], [170, 172, 94], .6],
+  ['forest', 'غابة', [34, 54, 28], [76, 98, 44], .8],
+  ['sand', 'رمل', [186, 162, 110], [230, 210, 154], .4],
+  ['desert', 'صحراء', [178, 132, 74], [224, 182, 114], .5],
+  ['dirt', 'تراب', [100, 76, 54], [152, 120, 84], .7],
+  ['rock', 'صخر', [88, 86, 82], [162, 156, 144], 1],
+  ['snow', 'ثلج', [196, 204, 214], [248, 250, 252], .35],
+  ['swamp', 'مستنقع', [52, 64, 44], [98, 106, 66], .7],
+  ['ash', 'رماد', [44, 40, 38], [96, 88, 82], .8],
+  ['shallow', 'ضحل', [70, 118, 114], [118, 160, 148], .4],
+  ['sea', 'بحر', [20, 44, 52], [44, 82, 88], .5],
+];
+const texCanvas = {};
+for (const [key, , dark, light, rough] of TEX) {
+  const S = 256, c = mk(S, S), x = c.getContext('2d'), im = x.createImageData(S, S), R = rng(key.length * 977 + key.charCodeAt(0));
+  const oct = [4, 8, 16, 32, 64].map(n => noiseTile(S, n, R));
+  for (let y = 0; y < S; y++) for (let i = 0; i < S; i++) {
+    let v = (oct[0](i, y) + oct[1](i, y) * .5 + oct[2](i, y) * .25 * rough * 1.4 + oct[3](i, y) * .13 * rough * 1.6 + oct[4](i, y) * .07 * rough * 2) / (1.75 + rough * .4);
+    v = Math.min(1, Math.max(0, (v - .5) * 1.6 + .5));
+    const sp = (R() - .5) * 18 * rough, k = (y * S + i) * 4;
+    im.data[k] = dark[0] + (light[0] - dark[0]) * v + sp;
+    im.data[k + 1] = dark[1] + (light[1] - dark[1]) * v + sp;
+    im.data[k + 2] = dark[2] + (light[2] - dark[2]) * v + sp;
+    im.data[k + 3] = 255;
+  }
+  x.putImageData(im, 0, 0);
+  texCanvas[key] = c;
+}
+const patCache = new WeakMap();
+function pat(ctx, key) {
+  let m = patCache.get(ctx); if (!m) patCache.set(ctx, m = {});
+  return m[key] || (m[key] = ctx.createPattern(texCanvas[key], 'repeat'));
+}
+
+/* ---------- stamp sprites (original, drawn in a 200x200 box, base at y=190) ---------- */
+function poly(c, p) { c.beginPath(); c.moveTo(p[0][0], p[0][1]); for (let i = 1; i < p.length; i++) c.lineTo(p[i][0], p[i][1]); c.closePath(); }
+function circ(c, x, y, r) { c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); }
+function shadow(c, w) { c.fillStyle = 'rgba(0,0,0,.35)'; c.beginPath(); c.ellipse(108, 188, w, w * .22, 0, 0, Math.PI * 2); c.fill(); }
+const INK = '#221c14';
+const SPRITES = {
+  oak: { name: 'شجرة', size: 46, draw(c) {
+    shadow(c, 50); c.fillStyle = '#5a3f26'; c.fillRect(93, 140, 14, 50);
+    for (const [x, y, r] of [[72, 122, 40], [128, 120, 38], [100, 88, 46]]) { c.fillStyle = '#2b4420'; circ(c, x, y, r); c.fill(); }
+    for (const [x, y, r] of [[66, 114, 28], [120, 110, 26], [92, 78, 32]]) { c.fillStyle = '#4b7431'; circ(c, x, y, r); c.fill(); }
+    for (const [x, y, r] of [[60, 104, 12], [112, 100, 11], [84, 66, 14]]) { c.fillStyle = '#8bb05b'; circ(c, x, y, r); c.fill(); }
+  } },
+  pine: { name: 'صنوبر', size: 44, draw(c) {
+    shadow(c, 36); c.fillStyle = '#4e3622'; c.fillRect(94, 160, 12, 30);
+    for (const [y, w] of [[20, 34], [62, 46], [104, 58]]) {
+      c.fillStyle = '#2f5230'; poly(c, [[100, y], [100 + w, y + 66], [100 - w, y + 66]]); c.fill();
+      c.fillStyle = '#1c3520'; poly(c, [[100, y], [100 + w, y + 66], [104, y + 66]]); c.fill();
+    }
+  } },
+  palm: { name: 'نخلة', size: 52, draw(c) {
+    shadow(c, 30); c.strokeStyle = '#7a5a36'; c.lineWidth = 11; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(100, 190); c.quadraticCurveTo(92, 120, 112, 62); c.stroke();
+    c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 2;
+    for (let y = 180; y > 70; y -= 12) { c.beginPath(); c.moveTo(94, y); c.lineTo(108, y - 3); c.stroke(); }
+    for (let i = 0; i < 7; i++) {
+      const a = -Math.PI + i * Math.PI / 6 - .1, ex = 112 + Math.cos(a) * 70, ey = 62 + Math.sin(a) * 40 + 26;
+      c.fillStyle = i % 2 ? '#3f6b2c' : '#5a8a3a';
+      c.beginPath(); c.moveTo(112, 62); c.quadraticCurveTo((112 + ex) / 2, ey - 34, ex, ey); c.quadraticCurveTo((112 + ex) / 2, ey - 14, 112, 66); c.fill();
+    }
+    c.fillStyle = '#6b3d1f'; circ(c, 108, 72, 6); c.fill(); circ(c, 118, 74, 6); c.fill();
+  } },
+  bush: { name: 'شجيرة', size: 26, draw(c) {
+    shadow(c, 54);
+    for (const [x, y, r] of [[60, 160, 32], [104, 150, 40], [146, 162, 30]]) { c.fillStyle = '#34512a'; circ(c, x, y, r); c.fill(); c.fillStyle = '#5b8040'; circ(c, x - 6, y - 8, r * .6); c.fill(); }
+  } },
+  mountain: { name: 'جبل', size: 130, draw(c) {
+    shadow(c, 86);
+    const out = [[16, 190], [66, 92], [100, 26], [136, 84], [186, 190]];
+    c.fillStyle = '#9a907e'; poly(c, out); c.fill();
+    c.fillStyle = '#5c5447'; poly(c, [[100, 26], [136, 84], [186, 190], [110, 190], [114, 120]]); c.fill();
+    c.fillStyle = '#f1efe8'; poly(c, [[100, 26], [78, 64], [90, 60], [97, 72], [106, 60], [116, 68], [124, 62]]); c.fill();
+    c.strokeStyle = 'rgba(255,255,255,.28)'; c.lineWidth = 2;
+    for (const [a, b] of [[[58, 140], [84, 118]], [[44, 166], [76, 150]], [[80, 104], [96, 92]]]) { c.beginPath(); c.moveTo(...a); c.lineTo(...b); c.stroke(); }
+    c.strokeStyle = INK; c.lineWidth = 3.5; c.lineJoin = 'round'; poly(c, out); c.stroke();
+    c.lineWidth = 2; c.beginPath(); c.moveTo(100, 26); c.lineTo(114, 120); c.lineTo(110, 188); c.stroke();
+  } },
+  hill: { name: 'تل', size: 80, draw(c) {
+    shadow(c, 84);
+    const g = c.createLinearGradient(20, 0, 180, 0); g.addColorStop(0, '#93a35e'); g.addColorStop(1, '#4b5a30');
+    c.fillStyle = g; c.beginPath(); c.moveTo(18, 190); c.bezierCurveTo(50, 90, 150, 90, 182, 190); c.closePath(); c.fill();
+    c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+    c.strokeStyle = 'rgba(34,28,20,.5)'; c.lineWidth = 2;
+    for (const x of [70, 96, 124]) { c.beginPath(); c.moveTo(x, 160); c.lineTo(x + 4, 150); c.stroke(); }
+  } },
+  castle: { name: 'قلعة', size: 100, draw(c) {
+    shadow(c, 80);
+    const stone = '#a39b8c', dark = '#6e675b', roof = '#7d2f25';
+    c.fillStyle = stone; c.fillRect(42, 118, 116, 70); c.fillStyle = dark; c.fillRect(120, 118, 38, 70);
+    for (let x = 42; x < 158; x += 16) { c.fillStyle = x >= 120 ? dark : stone; c.fillRect(x, 108, 10, 12); }
+    c.fillStyle = stone; c.fillRect(78, 62, 44, 126); c.fillStyle = dark; c.fillRect(106, 62, 16, 126);
+    for (const [x, w] of [[26, 30], [144, 30]]) { c.fillStyle = stone; c.fillRect(x, 92, w, 96); c.fillStyle = dark; c.fillRect(x + w * .55, 92, w * .45, 96); }
+    c.fillStyle = roof;
+    for (const [x, y, w] of [[26, 92, 30], [144, 92, 30], [78, 62, 44]]) { poly(c, [[x - 4, y], [x + w / 2, y - w * 1.1], [x + w + 4, y]]); c.fill(); }
+    c.fillStyle = INK; c.beginPath(); c.moveTo(88, 188); c.lineTo(88, 158); c.arc(100, 158, 12, Math.PI, 0); c.lineTo(112, 188); c.fill();
+    c.fillRect(96, 84, 8, 14); c.fillRect(37, 120, 7, 12); c.fillRect(155, 120, 7, 12);
+        c.beginPath(); c.moveTo(100, 14); c.lineTo(100, 0); c.stroke(); c.fillStyle = '#d6a446'; poly(c, [[100, 0], [118, 5], [100, 10]]); c.fill();
+    c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(42, 118, 116, 70); c.strokeRect(78, 62, 44, 126);
+  } },
+  village: { name: 'قرية', size: 80, draw(c) {
+    shadow(c, 84);
+    for (const [x, y, w] of [[30, 120, 52], [96, 98, 60], [122, 140, 48], [60, 150, 46]]) {
+      c.fillStyle = '#dccca4'; c.fillRect(x, y, w, w * .7); c.fillStyle = '#b3a37f'; c.fillRect(x + w * .6, y, w * .4, w * .7);
+      c.fillStyle = '#8c3b29'; poly(c, [[x - 5, y + 2], [x + w / 2, y - w * .5], [x + w + 5, y + 2]]); c.fill();
+      c.fillStyle = '#5f2618'; poly(c, [[x + w / 2, y - w * .5], [x + w + 5, y + 2], [x + w / 2, y + 2]]); c.fill();
+      c.fillStyle = INK; c.fillRect(x + w * .2, y + w * .32, w * .18, w * .38);
+      c.strokeStyle = INK; c.lineWidth = 2; c.strokeRect(x, y, w, w * .7);
+    }
+  } },
+  tower: { name: 'برج', size: 76, draw(c) {
+    shadow(c, 34);
+    c.fillStyle = '#a7a090'; c.fillRect(80, 58, 40, 132); c.fillStyle = '#6c665a'; c.fillRect(104, 58, 16, 132);
+    c.fillStyle = '#3e4b5f'; poly(c, [[72, 60], [100, 4], [128, 60]]); c.fill(); c.fillStyle = '#28323f'; poly(c, [[100, 4], [128, 60], [100, 60]]); c.fill();
+    c.fillStyle = '#e7c46a'; c.fillRect(94, 80, 10, 16); c.fillStyle = INK; c.fillRect(94, 124, 10, 16);
+    c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(80, 58, 40, 132);
+  } },
+  ship: { name: 'سفينة', size: 72, draw(c) {
+    c.strokeStyle = 'rgba(220,240,235,.6)'; c.lineWidth = 3;
+    for (const [x, y, w] of [[18, 186, 40], [150, 190, 34]]) { c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + w / 2, y - 6, x + w, y); c.stroke(); }
+    c.fillStyle = '#5b3d24'; c.beginPath(); c.moveTo(30, 150); c.lineTo(170, 150); c.quadraticCurveTo(160, 184, 128, 186); c.lineTo(66, 186); c.quadraticCurveTo(40, 182, 30, 150); c.fill();
+    c.fillStyle = '#3e2914'; c.fillRect(30, 150, 140, 7);
+    c.strokeStyle = INK; c.lineWidth = 4; c.beginPath(); c.moveTo(100, 150); c.lineTo(100, 20); c.stroke();
+    c.fillStyle = '#efe6cf'; c.beginPath(); c.moveTo(104, 26); c.quadraticCurveTo(150, 70, 104, 138); c.closePath(); c.fill();
+    c.fillStyle = '#d8cdb2'; c.beginPath(); c.moveTo(96, 40); c.quadraticCurveTo(60, 80, 96, 132); c.closePath(); c.fill();
+    c.fillStyle = '#8e2f24'; poly(c, [[100, 20], [122, 26], [100, 32]]); c.fill();
+  } },
+  ruins: { name: 'أطلال', size: 62, draw(c) {
+    shadow(c, 80);
+    c.fillStyle = '#9d9585'; c.fillRect(30, 176, 140, 12);
+    for (const [x, h] of [[44, 96], [78, 62], [112, 118], [146, 40]]) {
+      c.fillStyle = '#b9b1a0'; c.fillRect(x, 176 - h, 18, h); c.fillStyle = '#7b7466'; c.fillRect(x + 11, 176 - h, 7, h);
+      c.fillStyle = INK; poly(c, [[x - 2, 176 - h], [x + 9, 170 - h - 6 * (x % 3)], [x + 20, 176 - h]]); c.fill();
+    }
+    c.fillStyle = '#8a8274'; for (const [x, y, r] of [[30, 182, 7], [170, 180, 9], [100, 186, 6]]) { circ(c, x, y, r); c.fill(); }
+  } },
+  compass: { name: 'بوصلة', size: 140, draw(c) {
+    const cx = 100, cy = 100;
+    c.strokeStyle = '#e8dcbc'; c.lineWidth = 2; circ(c, cx, cy, 66); c.stroke(); c.setLineDash([3, 5]); circ(c, cx, cy, 58); c.stroke(); c.setLineDash([]);
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 - Math.PI / 2, L = i === 0 ? 92 : 78, ax = Math.cos(a), ay = Math.sin(a), px = -ay * 12, py = ax * 12;
+      c.fillStyle = i === 0 ? '#b8392a' : '#efe6cf'; poly(c, [[cx + ax * L, cy + ay * L], [cx + px, cy + py], [cx, cy]]); c.fill();
+      c.fillStyle = i === 0 ? '#7a2016' : '#9d927a'; poly(c, [[cx + ax * L, cy + ay * L], [cx - px, cy - py], [cx, cy]]); c.fill();
+    }
+    c.fillStyle = '#efe6cf'; c.font = '700 24px "Amiri", serif'; c.textAlign = 'center'; c.fillText('ش', cx, 4 + 14);
+  } },
+};
+const spriteCanvas = {};
+for (const [k, s] of Object.entries(SPRITES)) { const c = mk(200, 200); s.draw(c.getContext('2d')); spriteCanvas[k] = c; }
+const redrawCompass = () => { const c = spriteCanvas.compass.getContext('2d'); c.clearRect(0, 0, 200, 200); SPRITES.compass.draw(c); };
+
+/* ---------- document state ---------- */
+const mask = mk(MW, MH), mctx = mask.getContext('2d');
+const paint = mk(MW, MH), pctx = paint.getContext('2d');
+let stamps = [], labels = [];
+const opts = { vig: true, frame: true, grid: false };
+
+/* ---------- scratch canvases for compositing ---------- */
+const comp = mk(MW, MH), cctx = comp.getContext('2d');
+const tint = mk(MW, MH), tctx = tint.getContext('2d');
+const mid = mk(MW / 4, MH / 4), midx = mid.getContext('2d');
+const tiny = mk(MW / 16, MH / 16), tinx = tiny.getContext('2d');
+function tinted(color) { tctx.globalCompositeOperation = 'copy'; tctx.drawImage(mask, 0, 0); tctx.globalCompositeOperation = 'source-in'; tctx.fillStyle = color; tctx.fillRect(0, 0, MW, MH); tctx.globalCompositeOperation = 'source-over'; return tint; }
+
+function drawMap(c, ui) {
+  c.save(); c.beginPath(); c.rect(0, 0, MW, MH); c.clip();
+  c.fillStyle = pat(c, 'sea'); c.fillRect(0, 0, MW, MH);
+  // wide shallow water, then foam, both from blurred downsamples of the land mask
+  tinted('#8cc4b5');
+  tinx.clearRect(0, 0, tiny.width, tiny.height);
+  for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) tinx.drawImage(tint, dx, dy, tiny.width, tiny.height);
+  c.globalAlpha = .38; c.drawImage(tiny, 0, 0, MW, MH);
+  midx.clearRect(0, 0, mid.width, mid.height); midx.drawImage(tint, 0, 0, mid.width, mid.height);
+  c.globalAlpha = .7; c.drawImage(mid, 0, 0, MW, MH); c.globalAlpha = 1;
+  // ink coastline
+  tinted('#1f1a12');
+  for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3], [2, 2], [-2, 2], [2, -2], [-2, -2]]) c.drawImage(tint, dx, dy);
+  // land: base grass + painted textures, cut to the mask
+  cctx.globalCompositeOperation = 'source-over'; cctx.clearRect(0, 0, MW, MH);
+  cctx.fillStyle = pat(cctx, 'grass'); cctx.fillRect(0, 0, MW, MH);
+  cctx.drawImage(paint, 0, 0);
+  cctx.globalCompositeOperation = 'destination-in'; cctx.drawImage(mask, 0, 0); cctx.globalCompositeOperation = 'source-over';
+  c.drawImage(comp, 0, 0);
+  if (opts.grid) {
+    c.strokeStyle = 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.beginPath();
+    for (let x = 50; x < MW; x += 50) { c.moveTo(x, 0); c.lineTo(x, MH); }
+    for (let y = 50; y < MH; y += 50) { c.moveTo(0, y); c.lineTo(MW, y); }
+    c.stroke();
+  }
+  const order = stamps.slice().sort((a, b) => a.y - b.y);
+  for (const s of order) {
+    c.save(); c.translate(s.x, s.y); c.rotate(s.rot * Math.PI / 180); c.scale(s.flip ? -1 : 1, 1);
+    c.drawImage(spriteCanvas[s.type], -s.size / 2, -s.size * .95, s.size, s.size); c.restore();
+  }
+  for (const l of labels) drawLabel(c, l);
+  if (opts.vig) {
+    const g = c.createRadialGradient(MW / 2, MH / 2, MH * .38, MW / 2, MH / 2, MW * .7);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.5)'); c.fillStyle = g; c.fillRect(0, 0, MW, MH);
+  }
+  if (opts.frame) {
+    c.strokeStyle = '#3a2c1a'; c.lineWidth = 22; c.strokeRect(0, 0, MW, MH);
+    c.strokeStyle = '#c9a05a'; c.lineWidth = 3; c.strokeRect(14, 14, MW - 28, MH - 28);
+    c.lineWidth = 1.2; c.strokeRect(22, 22, MW - 44, MH - 44);
+    c.fillStyle = '#c9a05a';
+    for (const [x, y] of [[14, 14], [MW - 14, 14], [14, MH - 14], [MW - 14, MH - 14]]) { c.save(); c.translate(x, y); c.rotate(Math.PI / 4); c.fillRect(-7, -7, 14, 14); c.restore(); }
+  }
+  c.restore();
+}
+function labelFont(l) { return `700 ${l.size}px "${l.font}", "Amiri", serif`; }
+function drawLabel(c, l) {
+  c.save(); c.translate(l.x, l.y); c.rotate((l.rot || 0) * Math.PI / 180);
+  c.font = labelFont(l); c.textAlign = 'center'; c.textBaseline = 'middle'; c.direction = 'rtl';
+  c.lineJoin = 'round'; c.lineWidth = Math.max(3, l.size * .16); c.strokeStyle = l.halo; c.strokeText(l.text, 0, 0);
+  c.fillStyle = l.color; c.fillText(l.text, 0, 0); c.restore();
+}
+
+/* ---------- view ---------- */
+const view = $('view'), vctx = view.getContext('2d'), stage = $('stage');
+const V = { s: 1, tx: 0, ty: 0 };
+let dpr = 1, dirty = true, hover = null;
+function resize() {
+  dpr = window.devicePixelRatio || 1;
+  const r = stage.getBoundingClientRect();
+  view.width = Math.max(1, Math.round(r.width * dpr)); view.height = Math.max(1, Math.round(r.height * dpr));
+  dirty = true;
+}
+function fit() {
+  const r = stage.getBoundingClientRect();
+  V.s = Math.min(r.width / MW, r.height / MH) * .94;
+  V.tx = (r.width - MW * V.s) / 2; V.ty = (r.height - MH * V.s) / 2; dirty = true;
+}
+function zoomAt(px, py, f) {
+  const ns = Math.min(8, Math.max(.1, V.s * f));
+  V.tx = px - (px - V.tx) * ns / V.s; V.ty = py - (py - V.ty) * ns / V.s; V.s = ns; dirty = true;
+}
+const toWorld = (px, py) => [(px - V.tx) / V.s, (py - V.ty) / V.s];
+function frame() {
+  if (dirty) {
+    dirty = false;
+    vctx.setTransform(1, 0, 0, 1, 0, 0); vctx.fillStyle = '#0b0f10'; vctx.fillRect(0, 0, view.width, view.height);
+    vctx.setTransform(dpr * V.s, 0, 0, dpr * V.s, dpr * V.tx, dpr * V.ty);
+    vctx.shadowColor = 'rgba(0,0,0,.6)'; vctx.shadowBlur = 30 * V.s; vctx.fillStyle = '#000'; vctx.fillRect(0, 0, MW, MH); vctx.shadowBlur = 0;
+    drawMap(vctx, true);
+    const sel = selected && bbox(selected);
+    if (sel) { vctx.strokeStyle = '#d6a446'; vctx.lineWidth = 2 / V.s; vctx.setLineDash([6 / V.s, 4 / V.s]); vctx.strokeRect(...sel); vctx.setLineDash([]); }
+    if (hover && ['land', 'sea', 'paint', 'unpaint'].includes(tool)) {
+      vctx.strokeStyle = 'rgba(255,255,255,.8)'; vctx.lineWidth = 1.5 / V.s; circ(vctx, hover[0], hover[1], brush.size / 2); vctx.stroke();
+    }
+    $('zVal').value = Math.round(V.s * 100) + '%';
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- history ---------- */
+const undoS = [], redoS = [];
+function cloneC(c) { const n = mk(c.width, c.height); n.getContext('2d').drawImage(c, 0, 0); return n; }
+function snap(kind) { return kind === 'obj' ? { kind, json: JSON.stringify({ stamps, labels }) } : { kind, canvas: cloneC(kind === 'mask' ? mask : paint) }; }
+function pushHist(kind) {
+  undoS.push(snap(kind)); redoS.length = 0;
+  // raster snapshots are ~6 MB each; keep at most 12 of them
+  let raster = 0; for (let i = undoS.length - 1; i >= 0; i--) if (undoS[i].kind !== 'obj' && ++raster > 12) { undoS.splice(i, 1); }
+  if (undoS.length > 60) undoS.shift();
+  scheduleSave();
+}
+function restore(e) {
+  if (e.kind === 'obj') { const d = JSON.parse(e.json); stamps = d.stamps; labels = d.labels; selected = null; updateSelUI(); }
+  else { const x = e.kind === 'mask' ? mctx : pctx; x.globalCompositeOperation = 'copy'; x.drawImage(e.canvas, 0, 0); x.globalCompositeOperation = 'source-over'; }
+  dirty = true; scheduleSave();
+}
+function undo() { const e = undoS.pop(); if (!e) return; redoS.push(snap(e.kind)); restore(e); }
+function redo() { const e = redoS.pop(); if (!e) return; undoS.push(snap(e.kind)); restore(e); }
+
+/* ---------- tools ---------- */
+let tool = 'land', texKey = 'forest', stampType = 'oak', selected = null;
+const brush = { size: 60, op: .45 };
+function setTool(t) {
+  tool = t;
+  for (const b of document.querySelectorAll('.tool')) b.setAttribute('aria-pressed', String(b.dataset.tool === t));
+  $('pBrush').hidden = !['land', 'sea', 'paint', 'unpaint'].includes(t);
+  $('opRow').hidden = !['paint', 'unpaint'].includes(t);
+  $('pTex').hidden = t !== 'paint';
+  $('pStamp').hidden = t !== 'stamp';
+  $('pSel').hidden = t !== 'select';
+  $('pText').hidden = !(t === 'text' || (t === 'select' && selected && selected.kind === 'label'));
+  view.style.cursor = t === 'pan' ? 'grab' : t === 'select' ? 'default' : 'crosshair';
+  if (t !== 'select') { selected = null; }
+  updateSelUI(); dirty = true;
+}
+
+const DabR = rng(42);
+function landDab(x, y, r, erase) {
+  // irregular blob so coastlines come out ragged, not round
+  const n = 22, ph = DabR() * 6.28, p = [];
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, k = .78 + .14 * Math.sin(a * 3 + ph) + .1 * DabR(); p.push([x + Math.cos(a) * r * k, y + Math.sin(a) * r * k]); }
+  mctx.globalCompositeOperation = erase ? 'destination-out' : 'source-over';
+  mctx.fillStyle = '#fff'; poly(mctx, p); mctx.fill(); mctx.globalCompositeOperation = 'source-over';
+}
+const dab = mk(8, 8), dctx = dab.getContext('2d');
+function paintDab(x, y, r, key, op, erase) {
+  const g = (c) => { const gr = c.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(0,0,0,${op})`); gr.addColorStop(.6, `rgba(0,0,0,${op * .6})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); return gr; };
+  if (erase) { pctx.globalCompositeOperation = 'destination-out'; pctx.fillStyle = g(pctx); pctx.fillRect(x - r, y - r, r * 2, r * 2); pctx.globalCompositeOperation = 'source-over'; return; }
+  const d = Math.ceil(r * 2) + 2, x0 = Math.floor(x - r) - 1, y0 = Math.floor(y - r) - 1;
+  if (dab.width < d) { dab.width = dab.height = d; }
+  dctx.setTransform(1, 0, 0, 1, -x0, -y0); dctx.clearRect(x0, y0, dab.width, dab.height);
+  dctx.globalCompositeOperation = 'source-over'; dctx.fillStyle = pat(dctx, key); dctx.fillRect(x0, y0, d, d);
+  dctx.globalCompositeOperation = 'destination-in'; dctx.fillStyle = g(dctx); dctx.fillRect(x0, y0, d, d);
+  dctx.globalCompositeOperation = 'source-over'; dctx.setTransform(1, 0, 0, 1, 0, 0);
+  pctx.drawImage(dab, 0, 0, d, d, x0, y0, d, d);
+}
+
+function applyBrush(x, y) {
+  const r = brush.size / 2;
+  if (tool === 'land') landDab(x, y, r, false);
+  else if (tool === 'sea') landDab(x, y, r, true);
+  else if (tool === 'paint') paintDab(x, y, r, texKey, brush.op * .5, false);
+  else if (tool === 'unpaint') paintDab(x, y, r, null, brush.op, true);
+}
+const SR = rng(7);
+function placeStamp(x, y, jitter) {
+  const base = +$('sSize').value, f = jitter ? .8 + SR() * .4 : 1;
+  stamps.push({ type: stampType, x: x + (jitter ? (SR() - .5) * base * .4 : 0), y: y + (jitter ? (SR() - .5) * base * .3 : 0), size: Math.round(base * f), rot: 0, flip: jitter && stampType !== 'compass' ? SR() < .5 : false });
+}
+
+/* selection helpers */
+const mctxMeasure = mk(4, 4).getContext('2d');
+function bbox(sel) {
+  const o = sel.ref;
+  if (sel.kind === 'stamp') return [o.x - o.size / 2, o.y - o.size * .95, o.size, o.size];
+  mctxMeasure.font = labelFont(o); const w = mctxMeasure.measureText(o.text).width;
+  return [o.x - w / 2 - 4, o.y - o.size * .6, w + 8, o.size * 1.2];
+}
+function hit(x, y) {
+  for (let i = labels.length - 1; i >= 0; i--) { const s = { kind: 'label', ref: labels[i] }, b = bbox(s); if (x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3]) return s; }
+  const order = stamps.slice().sort((a, b) => b.y - a.y);
+  for (const o of order) { const s = { kind: 'stamp', ref: o }, b = bbox(s); if (x >= b[0] + b[2] * .15 && x <= b[0] + b[2] * .85 && y >= b[1] + b[3] * .1 && y <= b[1] + b[3]) return s; }
+  return null;
+}
+function updateSelUI() {
+  const has = !!selected;
+  $('selNone').hidden = has; $('selCtl').hidden = !has;
+  if (has) {
+    const o = selected.ref;
+    setRange('selSize', selected.kind === 'stamp' ? o.size : o.size * 2);
+    setRange('selRot', o.rot || 0);
+    $('selFlip').hidden = selected.kind !== 'stamp';
+  }
+  const isLabel = has && selected.kind === 'label';
+  $('pText').hidden = !(tool === 'text' || isLabel);
+  $('textTitle').textContent = isLabel ? 'تعديل النص المحدد' : 'نص جديد';
+  if (isLabel) {
+    const o = selected.ref; $('tVal').value = o.text; $('tFont').value = o.font; setRange('tSize', o.size); $('tColor').value = o.color; $('tHalo').value = o.halo;
+  }
+  editPushed = false;
+}
+function setRange(id, v) { $(id).value = v; $(id + 'V').value = Math.round(v); }
+
+/* ---------- pointer input ---------- */
+const pointers = new Map();
+let mode = null, last = null, pinch = null, dragOff = null, spaceDown = false, lastStamp = null, editPushed = false;
+const rel = e => { const r = view.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+view.addEventListener('pointerdown', e => {
+  view.setPointerCapture(e.pointerId);
+  const p = rel(e); pointers.set(e.pointerId, p);
+  if (pointers.size === 2) { mode = 'pinch'; const [a, b] = [...pointers.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] }; return; }
+  if (pointers.size > 2) return;
+  if (e.button === 1 || tool === 'pan' || spaceDown) { mode = 'pan'; last = p; view.style.cursor = 'grabbing'; return; }
+  if (e.button !== 0) return;
+  const [x, y] = toWorld(...p);
+  if (['land', 'sea'].includes(tool)) { pushHist('mask'); mode = 'brush'; applyBrush(x, y); last = [x, y]; }
+  else if (['paint', 'unpaint'].includes(tool)) { pushHist('paint'); mode = 'brush'; applyBrush(x, y); last = [x, y]; }
+  else if (tool === 'stamp') { pushHist('obj'); placeStamp(x, y, false); lastStamp = [x, y]; mode = $('scatter').checked ? 'scatter' : null; }
+  else if (tool === 'text') {
+    const t = $('tVal').value.trim(); if (!t) { toast('اكتب النص أولاً'); return; }
+    pushHist('obj'); labels.push({ text: t, x, y, size: +$('tSize').value, font: $('tFont').value, color: $('tColor').value, halo: $('tHalo').value, rot: 0 });
+  }
+  else if (tool === 'select') {
+    selected = hit(x, y); updateSelUI();
+    if (selected) { mode = 'drag'; dragOff = [selected.ref.x - x, selected.ref.y - y]; editPushed = false; }
+  }
+  dirty = true;
+});
+view.addEventListener('pointermove', e => {
+  const p = rel(e);
+  if (pointers.has(e.pointerId)) pointers.set(e.pointerId, p);
+  const [x, y] = toWorld(...p); hover = [x, y];
+  if (mode === 'pinch' && pointers.size === 2) {
+    const [a, b] = [...pointers.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    V.tx += m[0] - pinch.m[0]; V.ty += m[1] - pinch.m[1]; zoomAt(m[0], m[1], d / pinch.d); pinch = { d, m };
+  } else if (mode === 'pan') { V.tx += p[0] - last[0]; V.ty += p[1] - last[1]; last = p; }
+  else if (mode === 'brush') {
+    const step = Math.max(2, brush.size * .18), dx = x - last[0], dy = y - last[1], dist = Math.hypot(dx, dy);
+    for (let t = step; t <= dist; t += step) applyBrush(last[0] + dx * t / dist, last[1] + dy * t / dist);
+    if (dist >= step) last = [x, y];
+  } else if (mode === 'scatter') {
+    const gap = +$('sSize').value * +$('sGap').value / 100;
+    if (Math.hypot(x - lastStamp[0], y - lastStamp[1]) >= gap) { placeStamp(x, y, true); lastStamp = [x, y]; }
+  } else if (mode === 'drag' && selected) {
+    if (!editPushed) { pushHist('obj'); editPushed = true; }
+    selected.ref.x = x + dragOff[0]; selected.ref.y = y + dragOff[1];
+  }
+  dirty = true;
+});
+function endPointer(e) {
+  pointers.delete(e.pointerId);
+  if (mode === 'pinch') { if (pointers.size === 0) mode = null; return; }
+  if (mode && mode !== 'pan') scheduleSave();
+  mode = null; if (tool === 'pan') view.style.cursor = 'grab'; else if (tool === 'select') view.style.cursor = 'default'; else view.style.cursor = 'crosshair';
+}
+view.addEventListener('pointerup', endPointer);
+view.addEventListener('pointercancel', endPointer);
+view.addEventListener('pointerleave', () => { hover = null; dirty = true; });
+view.addEventListener('wheel', e => { e.preventDefault(); const p = rel(e); zoomAt(p[0], p[1], Math.exp(-e.deltaY * .0015)); }, { passive: false });
+
+/* ---------- keyboard ---------- */
+const KEYS = { b: 'land', w: 'sea', p: 'paint', e: 'unpaint', s: 'stamp', t: 'text', v: 'select', h: 'pan' };
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input[type=text], select')) return;
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+  if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); return; }
+  if (e.key === ' ') { spaceDown = true; view.style.cursor = 'grab'; e.preventDefault(); return; }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selected) { delSel(); return; }
+  if (KEYS[k] && !e.ctrlKey && !e.metaKey) setTool(KEYS[k]);
+  if (e.key === '[') { brush.size = Math.max(4, brush.size - 8); setRange('bSize', brush.size); dirty = true; }
+  if (e.key === ']') { brush.size = Math.min(220, brush.size + 8); setRange('bSize', brush.size); dirty = true; }
+});
+document.addEventListener('keyup', e => { if (e.key === ' ') { spaceDown = false; setTool(tool); } });
+
+/* ---------- panel wiring ---------- */
+for (const b of document.querySelectorAll('.tool')) b.addEventListener('click', () => setTool(b.dataset.tool));
+$('undo').onclick = undo; $('redo').onclick = redo;
+$('bSize').oninput = e => { brush.size = +e.target.value; $('bSizeV').value = brush.size; };
+$('bOp').oninput = e => { brush.op = e.target.value / 100; $('bOpV').value = e.target.value; };
+for (const id of ['sSize', 'sGap']) $(id).oninput = e => { $(id + 'V').value = e.target.value; };
+$('tSize').oninput = e => { $('tSizeV').value = e.target.value; editLabel(); };
+for (const id of ['tVal', 'tFont', 'tColor', 'tHalo']) $(id).addEventListener('input', editLabel);
+$('tFont').addEventListener('change', () => document.fonts.load(`700 40px "${$('tFont').value}"`).then(() => { dirty = true; }));
+function editLabel() {
+  if (!selected || selected.kind !== 'label') return;
+  if (!editPushed) { pushHist('obj'); editPushed = true; }
+  Object.assign(selected.ref, { text: $('tVal').value, font: $('tFont').value, size: +$('tSize').value, color: $('tColor').value, halo: $('tHalo').value });
+  dirty = true; scheduleSave();
+}
+$('selSize').oninput = e => {
+  if (!selected) return; if (!editPushed) { pushHist('obj'); editPushed = true; }
+  const v = +e.target.value; $('selSizeV').value = v;
+  if (selected.kind === 'stamp') selected.ref.size = v; else { selected.ref.size = Math.round(v / 2); setRange('tSize', selected.ref.size); }
+  dirty = true; scheduleSave();
+};
+$('selRot').oninput = e => { if (!selected) return; if (!editPushed) { pushHist('obj'); editPushed = true; } selected.ref.rot = +e.target.value; $('selRotV').value = e.target.value; dirty = true; scheduleSave(); };
+$('selFlip').onclick = () => { if (selected?.kind !== 'stamp') return; pushHist('obj'); selected.ref.flip = !selected.ref.flip; dirty = true; };
+$('selDup').onclick = () => {
+  if (!selected) return; pushHist('obj');
+  const c = { ...selected.ref, x: selected.ref.x + 20, y: selected.ref.y + 20 };
+  (selected.kind === 'stamp' ? stamps : labels).push(c); selected = { kind: selected.kind, ref: c }; updateSelUI(); dirty = true;
+};
+$('selFront').onclick = () => {
+  if (!selected) return; pushHist('obj');
+  const arr = selected.kind === 'stamp' ? stamps : labels; arr.splice(arr.indexOf(selected.ref), 1); arr.push(selected.ref);
+  if (selected.kind === 'stamp') selected.ref.y += .01; dirty = true;
+};
+function delSel() { const arr = selected.kind === 'stamp' ? stamps : labels; pushHist('obj'); arr.splice(arr.indexOf(selected.ref), 1); selected = null; updateSelUI(); dirty = true; }
+$('selDel').onclick = () => selected && delSel();
+for (const [id, key] of [['oVig', 'vig'], ['oFrame', 'frame'], ['oGrid', 'grid']]) $(id).onchange = e => { opts[key] = e.target.checked; dirty = true; scheduleSave(); };
+$('zIn').onclick = () => { const r = stage.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, 1.25); };
+$('zOut').onclick = () => { const r = stage.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, .8); };
+$('zFit').onclick = fit;
+
+// texture swatches and stamp buttons
+const texList = $('texList');
+for (const [key, name] of TEX) {
+  const b = document.createElement('button'); b.className = 'sw'; b.style.backgroundImage = `url(${texCanvas[key].toDataURL()})`;
+  b.innerHTML = `<span>${name}</span>`; b.setAttribute('aria-label', name); b.setAttribute('aria-pressed', String(key === texKey));
+  b.onclick = () => { texKey = key; for (const x of texList.children) x.setAttribute('aria-pressed', String(x === b)); };
+  texList.appendChild(b);
+}
+const stampList = $('stampList');
+function buildStampButtons() {
+  stampList.innerHTML = '';
+  for (const [key, s] of Object.entries(SPRITES)) {
+    const b = document.createElement('button'); b.className = 'st'; b.title = s.name; b.setAttribute('aria-label', s.name);
+    b.style.backgroundImage = `url(${spriteCanvas[key].toDataURL()})`; b.setAttribute('aria-pressed', String(key === stampType));
+    b.onclick = () => { stampType = key; setRange('sSize', s.size); for (const x of stampList.children) x.setAttribute('aria-pressed', String(x === b)); };
+    stampList.appendChild(b);
+  }
+}
+buildStampButtons();
+
+let toastT;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
+
+/* ---------- new map (two-step confirm, no dialogs) ---------- */
+let armT = null;
+$('newMap').onclick = () => {
+  if (!armT) { $('newLbl').textContent = 'تأكيد المسح؟'; $('newLbl').parentElement.querySelector('.lbl'); armT = setTimeout(() => { armT = null; $('newLbl').textContent = 'خريطة جديدة'; }, 3000); toast('اضغط مرة أخرى خلال 3 ثوانٍ لمسح الخريطة'); return; }
+  clearTimeout(armT); armT = null; $('newLbl').textContent = 'خريطة جديدة';
+  pushHist('mask'); pushHist('paint'); pushHist('obj');
+  mctx.clearRect(0, 0, MW, MH); pctx.clearRect(0, 0, MW, MH); stamps = []; labels = []; selected = null; updateSelUI(); dirty = true; scheduleSave();
+  toast('خريطة فارغة. التراجع يعيد السابقة.');
+};
+
+/* ---------- persistence: IndexedDB autosave (this browser only) ---------- */
+let idbP = null;
+function idb() {
+  return idbP || (idbP = new Promise((res, rej) => {
+    try { const r = indexedDB.open('aren-map-editor', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }
+    catch (err) { rej(err); }
+  }));
+}
+async function kv(op, key, val) {
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', op === 'get' ? 'readonly' : 'readwrite'), st = tx.objectStore('kv');
+    const r = op === 'get' ? st.get(key) : st.put(val, key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+const toBlob = c => new Promise(r => c.toBlob(r, 'image/png'));
+let saveT = null;
+function scheduleSave() { clearTimeout(saveT); saveT = setTimeout(saveLocal, 1200); }
+async function saveLocal() {
+  try { await kv('put', 'doc', { v: 1, mask: await toBlob(mask), paint: await toBlob(paint), stamps, labels, opts }); }
+  catch (err) { $('saveNote').textContent = 'الحفظ التلقائي غير متاح في هذا المتصفح. استخدم حفظ مشروع.'; }
+}
+function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = typeof src === 'string' ? src : URL.createObjectURL(src); }); }
+async function applyDoc(d) {
+  const [mi, pi] = await Promise.all([loadImg(d.mask), loadImg(d.paint)]);
+  mctx.clearRect(0, 0, MW, MH); mctx.drawImage(mi, 0, 0); pctx.clearRect(0, 0, MW, MH); pctx.drawImage(pi, 0, 0);
+  stamps = (d.stamps || []).filter(s => SPRITES[s.type]); labels = d.labels || [];
+  Object.assign(opts, d.opts || {}); $('oVig').checked = opts.vig; $('oFrame').checked = opts.frame; $('oGrid').checked = opts.grid;
+  selected = null; updateSelUI(); dirty = true;
+}
+
+/* ---------- project file + PNG export via the downloads capability ---------- */
+let downloads = null;
+(async () => {
+  try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch { downloads = null; }
+  if (downloads) { $('exportPng').hidden = false; $('saveProj').hidden = false; }
+})();
+async function offer(filename, data) {
+  try { await downloads.save({ filename, data }); toast('تم الحفظ'); }
+  catch (err) { if (err?.code !== 'declined') toast('تعذر الحفظ: ' + (err?.message || err?.code || 'خطأ')); }
+}
+$('exportPng').onclick = async () => {
+  const sc = 2, c = mk(MW * sc, MH * sc), x = c.getContext('2d'); x.scale(sc, sc);
+  const keepSel = selected; selected = null; drawMap(x, false); selected = keepSel;
+  offer('aren-map.png', await toBlob(c));
+};
+$('saveProj').onclick = () => offer('aren-map.json', JSON.stringify({ v: 1, mask: mask.toDataURL(), paint: paint.toDataURL(), stamps, labels, opts }));
+$('openProj').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (typeof d.mask !== 'string' || !d.mask.startsWith('data:image/') || typeof d.paint !== 'string' || !d.paint.startsWith('data:image/')) throw new Error('bad');
+    pushHist('mask'); pushHist('paint'); pushHist('obj'); await applyDoc(d); scheduleSave(); toast('فُتح المشروع');
+  } catch { toast('هذا الملف ليس مشروع خريطة صالحاً'); }
+};
+
+/* ---------- example map shown on first open ---------- */
+function exampleMap() {
+  const R = rng(2026);
+  const blob = (cx, cy, rad, seed) => {
+    const p = [];
+    for (let i = 0; i < 160; i++) {
+      const a = i / 160 * Math.PI * 2;
+      const k = 1 + .22 * Math.sin(3 * a + seed) + .12 * Math.sin(7 * a + seed * 2) + .06 * Math.sin(17 * a + seed) + R() * .03;
+      p.push([cx + Math.cos(a) * rad * k * 1.25, cy + Math.sin(a) * rad * k * .85]);
+    }
+    mctx.fillStyle = '#fff'; poly(mctx, p); mctx.fill();
+  };
+  blob(760, 500, 330, 1.3); blob(1330, 260, 110, 4); blob(250, 800, 90, 2.2); blob(1380, 760, 70, 5.1);
+  const area = (cx, cy, rx, ry, key, n, op) => { for (let i = 0; i < n; i++) { const a = R() * 6.28, d = Math.sqrt(R()); paintDab(cx + Math.cos(a) * rx * d, cy + Math.sin(a) * ry * d, 40 + R() * 50, key, op, false); } };
+  area(470, 520, 150, 130, 'forest', 70, .35);
+  area(1000, 690, 170, 90, 'desert', 60, .35);
+  area(760, 290, 260, 70, 'rock', 70, .3);
+  area(760, 260, 160, 40, 'snow', 30, .3);
+  area(1010, 430, 90, 70, 'meadow', 30, .3);
+  for (let i = 0; i < 16; i++) { const t = i / 15; stamps.push({ type: 'mountain', x: 540 + t * 440 + (R() - .5) * 40, y: 300 + Math.sin(t * 3) * 30 + (R() - .5) * 30, size: 90 + R() * 70 | 0, rot: 0, flip: R() < .5 }); }
+  for (let i = 0; i < 110; i++) { const a = R() * 6.28, d = Math.sqrt(R()); stamps.push({ type: R() < .55 ? 'pine' : 'oak', x: 470 + Math.cos(a) * 140 * d, y: 520 + Math.sin(a) * 115 * d, size: 30 + R() * 16 | 0, rot: 0, flip: R() < .5 }); }
+  for (let i = 0; i < 14; i++) stamps.push({ type: 'palm', x: 940 + R() * 140, y: 640 + R() * 90, size: 40 + R() * 14 | 0, rot: 0, flip: R() < .5 });
+  for (let i = 0; i < 6; i++) stamps.push({ type: 'hill', x: 1040 + R() * 140, y: 380 + R() * 110, size: 60 + R() * 30 | 0, rot: 0, flip: R() < .5 });
+  stamps.push({ type: 'castle', x: 770, y: 540, size: 110, rot: 0, flip: false });
+  stamps.push({ type: 'village', x: 600, y: 680, size: 80, rot: 0, flip: false });
+  stamps.push({ type: 'village', x: 1030, y: 540, size: 70, rot: 0, flip: true });
+  stamps.push({ type: 'tower', x: 1330, y: 270, size: 80, rot: 0, flip: false });
+  stamps.push({ type: 'ruins', x: 1000, y: 720, size: 64, rot: 0, flip: false });
+  stamps.push({ type: 'ship', x: 300, y: 380, size: 74, rot: 0, flip: false });
+  stamps.push({ type: 'ship', x: 1180, y: 880, size: 64, rot: 0, flip: true });
+  stamps.push({ type: 'compass', x: 1460, y: 960, size: 150, rot: 0, flip: false });
+  const L = (text, x, y, size, font, color = '#f6ecd2', halo = '#1b231f') => labels.push({ text, x, y, size, font, color, halo, rot: 0 });
+  L('آرين', 210, 110, 76, 'Aref Ruqaa', '#e8c97a', '#1a1208');
+  L('مدينة الحارس', 770, 580, 30, 'Amiri');
+  L('جبال الرماد', 760, 205, 36, 'Reem Kufi');
+  L('غابة الهمس', 470, 520, 34, 'Aref Ruqaa');
+  L('كثبان الذهب', 1010, 660, 30, 'Aref Ruqaa');
+  L('برج الحكماء', 1330, 310, 24, 'Amiri');
+  L('قرية النهر', 600, 715, 22, 'Amiri');
+  L('بحر السكون', 1250, 560, 34, 'Aref Ruqaa', 'rgba(220,236,230,.8)', 'rgba(10,30,34,.6)');
+  L('المحيط الغربي', 170, 500, 34, 'Aref Ruqaa', 'rgba(220,236,230,.8)', 'rgba(10,30,34,.6)');
+}
+
+/* ---------- boot ---------- */
+let lastW = 0;
+new ResizeObserver(() => { resize(); const w = stage.clientWidth; if (Math.abs(w - lastW) > 40) { lastW = w; fit(); } }).observe(stage);
+resize(); fit(); setTool('land'); setRange('sSize', SPRITES[stampType].size);
+document.querySelector(`.sw[aria-pressed="true"]`)?.scrollIntoView?.({ block: 'nearest' });
+(async () => {
+  let loaded = false;
+  try { const d = await kv('get', 'doc'); if (d && d.mask) { await applyDoc(d); loaded = true; } } catch { /* no storage: start from the example */ }
+  if (!loaded) { exampleMap(); toast('خريطة مثال. اضغط «خريطة جديدة» لتبدأ من الصفر.'); }
+  dirty = true;
+})();
+const fams = ['Aref Ruqaa', 'Amiri', 'Reem Kufi', 'El Messiri', 'Lalezar', 'Cairo', 'Cinzel'];
+Promise.all(fams.map(f => document.fonts.load(`700 40px "${f}"`).catch(() => {}))).then(() => { redrawCompass(); buildStampButtons(); dirty = true; });
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>

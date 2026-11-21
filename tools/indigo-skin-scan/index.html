@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indigo · فحص البشرة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0b1f; --panel:#15143a; --line:#2a2866; --ink:#eceafe; --mute:#9b98c9;
+    --indigo:#5b54e8; --cyan:#5ee6ff; --ok:#3ddc97; --warn:#ffb547; --bad:#ff6b8a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Tajawal",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Readex Pro","Tajawal",sans-serif;margin:0}
+  .wrap{max-width:520px;margin:0 auto;padding:18px 16px 60px}
+  header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .logo{width:34px;height:34px;border-radius:10px;background:radial-gradient(circle at 30% 30%,#8a84ff,#2b2a6b);box-shadow:0 0 18px #5b54e855}
+  header h1{font-size:19px}
+  header small{display:block;color:var(--mute);font-size:12px;font-family:"Tajawal"}
+  .steps{display:flex;gap:6px;margin-bottom:16px}
+  .steps span{flex:1;height:4px;border-radius:4px;background:var(--line);transition:.4s}
+  .steps span.on{background:linear-gradient(90deg,var(--cyan),var(--indigo))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:16px;margin-bottom:10px}
+  .hidden{display:none!important}
+
+  /* guide */
+  .guide{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center}
+  .tips{margin:0;padding:0;list-style:none;font-size:14px;line-height:1.9;color:#d6d4f5}
+  .tips li::before{content:"●";color:var(--cyan);font-size:9px;margin-left:8px;vertical-align:middle}
+  .demo{width:110px;height:110px}
+  .demo .face{animation:slide 4.5s ease-in-out infinite}
+  .demo .ring{animation:ring 4.5s ease-in-out infinite}
+  @keyframes slide{0%,10%{transform:translate(-22px,14px) scale(.78)}45%,100%{transform:translate(0,0) scale(1)}}
+  @keyframes ring{0%,44%{stroke:#ff6b8a}50%,100%{stroke:#3ddc97}}
+
+  /* stage */
+  .stage{position:relative;width:100%;aspect-ratio:1;border-radius:22px;overflow:hidden;background:#07061a;border:1px solid var(--line)}
+  .stage video,.stage canvas,.stage img{position:absolute;inset:0;width:100%;height:100%}
+  .stage video{object-fit:cover}
+  .mirror{transform:scaleX(-1)}
+  .mask{position:absolute;inset:0;pointer-events:none}
+  .placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--mute);font-size:14px;padding:30px}
+  .status{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#0c0b1fd9;border:1px solid var(--line);
+    padding:9px 16px;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px)}
+  .status.ok{border-color:var(--ok);color:var(--ok)}
+  .status.warn{border-color:var(--warn);color:var(--warn)}
+  .status .arrow{font-size:18px}
+  .checks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+  .checks div{font-size:11.5px;text-align:center;padding:7px 4px;border-radius:10px;background:#0f0e2b;border:1px solid var(--line);color:var(--mute)}
+  .checks div.ok{color:var(--ok);border-color:#3ddc9766}
+  .checks div.bad{color:var(--warn);border-color:#ffb54766}
+
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button,.btn{font-family:inherit;font-size:15px;font-weight:700;border:0;border-radius:14px;padding:12px 14px;cursor:pointer;flex:1;min-width:120px;
+    color:#fff;background:linear-gradient(135deg,#6a63ff,#4038c9);text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn.ghost,button.ghost{background:#1d1c4a;border:1px solid var(--line);color:var(--ink)}
+  input[type=file]{display:none}
+  .note{font-size:12.5px;color:var(--mute);margin-top:10px;line-height:1.7}
+
+  /* indicators */
+  .ind{display:grid;gap:10px;margin-top:4px}
+  .ind .row{display:grid;grid-template-columns:110px 1fr 64px;gap:10px;align-items:center;font-size:13.5px}
+  .bar{height:8px;border-radius:8px;background:#0f0e2b;overflow:hidden;position:relative}
+  .bar i{position:absolute;inset:0 auto 0 0;border-radius:8px;transition:width .6s}
+  .bar i.base{background:#ffffff22}
+  .bar i.now{background:linear-gradient(90deg,var(--cyan),var(--indigo))}
+  .val{font-family:"Readex Pro";font-size:13px;text-align:left;direction:ltr}
+  .val b{color:var(--ok);font-weight:600}
+  .score{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+  .score b{font-family:"Readex Pro";font-size:34px;color:var(--cyan)}
+
+  /* simulation */
+  .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}
+  .chips button{min-width:0;font-size:13px;padding:10px 4px;background:#1d1c4a;border:1px solid var(--line)}
+  .chips button.on{background:linear-gradient(135deg,#6a63ff,#4038c9);border-color:transparent}
+  .cmp{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+  .divider{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 10px #0008;pointer-events:none}
+  .divider::after{content:"⟷";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;
+    background:#fff;color:#2b2a6b;display:grid;place-items:center;font-weight:700}
+  .tag{position:absolute;top:12px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#0c0b1fcc}
+  .routine{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+  .routine li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.6;background:#0f0e2b;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .routine .p{font-weight:700;color:var(--cyan);white-space:nowrap}
+  .disclaimer{font-size:12px;color:var(--warn);background:#ffb5470f;border:1px solid #ffb54733;border-radius:12px;padding:10px 12px;margin-top:12px;line-height:1.7}
+  .loading{display:flex;gap:8px;align-items:center;color:var(--mute);font-size:13px}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--cyan);animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"></div>
+    <div><h1>فحص البشرة الذكي</h1><small>Indigo Cosmetics · التقاط، تحليل، ومحاكاة النتائج</small></div>
+  </header>
+  <div class="steps"><span class="on" id="s1"></span><span id="s2"></span><span id="s3"></span></div>
+
+  <!-- STEP 1: capture -->
+  <section id="capture">
+    <div class="card">
+      <h2>كيف تلتقط صورة صحيحة</h2>
+      <div class="guide">
+        <svg class="demo" viewBox="0 0 110 110" aria-hidden="true">
+          <circle class="ring" cx="55" cy="55" r="44" fill="none" stroke-width="3" stroke-dasharray="6 5"/>
+          <g class="face" style="transform-origin:55px 55px">
+            <ellipse cx="55" cy="55" rx="25" ry="32" fill="#2b2a6b" stroke="#8a84ff" stroke-width="1.5"/>
+            <path d="M44 48h7M59 48h7" stroke="#5ee6ff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M55 52v10M49 70q6 4 12 0" stroke="#5ee6ff" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <ul class="tips">
+          <li>ضوء نهار من نافذة أمامك</li>
+          <li>الكاميرا بمستوى العينين</li>
+          <li>بدون مكياج أو فلتر أو نظارة</li>
+          <li>الشعر بعيد عن الجبهة</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stage" id="camStage">
+        <video id="video" class="mirror hidden" playsinline muted></video>
+        <canvas id="camOverlay" class="mirror"></canvas>
+        <svg class="mask" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs><mask id="hole"><rect width="100" height="100" fill="#fff"/><circle cx="50" cy="48" r="36" fill="#000"/></mask></defs>
+          <rect width="100" height="100" fill="#07061acc" mask="url(#hole)"/>
+          <circle id="guideRing" cx="50" cy="48" r="36" fill="none" stroke="#ffffff55" stroke-width=".7" stroke-dasharray="2 1.6"/>
+          <circle id="progRing" cx="50" cy="48" r="37.6" fill="none" stroke="#3ddc97" stroke-width="1.4" stroke-linecap="round"
+            stroke-dasharray="236.2" stroke-dashoffset="236.2" transform="rotate(-90 50 48)"/>
+        </svg>
+        <div class="placeholder" id="camPh">ضع وجهك داخل الدائرة<br>شغّل الكاميرا أو التقط صورة</div>
+        <div class="status hidden" id="status"><span class="arrow" id="arrow"></span><span id="statusText"></span></div>
+      </div>
+      <div class="checks">
+        <div id="ckCenter">المنتصف</div><div id="ckSize">المسافة</div><div id="ckStraight">الاستقامة</div><div id="ckLight">الإضاءة</div>
+      </div>
+      <div class="btns">
+        <button id="btnLive">تشغيل الكاميرا المباشرة</button>
+        <label class="btn" for="fileCam">📷 التقط بالكاميرا</label>
+        <label class="btn ghost" for="fileUp">رفع صورة</label>
+      </div>
+      <input type="file" id="fileCam" accept="image/*" capture="user">
+      <input type="file" id="fileUp" accept="image/*">
+      <div class="note" id="modelState"><span class="loading"><span class="spin"></span>تحميل نموذج تحديد معالم الوجه…</span></div>
+    </div>
+  </section>
+
+  <!-- STEP 2: analysis -->
+  <section id="analysis" class="hidden">
+    <div class="card">
+      <h2>خريطة الوجه</h2>
+      <div class="stage"><canvas id="faceCanvas"></canvas><canvas id="meshCanvas"></canvas></div>
+      <div class="note">🔒 العينان محجوبتان تلقائياً قبل أي تحليل. منطقة تحت العين ظاهرة لقياس الهالات.</div>
+    </div>
+    <div class="card">
+      <div class="score"><b id="overall">--</b><span>المؤشر العام من 100</span></div>
+      <div class="ind" id="indBase"></div>
+      <div class="note">مؤشرات تقديرية من الصورة. الإضاءة الملونة تغيّر القراءة.</div>
+      <div class="btns"><button id="toSim">شاهد النتائج المتوقعة مع المنتجات</button><button class="ghost" id="retake">إعادة الالتقاط</button></div>
+    </div>
+  </section>
+
+  <!-- STEP 3: simulation -->
+  <section id="sim" class="hidden">
+    <div class="card">
+      <h2>محاكاة وجهك مع الروتين</h2>
+      <div class="chips" id="chips">
+        <button data-s="0" class="on">الآن</button><button data-s="1">أسبوعان</button><button data-s="2">شهر</button><button data-s="3">٣ أشهر</button>
+      </div>
+      <div class="stage" id="simStage">
+        <canvas id="simCanvas"></canvas>
+        <div class="divider" id="divider"></div>
+        <span class="tag" style="right:12px">قبل</span><span class="tag" style="left:12px" id="afterTag">بعد</span>
+        <input type="range" class="cmp" id="cmp" min="0" max="100" value="50" aria-label="مقارنة قبل وبعد">
+      </div>
+      <div class="note">اسحب على الصورة للمقارنة بين قبل وبعد.</div>
+    </div>
+    <div class="card">
+      <h2 id="stageTitle">الروتين</h2>
+      <ul class="routine" id="routine"></ul>
+    </div>
+    <div class="card">
+      <h2>تغيّر المؤشرات</h2>
+      <div class="ind" id="indSim"></div>
+      <div class="disclaimer">⚠️ محاكاة توضيحية مبنية على التأثير المعتاد للمكونات، وليست صورة حقيقية أو نتيجة مضمونة. النتائج تختلف من شخص لآخر وتتطلب الالتزام والوقاية من الشمس.</div>
+      <div class="btns"><button class="ghost" id="back">العودة لخريطة الوجه</button></div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
+<script src="weights.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const S = 512;                       // working size of the face crop
+let modelReady = false, stream = null, liveLoop = null;
+const framed = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+
+/* ---------- model ---------- */
+(async () => {
+  try {
+    // weights ship inside weights.js (the host serves no .bin files): decode them directly
+    const W = window.FACE_WEIGHTS;
+    const loadNet = (net, name) => {
+      const man = JSON.parse(atob(W['model/' + name + '-weights_manifest.json']));
+      const bytes = Uint8Array.from(atob(W['model/' + name + '.bin']), c => c.charCodeAt(0));
+      net.loadFromWeightMap(faceapi.tf.io.decodeWeights(bytes.buffer, man.flatMap(g => g.weights)));
+    };
+    // WebGL when the phone allows it, CPU otherwise
+    let ok = false; try { ok = await faceapi.tf.setBackend('webgl'); } catch (e) {}
+    if (!ok) await faceapi.tf.setBackend('cpu');
+    await faceapi.tf.ready();
+    loadNet(faceapi.nets.tinyFaceDetector, 'tiny_face_detector_model');
+    loadNet(faceapi.nets.faceLandmark68Net, 'face_landmark_68_model');
+    modelReady = true;
+    $('modelState').textContent = 'النموذج جاهز: 68 نقطة لتحديد معالم الوجه.';
+    if (!framed && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) startLive();
+  } catch (e) {
+    $('modelState').textContent = 'تعذّر تحميل النموذج (' + e.message + '). أعد فتح الصفحة.';
+  }
+})();
+const detOpts = () => new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.45 });
+async function detect(src) {
+  if (!modelReady) return null;
+  try { return await faceapi.detectSingleFace(src, detOpts()).withFaceLandmarks(); }
+  catch (e) {   // some phone webviews fail on WebGL: retry on CPU
+    await faceapi.tf.setBackend('cpu'); await faceapi.tf.ready();
+    return faceapi.detectSingleFace(src, detOpts()).withFaceLandmarks();
+  }
+}
+/* show the captured photo inside the circle right away */
+function showPhoto(c) {
+  const ov = $('camOverlay'), Sz = $('camStage').clientWidth * devicePixelRatio;
+  ov.width = ov.height = Sz; ov.classList.remove('mirror');
+  const side = Math.min(c.width, c.height), x = ov.getContext('2d');
+  x.drawImage(c, (c.width - side) / 2, (c.height - side) / 2, side, side, 0, 0, Sz, Sz);
+  $('camPh').classList.add('hidden'); $('status').classList.remove('hidden');
+  $('status').className = 'status'; $('arrow').textContent = '◎'; $('statusText').textContent = 'جاري تحليل الصورة…';
+}
+
+/* ---------- geometry helpers ---------- */
+const P = (pts, i) => pts[i];
+const mid = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const avg = arr => arr.reduce((s, p) => ({ x: s.x + p.x / arr.length, y: s.y + p.y / arr.length }), { x: 0, y: 0 });
+const eyeC = (pts, a) => avg(pts.slice(a, a + 6));
+
+/* Checks shared by live camera and photos. Coordinates: frame w×h, circle at (cx,cy,r). */
+function evaluate(pts, box, w, h, lum, mirrored) {
+  const cx = w / 2, cy = h * 0.48, r = Math.min(w, h) * 0.36;
+  const fc = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  const dx = (fc.x - cx) / r, dy = (fc.y - cy) / r, size = box.height / r;
+  const le = eyeC(pts, 36), re = eyeC(pts, 42);
+  const tilt = Math.atan2(re.y - le.y, re.x - le.x) * 180 / Math.PI;
+  const nose = P(pts, 30), jl = P(pts, 0), jr = P(pts, 16);
+  const yaw = dist(nose, jl) / Math.max(1, dist(nose, jr));
+  const res = { center: Math.abs(dx) < .18 && Math.abs(dy) < .2, size: size > .9 && size < 1.35,
+                straight: Math.abs(tilt) < 7 && yaw > .7 && yaw < 1.43, light: lum > 70 && lum < 205 };
+  let msg = 'ممتاز، ثبّت وجهك', arrow = '✓';
+  if (!res.size) { msg = size <= .9 ? 'قرّب وجهك من الكاميرا' : 'ابتعد قليلاً'; arrow = size <= .9 ? '⤢' : '⤡'; }
+  else if (!res.center) {
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      const faceLeftOnScreen = mirrored ? dx > 0 : dx < 0;
+      msg = faceLeftOnScreen ? 'حرّك وجهك نحو اليمين' : 'حرّك وجهك نحو اليسار';
+      arrow = faceLeftOnScreen ? '➡' : '⬅';
+    } else { msg = dy < 0 ? 'أنزل وجهك قليلاً' : 'ارفع وجهك قليلاً'; arrow = dy < 0 ? '⬇' : '⬆'; }
+  }
+  else if (!res.straight) { msg = Math.abs(tilt) >= 7 ? 'استقم برأسك، لا تمِله' : 'انظر مباشرة إلى الكاميرا'; arrow = '⟲'; }
+  else if (!res.light) { msg = lum <= 70 ? 'الإضاءة ضعيفة، اقترب من النافذة' : 'الإضاءة قوية جداً'; arrow = '☀'; }
+  res.all = res.center && res.size && res.straight && res.light;
+  res.msg = msg; res.arrow = arrow;
+  return res;
+}
+function showChecks(res) {
+  [['ckCenter', 'center'], ['ckSize', 'size'], ['ckStraight', 'straight'], ['ckLight', 'light']]
+    .forEach(([id, k]) => { $(id).className = res ? (res[k] ? 'ok' : 'bad') : ''; });
+  const st = $('status');
+  if (!res) { st.className = 'status warn'; $('arrow').textContent = '◎'; $('statusText').textContent = 'لم يُعثر على وجه داخل الدائرة'; return; }
+  st.className = 'status ' + (res.all ? 'ok' : 'warn');
+  $('arrow').textContent = res.arrow; $('statusText').textContent = res.msg;
+}
+function regionLum(ctx, box) {
+  const x = Math.max(0, box.x | 0), y = Math.max(0, box.y | 0);
+  const w = Math.max(1, Math.min(ctx.canvas.width - x, box.width | 0)), h = Math.max(1, Math.min(ctx.canvas.height - y, box.height | 0));
+  const d = ctx.getImageData(x, y, w, h).data; let s = 0, n = 0;
+  for (let i = 0; i < d.length; i += 16) { s += .299 * d[i] + .587 * d[i + 1] + .114 * d[i + 2]; n++; }
+  return s / n;
+}
+
+/* ---------- mesh drawing ---------- */
+const CONTOURS = [[0,16,false],[17,21,false],[22,26,false],[27,30,false],[31,35,false],[36,41,true],[42,47,true],[48,59,true],[60,67,true]];
+function meshEdges(pts) {
+  const edges = new Set();
+  pts.forEach((p, i) => {
+    pts.map((q, j) => [j, dist(p, q)]).filter(([j]) => j !== i).sort((a, b) => a[1] - b[1]).slice(0, 3)
+      .forEach(([j]) => edges.add(i < j ? i + '-' + j : j + '-' + i));
+  });
+  return [...edges].map(e => e.split('-').map(Number));
+}
+function drawMesh(ctx, pts, scale, alpha = 1, upto = 68) {
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.strokeStyle = 'rgba(94,230,255,.28)'; ctx.lineWidth = 1 * scale;
+  meshEdges(pts).forEach(([a, b]) => { if (a < upto && b < upto) { ctx.beginPath(); ctx.moveTo(pts[a].x, pts[a].y); ctx.lineTo(pts[b].x, pts[b].y); ctx.stroke(); } });
+  ctx.strokeStyle = 'rgba(94,230,255,.95)'; ctx.lineWidth = 1.6 * scale; ctx.shadowColor = '#5ee6ff'; ctx.shadowBlur = 8 * scale;
+  CONTOURS.forEach(([a, b, close]) => {
+    ctx.beginPath();
+    for (let i = a; i <= Math.min(b, upto - 1); i++) i === a ? ctx.moveTo(pts[i].x, pts[i].y) : ctx.lineTo(pts[i].x, pts[i].y);
+    if (close && b < upto) ctx.closePath(); ctx.stroke();
+  });
+  ctx.fillStyle = '#fff';
+  for (let i = 0; i < Math.min(upto, 68); i++) { ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 2.1 * scale, 0, 7); ctx.fill(); }
+  ctx.restore();
+}
+
+/* ---------- live camera ---------- */
+if (framed || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) $('btnLive').classList.add('hidden');
+$('btnLive').onclick = () => stream ? stopLive() : startLive();
+async function startLive() {
+  if (stream) return;
+  $('camPh').innerHTML = 'اسمح للصفحة باستخدام الكاميرا<br>ثم ضع وجهك داخل الدائرة';
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
+  } catch (e) {
+    $('modelState').textContent = e.name === 'NotAllowedError'
+      ? 'لم يُسمح باستخدام الكاميرا. فعّلها من إعدادات المتصفح، أو استخدم «التقط بالكاميرا».'
+      : 'الكاميرا المباشرة غير متاحة هنا. استخدم «التقط بالكاميرا».';
+    stream = null; return;
+  }
+  $('camOverlay').classList.add('mirror');
+  const v = $('video'); v.srcObject = stream; await v.play();
+  v.classList.remove('hidden'); $('camPh').classList.add('hidden'); $('status').classList.remove('hidden');
+  $('btnLive').textContent = 'إيقاف الكاميرا';
+  runLive();
+}
+function stopLive() {
+  stream && stream.getTracks().forEach(t => t.stop()); stream = null; cancelAnimationFrame(liveLoop);
+  $('video').classList.add('hidden'); $('btnLive').textContent = 'تشغيل الكاميرا المباشرة';
+}
+function runLive() {
+  const v = $('video'), ov = $('camOverlay'), stage = $('camStage');
+  const grab = document.createElement('canvas'), gctx = grab.getContext('2d', { willReadFrequently: true });
+  let busy = false, okSince = 0, last = 0;
+  const tick = async t => {
+    liveLoop = requestAnimationFrame(tick);
+    if (busy || t - last < 110 || !v.videoWidth) return;
+    busy = true; last = t;
+    const Sz = Math.round(stage.clientWidth * devicePixelRatio); if (ov.width !== Sz) ov.width = ov.height = Sz;
+    const vw = v.videoWidth, vh = v.videoHeight, sc = Math.max(Sz / vw, Sz / vh), ox = (Sz - vw * sc) / 2, oy = (Sz - vh * sc) / 2;
+    grab.width = vw; grab.height = vh; gctx.drawImage(v, 0, 0);
+    const r = await detect(grab);
+    const octx = ov.getContext('2d'); octx.clearRect(0, 0, Sz, Sz);
+    if (!r) { showChecks(null); okSince = 0; setProg(0); busy = false; return; }
+    const pts = r.landmarks.positions.map(p => ({ x: p.x * sc + ox, y: p.y * sc + oy }));
+    const b = r.detection.box, box = { x: b.x * sc + ox, y: b.y * sc + oy, width: b.width * sc, height: b.height * sc };
+    const res = evaluate(pts, box, Sz, Sz, regionLum(gctx, b), true);
+    drawMesh(octx, pts, devicePixelRatio, .9);
+    showChecks(res);
+    if (res.all) { okSince = okSince || t; const p = Math.min(1, (t - okSince) / 1300); setProg(p); if (p >= 1) { stopLive(); setProg(0); processSource(grab, r); } }
+    else { okSince = 0; setProg(0); }
+    busy = false;
+  };
+  liveLoop = requestAnimationFrame(tick);
+}
+function setProg(p) { $('progRing').setAttribute('stroke-dashoffset', 236.2 * (1 - p)); }
+
+/* ---------- photo input ---------- */
+['fileCam', 'fileUp'].forEach(id => $(id).onchange = e => {
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
+  const img = new Image();
+  img.onload = async () => {
+    const k = Math.min(1, 1400 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = img.naturalWidth * k; c.height = img.naturalHeight * k;
+    c.getContext('2d', { willReadFrequently: true }).drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(img.src);
+    showPhoto(c);
+    if (!modelReady) { $('statusText').textContent = 'النموذج لم يكتمل تحميله'; $('modelState').textContent = 'انتظر اكتمال تحميل النموذج ثم أعد الالتقاط.'; return; }
+    $('modelState').innerHTML = '<span class="loading"><span class="spin"></span>تحديد معالم الوجه…</span>';
+    let r;
+    try { r = await detect(c); }
+    catch (err) { $('statusText').textContent = 'تعذّر التحليل على هذا الجهاز'; $('modelState').textContent = 'خطأ: ' + err.message; return; }
+    if (!r) { $('camPh').classList.add('hidden'); $('status').classList.remove('hidden'); showChecks(null); $('modelState').textContent = 'لم يُعثر على وجه. التقط صورة أمامية بإضاءة جيدة.'; return; }
+    // judge framing the way the live view would: centred crop of the photo
+    const side = Math.min(c.width, c.height), ox = (c.width - side) / 2, oy = (c.height - side) / 2;
+    const pts = r.landmarks.positions.map(p => ({ x: p.x - ox, y: p.y - oy }));
+    const b = r.detection.box, res = evaluate(pts, { x: b.x - ox, y: b.y - oy, width: b.width, height: b.height }, side, side, regionLum(c.getContext('2d'), b), false);
+    $('modelState').textContent = res.all ? 'الصورة مطابقة للشروط.' :
+      'ملاحظة على الصورة: ' + res.msg + '. سنُكمل التحليل، وللدقة أعد الالتقاط.';
+    showChecks(res);
+    try { processSource(c, r); } catch (err) { $('modelState').textContent = 'خطأ في المعالجة: ' + err.message; }
+  };
+  img.onerror = () => { $('modelState').textContent = 'تعذّر فتح الصورة. جرّب صورة JPG أو PNG.'; };
+  img.src = URL.createObjectURL(f);
+});
+
+/* ---------- crop, mask eyes, analyse ---------- */
+let base = null;   // {img: ImageData, pts, masks, stats}
+function processSource(src, r) {
+  const pts0 = r.landmarks.positions, b = r.detection.box;
+  const faceH = dist(P(pts0, 27), P(pts0, 8));
+  const side = faceH * 2.35, c = { x: b.x + b.width / 2, y: P(pts0, 27).y + faceH * 0.18 };
+  const k = S / side, ox = c.x - side / 2, oy = c.y - side / 2;
+  const cv = $('faceCanvas'); cv.width = cv.height = S;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.fillStyle = '#07061a'; ctx.fillRect(0, 0, S, S);
+  ctx.drawImage(src, ox, oy, side, side, 0, 0, S, S);
+  const pts = pts0.map(p => ({ x: (p.x - ox) * k, y: (p.y - oy) * k }));
+  maskEyes(ctx, pts);
+  const img = ctx.getImageData(0, 0, S, S);
+  const masks = buildMasks(pts);
+  const prep = prepare(img, masks);
+  base = { img, pts, masks, prep, stats: measure(img.data, prep.blurL, masks, prep) };
+  renderBase(); go('analysis'); animateMesh();
+}
+function maskEyes(ctx, pts) {
+  [36, 42].forEach(a => {
+    const e = pts.slice(a, a + 6), xs = e.map(p => p.x), ys = e.map(p => p.y);
+    const w = Math.max(...xs) - Math.min(...xs), x0 = Math.min(...xs) - w * .3, x1 = Math.max(...xs) + w * .3;
+    const y0 = Math.min(...ys) - w * .45, y1 = Math.max(...ys) + w * .14;
+    const bw = Math.max(1, Math.round(x1 - x0)), bh = Math.max(1, Math.round(y1 - y0));
+    const t = document.createElement('canvas'); t.width = 6; t.height = Math.max(2, Math.round(6 * bh / bw));
+    const tc = t.getContext('2d'); tc.drawImage(ctx.canvas, x0, y0, bw, bh, 0, 0, t.width, t.height);
+    ctx.imageSmoothingEnabled = false; ctx.drawImage(t, 0, 0, t.width, t.height, x0, y0, bw, bh); ctx.imageSmoothingEnabled = true;
+  });
+}
+
+/* masks: Float32 arrays S*S, 0..1 */
+function polyMask(polys, feather, holes = []) {
+  const c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d', { willReadFrequently: true }); x.fillStyle = '#fff';
+  polys.forEach(poly => { x.beginPath(); poly.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y)); x.closePath(); x.fill(); });
+  x.globalCompositeOperation = 'destination-out';
+  holes.forEach(poly => { x.beginPath(); poly.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y)); x.closePath(); x.fill(); });
+  const d = x.getImageData(0, 0, S, S).data, m = new Float32Array(S * S);
+  for (let i = 0; i < m.length; i++) m[i] = d[i * 4 + 3] / 255;
+  return feather ? boxBlur1(m, feather, 2) : m;
+}
+function grow(poly, f) { const c = avg(poly); return poly.map(p => ({ x: c.x + (p.x - c.x) * f, y: c.y + (p.y - c.y) * f })); }
+function buildMasks(pts) {
+  const faceH = dist(P(pts, 27), P(pts, 8));
+  const fore = pts.slice(17, 27).map(p => ({ x: p.x, y: p.y - faceH * 0.42 })).reverse();
+  const outline = [...pts.slice(0, 17), ...fore];
+  const eyes = [grow(pts.slice(36, 42), 1.9), grow(pts.slice(42, 48), 1.9)];
+  const brows = [grow([...pts.slice(17, 22), ...pts.slice(17, 22).reverse().map(p => ({ x: p.x, y: p.y + 6 }))], 1.25),
+                 grow([...pts.slice(22, 27), ...pts.slice(22, 27).reverse().map(p => ({ x: p.x, y: p.y + 6 }))], 1.25)];
+  const lips = [grow(pts.slice(48, 60), 1.15)];
+  const skin = polyMask([outline], 5, [...eyes, ...brows, ...lips]);
+  const under = [[36, 41, 40, 39], [42, 47, 46, 45]].map(ix => {
+    const lid = ix.map(i => pts[i]), w = dist(lid[0], lid[3]), d = w * 0.55;
+    return [...lid.map(p => ({ x: p.x, y: p.y + 3 })), ...lid.slice().reverse().map((p, i) => ({ x: p.x, y: p.y + d * (i === 0 || i === 3 ? .55 : 1) }))];
+  });
+  const underEye = polyMask(under, 7);
+  const nose = [P(pts, 27), mid(P(pts, 27), P(pts, 39)), P(pts, 31), P(pts, 33), P(pts, 35), mid(P(pts, 27), P(pts, 42))];
+  const tzone = polyMask([[...pts.slice(17, 27), ...fore.slice().reverse().reverse()], nose], 8, [...eyes, ...brows]);
+  const fw = dist(P(pts, 0), P(pts, 16));
+  const cheeks = [mid(P(pts, 2), P(pts, 31)), mid(P(pts, 14), P(pts, 35))].map(c => ({ c, r: fw * 0.07 }));
+  return { skin, underEye, tzone, cheeks, pts };
+}
+
+/* separable box blur on a single channel */
+function boxBlur1(src, r, passes = 3) {
+  let a = Float32Array.from(src), b = new Float32Array(src.length);
+  for (let p = 0; p < passes; p++) {
+    for (let y = 0; y < S; y++) { let s = 0; const o = y * S;
+      for (let x = -r; x <= r; x++) s += a[o + Math.min(S - 1, Math.max(0, x))];
+      for (let x = 0; x < S; x++) { b[o + x] = s / (2 * r + 1); s += a[o + Math.min(S - 1, x + r + 1)] - a[o + Math.max(0, x - r)]; } }
+    for (let x = 0; x < S; x++) { let s = 0;
+      for (let y = -r; y <= r; y++) s += b[Math.min(S - 1, Math.max(0, y)) * S + x];
+      for (let y = 0; y < S; y++) { a[y * S + x] = s / (2 * r + 1); s += b[Math.min(S - 1, y + r + 1) * S + x] - b[Math.max(0, y - r) * S + x]; } }
+  }
+  return a;
+}
+function channels(d) {
+  const R = new Float32Array(S * S), G = new Float32Array(S * S), B = new Float32Array(S * S), L = new Float32Array(S * S);
+  for (let i = 0; i < R.length; i++) { R[i] = d[i * 4]; G[i] = d[i * 4 + 1]; B[i] = d[i * 4 + 2]; L[i] = .299 * R[i] + .587 * G[i] + .114 * B[i]; }
+  return { R, G, B, L };
+}
+function prepare(img, m) {
+  const ch = channels(img.data);
+  const fine = { R: boxBlur1(ch.R, 2), G: boxBlur1(ch.G, 2), B: boxBlur1(ch.B, 2) };
+  const low = { R: boxBlur1(ch.R, 14), G: boxBlur1(ch.G, 14), B: boxBlur1(ch.B, 14) };
+  const blurL = boxBlur1(ch.L, 2);
+  // skin reference colour = median of skin pixels; beard/hair excluded by luminance
+  const ls = []; for (let i = 0; i < ch.L.length; i += 3) if (m.skin[i] > .9) ls.push(ch.L[i]);
+  ls.sort((a, b) => a - b); const medL = ls[ls.length >> 1] || 100;
+  const hair = new Float32Array(S * S);  // 1 = skin-like, 0 = beard/hair (dark)
+  for (let i = 0; i < hair.length; i++) hair[i] = Math.min(1, Math.max(0, (ch.L[i] - medL * .45) / (medL * .2)));
+  const mean = (mask, inCircle) => { let r = 0, g = 0, b = 0, n = 0;
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const i = y * S + x;
+      const w = inCircle ? (inCircle.some(c => Math.hypot(x - c.c.x, y - c.c.y) < c.r) ? 1 : 0) : mask[i] * hair[i];
+      if (w > .5) { r += ch.R[i]; g += ch.G[i]; b += ch.B[i]; n++; } }
+    return n ? { r: r / n, g: g / n, b: b / n } : { r: 120, g: 90, b: 75 }; };
+  const cheek = mean(null, m.cheeks), under = mean(m.underEye), skinMean = mean(m.skin);
+  return { ch, fine, low, blurL, medL, hair, cheek, under, skinMean };
+}
+
+/* image indicators, 0-100 (higher = more visible concern) */
+function measure(d, blurL, m, prep) {
+  const { hair, medL } = prep; let sumU = 0, nU = 0, nC = 0, sumC = 0, shine = 0, nS = 0, tex = 0, lowS = 0, lowS2 = 0;
+  const L = new Float32Array(S * S); for (let i = 0; i < L.length; i++) L[i] = .299 * d[i * 4] + .587 * d[i * 4 + 1] + .114 * d[i * 4 + 2];
+  const bl = boxBlur1(L, 2), lo = boxBlur1(L, 14);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const i = y * S + x;
+    if (m.underEye[i] > .6) { sumU += L[i]; nU++; }
+    if (m.cheeks.some(c => Math.hypot(x - c.c.x, y - c.c.y) < c.r)) { sumC += L[i]; nC++; }
+    const w = m.skin[i] * hair[i];
+    if (w > .8) { nS++; if (L[i] > medL * 1.42) shine++; tex += Math.abs(L[i] - bl[i]); lowS += lo[i]; lowS2 += lo[i] * lo[i]; } }
+  const clamp = v => Math.round(Math.max(3, Math.min(97, v)));
+  const lowMean = lowS / nS, lowStd = Math.sqrt(Math.max(0, lowS2 / nS - lowMean * lowMean));
+  const r = {
+    dark: clamp((1 - (sumU / nU) / (sumC / nC)) * 230),
+    oil: clamp(shine / nS * 420),
+    tone: clamp(lowStd / lowMean * 330),
+    texture: clamp(tex / nS * 9),
+  };
+  r.overall = Math.round(100 - (r.dark + r.oil + r.tone + r.texture) / 4);
+  return r;
+}
+const LABELS = { dark: 'الهالات تحت العين', oil: 'اللمعان والدهون', tone: 'عدم توحّد اللون', texture: 'الملمس والمسام' };
+function indRows(el, a, b) {
+  el.innerHTML = Object.keys(LABELS).map(k => `
+    <div class="row"><span>${LABELS[k]}</span>
+      <div class="bar">${b ? `<i class="base" style="width:${a[k]}%"></i>` : ''}<i class="now" style="width:${(b || a)[k]}%"></i></div>
+      <span class="val">${b ? `${a[k]} → <b>${b[k]}</b>` : a[k]}</span></div>`).join('');
+}
+function renderBase() { $('overall').textContent = base.stats.overall; indRows($('indBase'), base.stats); }
+
+/* scanning mesh animation over the masked face */
+let meshAnim = null;
+function animateMesh() {
+  cancelAnimationFrame(meshAnim);
+  const cv = $('meshCanvas'); cv.width = cv.height = S; const ctx = cv.getContext('2d'); const t0 = performance.now();
+  const pts = base.pts, faceH = dist(P(pts, 27), P(pts, 8));
+  const zones = [
+    ['الجبهة', { x: P(pts, 27).x, y: P(pts, 27).y - faceH * .3 }], ['الأنف', P(pts, 30)],
+    ['الخد', mid(P(pts, 2), P(pts, 31))], ['الخد', mid(P(pts, 14), P(pts, 35))],
+    ['تحت العين', { x: eyeC(pts, 36).x, y: eyeC(pts, 36).y + faceH * .14 }], ['الذقن', mid(P(pts, 57), P(pts, 8))]];
+  const frame = t => {
+    const e = (t - t0) / 1000; ctx.clearRect(0, 0, S, S);
+    const upto = Math.min(68, Math.floor(e * 45));
+    drawMesh(ctx, pts, 1, .85, upto);
+    if (e < 2.2) { const y = (e / 2.2) * S; const g = ctx.createLinearGradient(0, y - 40, 0, y);
+      g.addColorStop(0, 'rgba(94,230,255,0)'); g.addColorStop(1, 'rgba(94,230,255,.45)'); ctx.fillStyle = g; ctx.fillRect(0, y - 40, S, 40);
+      ctx.fillStyle = '#5ee6ff'; ctx.fillRect(0, y, S, 2); }
+    if (e > 1.6) { ctx.globalAlpha = Math.min(1, (e - 1.6) * 2); ctx.font = '600 14px Readex Pro, Tajawal'; ctx.textAlign = 'center';
+      zones.forEach(([n, p]) => { const w = ctx.measureText(n).width + 14;
+        ctx.fillStyle = 'rgba(12,11,31,.78)'; ctx.beginPath(); ctx.roundRect(p.x - w / 2, p.y - 11, w, 22, 11); ctx.fill();
+        ctx.fillStyle = '#eceafe'; ctx.fillText(n, p.x, p.y + 5); }); ctx.globalAlpha = 1; }
+    if (e < 3) meshAnim = requestAnimationFrame(frame);
+  };
+  meshAnim = requestAnimationFrame(frame);
+}
+
+/* ---------- simulation ---------- */
+const STAGES = [
+  { t: 0, title: 'الآن: قبل الروتين', routine: [['—', 'هذه صورتك الحالية بعد حجب العينين. اختر فترة لرؤية التغيّر المتوقع.']] },
+  { t: .35, title: 'بعد أسبوعين', routine: [
+    ['Blue Moon', 'غسول صباحاً ومساءً: يقلّل الدهون واللمعان في الجبهة والأنف.'],
+    ['Aura', 'مرطّب خفيف بعد الغسول: بشرة أهدأ وملمس أنعم.'],
+    ['واقي شمس', 'SPF 30+ كل صباح، حتى للبشرة السمراء، لمنع التصبغ.']] },
+  { t: .65, title: 'بعد شهر', routine: [
+    ['Glaze', 'سيروم التصبغ ليلاً: يبدأ توحيد اللون حول العين والخدين.'],
+    ['نياسيناميد', 'صباحاً: مسام أقل وضوحاً وتحكّم أفضل بالدهون.'],
+    ['Blue Moon + Aura', 'الاستمرار يومياً.']] },
+  { t: 1, title: 'بعد ٣ أشهر', routine: [
+    ['Glaze', 'الاستمرار ليلاً: لون أكثر توحّداً وهالات أفتح جزئياً.'],
+    ['ساليسيليك 2%', 'مرتين إلى ثلاث أسبوعياً: ملمس أنعم ومسام أنظف.'],
+    ['كريم عين بالكافيين', 'يخفّف الانتفاخ. الهالات الوراثية تتحسّن جزئياً فقط.']] },
+];
+let simT = 0, simTarget = 0, simImg = null, simAnim = null, cmpPos = .5;
+function simulate(t) {
+  const { ch, fine, low, hair, medL, cheek, under, skinMean } = base.prep, m = base.masks;
+  const out = new ImageData(S, S), o = out.data;
+  const dR = cheek.r - under.r, dG = cheek.g - under.g, dB = cheek.b - under.b;
+  for (let i = 0; i < S * S; i++) {
+    let r = ch.R[i], g = ch.G[i], b = ch.B[i];
+    const sk = m.skin[i] * hair[i];
+    if (sk > .01) {
+      // 1. texture: edge-aware smoothing
+      const edge = Math.exp(-Math.abs(ch.L[i] - (.299 * fine.R[i] + .587 * fine.G[i] + .114 * fine.B[i])) / 10);
+      const s = sk * .55 * t * edge; r += (fine.R[i] - r) * s; g += (fine.G[i] - g) * s; b += (fine.B[i] - b) * s;
+      // 2. tone: pull low-frequency colour toward skin mean, keep detail
+      const tw = sk * .3 * t; r += (skinMean.r - low.R[i]) * tw; g += (skinMean.g - low.G[i]) * tw; b += (skinMean.b - low.B[i]) * tw;
+      // 3. oil: compress highlights, stronger in the T-zone
+      const L = .299 * r + .587 * g + .114 * b, thr = medL * 1.22;
+      if (L > thr) { const k = (L - thr) / L * (.3 + .25 * m.tzone[i]) * t * sk; r -= r * k; g -= g * k; b -= b * k; }
+      // 4. radiance
+      const rad = 1 + .04 * t * sk; r *= rad; g *= rad; b *= rad;
+    }
+    // 5. dark circles: lift under-eye toward cheek colour (partial: genetics limit it)
+    const u = m.underEye[i] * .38 * t;
+    if (u > .001) { r += dR * u; g += dG * u; b += dB * u; }
+    o[i * 4] = r; o[i * 4 + 1] = g; o[i * 4 + 2] = b; o[i * 4 + 3] = 255;
+  }
+  return out;
+}
+function drawSim() {
+  const cv = $('simCanvas'); cv.width = cv.height = S; const ctx = cv.getContext('2d');
+  ctx.putImageData(base.img, 0, 0);
+  if (!simImg) return;
+  // RTL: "before" on the right, "after" on the left of the divider
+  const x = Math.round(S * cmpPos);
+  const t = document.createElement('canvas'); t.width = t.height = S; t.getContext('2d').putImageData(simImg, 0, 0);
+  ctx.drawImage(t, 0, 0, x, S, 0, 0, x, S);
+  $('divider').style.left = (cmpPos * 100) + '%';
+}
+function setStage(i) {
+  [...$('chips').children].forEach((b, j) => b.classList.toggle('on', j === i));
+  const st = STAGES[i]; $('stageTitle').textContent = st.title;
+  $('routine').innerHTML = st.routine.map(([p, d]) => `<li><span class="p">${p}</span><span>${d}</span></li>`).join('');
+  $('afterTag').textContent = i ? st.title.replace('بعد ', 'بعد ') : 'بعد';
+  simTarget = st.t; cancelAnimationFrame(simAnim);
+  const from = simT, t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / 650), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    simT = from + (simTarget - from) * e; simImg = simulate(simT); drawSim();
+    if (p < 1) simAnim = requestAnimationFrame(step);
+    else { const after = measure(simImg.data, null, base.masks, base.prep); indRows($('indSim'), base.stats, after); }
+  };
+  simAnim = requestAnimationFrame(step);
+}
+$('chips').onclick = e => { const b = e.target.closest('button'); if (b) setStage(+b.dataset.s); };
+$('cmp').oninput = e => { cmpPos = e.target.value / 100; drawSim(); };
+
+/* ---------- navigation ---------- */
+function go(id) {
+  ['capture', 'analysis', 'sim'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+  const n = { capture: 1, analysis: 2, sim: 3 }[id];
+  ['s1', 's2', 's3'].forEach((s, i) => $(s).classList.toggle('on', i < n));
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('toSim').onclick = () => { go('sim'); simT = 0; simImg = simulate(0); drawSim(); indRows($('indSim'), base.stats, base.stats); setStage(3); };
+$('retake').onclick = () => { go('capture'); };
+$('back').onclick = () => { go('analysis'); animateMesh(); };
+</script>
+</body>
+</html>

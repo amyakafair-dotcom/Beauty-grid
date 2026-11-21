@@ -1,0 +1,291 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>كاتب الشوارع</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+/* layout: preview stage on the start side, control rail on the end side; stacks on phone */
+:root{
+  --bg:#EEF2F0; --panel:#FFFFFF; --line:#D5DDD9; --fg:#18211E; --muted:#5E6B66; --accent:#0E8C63;
+  --f-display:"Cairo","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121615;--panel:#1A201E;--line:#2C3532;--fg:#E6ECE9;--muted:#93A19B;--accent:#3CC995;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121615;--panel:#1A201E;--line:#2C3532;--fg:#E6ECE9;--muted:#93A19B;--accent:#3CC995;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;max-width:1200px;margin:0 auto}
+@media (max-width:820px){.app{grid-template-columns:1fr}}
+.stage-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.stage{position:relative;width:100%;max-width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#E2E9E1}
+.stage canvas{display:block;width:100%;height:100%}
+.bar{display:flex;gap:8px}
+button{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:20px;align-self:start}
+h1{font-family:var(--f-display);font-weight:800;font-size:1.35rem;margin:0}
+h2{font-size:.78rem;letter-spacing:.04em;color:var(--muted);margin:0 0 8px;font-weight:600}
+textarea{width:100%;box-sizing:border-box;min-height:72px;resize:vertical;font:500 1rem var(--f-body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+.hint{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem;margin-top:6px;font-variant-numeric:tabular-nums}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{padding:8px 0;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed="true"],.sw[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sws{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:40px;height:30px;padding:0;display:flex;overflow:hidden}
+.sw span{flex:1}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.row label{font-size:.88rem}
+input[type=color]{width:44px;height:28px;border:1px solid var(--line);border-radius:6px;background:none;padding:2px;cursor:pointer}
+input[type=range]{width:150px;accent-color:var(--accent)}
+.full{width:100%}
+</style>
+
+<div class="app">
+  <div class="stage-wrap">
+    <div class="stage" id="stage"></div>
+    <div class="bar">
+      <button id="play" type="button">إيقاف</button>
+      <button id="replay" type="button">إعادة</button>
+    </div>
+  </div>
+
+  <aside class="panel">
+    <h1>كاتب الشوارع</h1>
+    <section>
+      <h2>النص</h2>
+      <textarea id="txt" maxlength="48" placeholder="اكتب رسالتك في الشوارع…">مرحبا</textarea>
+      <div class="hint"><span>العبارات القصيرة أوضح. سطر جديد = سطر ثاني.</span><span id="count">0/48</span></div>
+    </section>
+    <section>
+      <h2>نسبة العرض</h2>
+      <div class="seg" id="ar">
+        <button type="button" data-ar="1/1">1:1</button>
+        <button type="button" data-ar="4/5">4:5</button>
+        <button type="button" data-ar="9/16" aria-pressed="true">9:16</button>
+        <button type="button" data-ar="16/9">16:9</button>
+      </div>
+    </section>
+    <section>
+      <h2>الألوان</h2>
+      <div class="sws" id="presets"></div>
+      <div class="row"><label for="cg">الأرض</label><input type="color" id="cg"></div>
+      <div class="row"><label for="cb">المباني</label><input type="color" id="cb"></div>
+      <div class="row"><label for="ct">النص</label><input type="color" id="ct"></div>
+    </section>
+    <section>
+      <h2>المدينة</h2>
+      <div class="row"><label for="blur">ضبابية الأطراف</label><input type="range" id="blur" min="0" max="1" step="0.01" value="0.5"></div>
+      <div class="row"><button id="shuffle" type="button" class="full">مدينة جديدة</button></div>
+    </section>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const PRESETS=[
+  {g:'#E2E9E1',b:'#DEE6DD',t:'#0E8C63'},
+  {g:'#0D1220',b:'#1B2438',t:'#38C6F4'},
+  {g:'#EFE9E2',b:'#E8E0D7',t:'#E2502B'},
+  {g:'#1E1A2E',b:'#2D2844',t:'#F2B233'},
+  {g:'#E4E9F5',b:'#D8E0F1',t:'#2350D8'},
+  {g:'#111111',b:'#232323',t:'#F5F5F5'},
+];
+const $=id=>document.getElementById(id);
+const S={text:$('txt').value,ar:9/16,col:{...PRESETS[0]},blur:.5,seed:7};
+
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const isAr=s=>/[؀-ۿ]/.test(s);
+
+// ---- three setup
+const stage=$('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(40,1,.5,800);
+const hemi=new THREE.HemisphereLight(0xffffff,0x888888,.8);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffffff,.45);sun.position.set(-30,60,40);scene.add(sun);
+scene.fog=new THREE.Fog(0xffffff,40,120);
+
+const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');
+  const g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=g;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(2000,2000).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial());
+scene.add(ground);
+const bMat=new THREE.MeshLambertMaterial();
+const tMat=new THREE.MeshBasicMaterial();
+const hMat=new THREE.MeshBasicMaterial({map:glowTex,transparent:true,opacity:.45,depthWrite:false});
+const head=new THREE.Group();
+head.add(new THREE.Mesh(new THREE.SphereGeometry(.55,16,12),tMat));
+const headGlow=new THREE.Mesh(new THREE.PlaneGeometry(7,7).rotateX(-Math.PI/2),hMat);headGlow.position.y=.05;head.add(headGlow);
+scene.add(head);
+
+let city=null; // {group,tiles,halos,cells,total,first,center,bw,bh}
+const dummy=new THREE.Object3D();
+
+function makeMask(text){
+  const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!lines.length) return null;
+  const fs=30,lh=Math.round(fs*1.35),cs=3.4;
+  const c=document.createElement('canvas'),x=c.getContext('2d');
+  const font=`600 ${fs}px Cairo, "IBM Plex Sans Arabic", system-ui, sans-serif`;
+  x.font=font;
+  const tw=Math.max(...lines.map(l=>x.measureText(l).width));
+  c.width=Math.ceil(tw+20);c.height=lh*lines.length+10;
+  x.font=font;x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';
+  lines.forEach((l,i)=>{x.direction=isAr(l)?'rtl':'ltr';x.fillText(l,c.width/2,5+lh*(i+.5))});
+  const d=x.getImageData(0,0,c.width,c.height).data;
+  const w=Math.ceil(c.width/cs),h=Math.ceil(c.height/cs),m=new Uint8Array(w*h);
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){
+    const px=Math.min(c.width-1,Math.floor((i+.5)*cs)),py=Math.min(c.height-1,Math.floor((j+.5)*cs));
+    if(d[(py*c.width+px)*4+3]>110)m[j*w+i]=1;
+  }
+  return {w,h,m,lineH:lh/cs,rtl:isAr(text)};
+}
+
+// trace order: each connected stroke is flood-filled from its start, strokes in reading order
+function traceOrder(M){
+  const {w,h,m}=M,seen=new Uint8Array(w*h),comps=[];
+  for(let i=0;i<w*h;i++){if(!m[i]||seen[i])continue;
+    const q=[i];seen[i]=1;const cells=[];let minX=1e9,maxX=-1,minY=1e9;
+    while(q.length){const k=q.shift(),x=k%w,y=(k-x)/w;cells.push(k);minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy,n=ny*w+nx;
+        if(nx>=0&&ny>=0&&nx<w&&ny<h&&m[n]&&!seen[n]){seen[n]=1;q.push(n)}}}
+    comps.push({cells,minX,maxX,line:Math.floor(minY/M.lineH)});
+  }
+  comps.sort((a,b)=>a.line-b.line||(M.rtl?b.maxX-a.maxX:a.minX-b.minX));
+  const step=new Map();let acc=0;
+  for(const c of comps){
+    // restart BFS from the reading-order end of the stroke so it "draws" from there
+    const set=new Set(c.cells);
+    const start=c.cells.reduce((a,b)=>{const ax=a%w,bx=b%w;return (M.rtl?bx>ax:bx<ax)?b:a});
+    const dist=new Map([[start,0]]),q=[start];let maxD=0;
+    while(q.length){const k=q.shift(),x=k%w,y=(k-x)/w,dk=dist.get(k);maxD=Math.max(maxD,dk);
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const n=(y+dy)*w+x+dx;
+        if(x+dx>=0&&x+dx<w&&set.has(n)&&!dist.has(n)){dist.set(n,dk+1);q.push(n)}}}
+    for(const [k,d] of dist)step.set(k,acc+d);
+    acc+=maxD+3;
+  }
+  return {step,total:Math.max(acc-3,1)};
+}
+
+async function build(){
+  try{await document.fonts.load('600 30px Cairo',S.text||'a')}catch(e){}
+  if(city){scene.remove(city.group);city.group.traverse(o=>o.geometry&&o.geometry.dispose())}
+  const M=makeMask(S.text);
+  const tw=M?M.w:20,th=M?M.h:10,pad=30;
+  const GW=tw+pad*2,GH=th+pad*2,r=rng(S.seed);
+  const isT=(gx,gy)=>{const x=gx-pad,y=gy-pad;return M&&x>=0&&y>=0&&x<M.w&&y<M.h&&M.m[y*M.w+x]};
+  const nearT=(gx,gy)=>{for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(isT(gx+dx,gy+dy))return true;return false};
+  const parks=new Set();for(let i=0;i<GW*GH/25*.07;i++)parks.add(Math.floor(r()*GW/5)+','+Math.floor(r()*GH/5));
+  const ox=GW/2,oz=GH/2,blds=[];
+  for(let gy=0;gy<GH;gy++)for(let gx=0;gx<GW;gx++){
+    if(gx%5===0||gy%5===0||isT(gx,gy))continue;
+    if(parks.has(Math.floor(gx/5)+','+Math.floor(gy/5)))continue;
+    const dc=Math.hypot(gx-ox,(gy-oz)*1.4)/Math.max(GW,GH);
+    let h=.5+Math.pow(r(),2.2)*3.2+Math.max(0,.35-dc)*7*r();
+    if(nearT(gx,gy))h*=.3;
+    blds.push([gx-ox+.5,gy-oz+.5,h,r()]);
+  }
+  const group=new THREE.Group();
+  const bGeo=new THREE.BoxGeometry(1,1,1).translate(0,.5,0);
+  const bm=new THREE.InstancedMesh(bGeo,bMat,blds.length);
+  const base=new THREE.Color(S.col.b),c=new THREE.Color(),wht=new THREE.Color('#fff'),blk=new THREE.Color('#000');
+  blds.forEach(([x,z,h,v],i)=>{dummy.position.set(x,0,z);dummy.scale.set(.82,h,.82);dummy.updateMatrix();bm.setMatrixAt(i,dummy.matrix);
+    c.copy(base).lerp(v>.5?wht:blk,(v%.5)*.14);bm.setColorAt(i,c)});
+  group.add(bm);
+
+  let cells=[],total=1,first=new THREE.Vector3(),bw=10,bh=10;
+  if(M){
+    const T=traceOrder(M);total=T.total;
+    for(const [k,s] of T.step){const x=k%M.w,y=(k-x)/M.w;cells.push({x:x+pad-ox+.5,z:y+pad-oz+.5,s})}
+    cells.sort((a,b)=>a.s-b.s);
+    first.set(cells[0].x,0,cells[0].z);bw=M.w;bh=M.h;
+  }
+  const tiles=new THREE.InstancedMesh(new THREE.PlaneGeometry(1.05,1.05).rotateX(-Math.PI/2),tMat,Math.max(cells.length,1));
+  const halos=new THREE.InstancedMesh(new THREE.PlaneGeometry(3.2,3.2).rotateX(-Math.PI/2),hMat,Math.max(cells.length,1));
+  tiles.count=halos.count=cells.length;
+  group.add(halos,tiles);
+  scene.add(group);
+  // step -> cell index lookup for the moving head
+  const byStep=[];cells.forEach((cl,i)=>{byStep[cl.s]=i});
+  for(let s=1;s<=total;s++)if(byStep[s]===undefined)byStep[s]=byStep[s-1];
+  city={group,tiles,halos,cells,total,first,byStep,bw,bh,trace:clamp(total*.04,2.5,8)};
+  applyColors();
+  t=reduced?city.trace+1.4:0;
+}
+
+function applyColors(){
+  const g=new THREE.Color(S.col.g);
+  scene.background=g;scene.fog.color.copy(g);
+  ground.material.color.copy(g);
+  hemi.groundColor.copy(g);
+  tMat.color.set(S.col.t);hMat.color.set(S.col.t);
+  stage.style.background=S.col.g;
+}
+
+// ---- animation
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let t=0,last=performance.now(),playing=!reduced;
+const HOLD=2.5,RISE=1.4;
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(city){
+    if(playing){t+=dt;if(t>city.trace+RISE+HOLD)t=0}
+    const {cells,total,trace}=city,s=t/trace*total;
+    cells.forEach((cl,i)=>{const k=ease(clamp((s-cl.s)/4,0,1));
+      dummy.position.set(cl.x,.03,cl.z);dummy.scale.set(k||1e-4,1,k||1e-4);dummy.updateMatrix();
+      city.tiles.setMatrixAt(i,dummy.matrix);
+      dummy.position.y=.02;dummy.updateMatrix();city.halos.setMatrixAt(i,dummy.matrix)});
+    city.tiles.instanceMatrix.needsUpdate=city.halos.instanceMatrix.needsUpdate=true;
+    // head
+    const live=cells.length&&s<total;head.visible=!!live;
+    if(live){const a=cells[city.byStep[Math.floor(s)]],b=cells[city.byStep[Math.min(total,Math.floor(s)+1)]],f=s%1;
+      head.position.set(a.x+(b.x-a.x)*f,.6,a.z+(b.z-a.z)*f)}
+    // camera: low and close at the first stroke, rising to an overhead view of the whole text
+    const u=ease(clamp(t/(trace+RISE),0,1));
+    const fov=camera.fov*Math.PI/180,tan=Math.tan(fov/2);
+    const dFit=Math.max(city.bh/2/tan,city.bw/2/(tan*camera.aspect))*1.35+6;
+    const d=18+(dFit-18)*u,phi=(52-48*u)*Math.PI/180,az=(-22+22*u)*Math.PI/180;
+    const tgt=new THREE.Vector3().lerpVectors(head.visible&&u<.6?head.position:city.first,new THREE.Vector3(),u);
+    tgt.y=0;
+    camera.position.set(tgt.x+Math.sin(az)*Math.sin(phi)*d,Math.cos(phi)*d,tgt.z+Math.cos(az)*Math.sin(phi)*d);
+    camera.lookAt(tgt);
+    scene.fog.near=d*(1.1-S.blur*.7);scene.fog.far=d*(2.6-S.blur*1.3);
+  }
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+function setAR(ar){S.ar=ar;stage.style.aspectRatio=String(ar);stage.style.width=`min(100%, calc(78vh * ${ar}))`;resize()}
+new ResizeObserver(resize).observe(stage);
+
+// ---- controls
+const syncColorInputs=()=>{$('cg').value=S.col.g;$('cb').value=S.col.b;$('ct').value=S.col.t};
+const count=()=>$('count').textContent=`${$('txt').value.length}/48`;
+let deb;
+$('txt').addEventListener('input',e=>{S.text=e.target.value;count();clearTimeout(deb);deb=setTimeout(build,350)});
+$('ar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  [...$('ar').children].forEach(x=>x.setAttribute('aria-pressed',x===b));const [a,c]=b.dataset.ar.split('/');setAR(a/c)});
+PRESETS.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.className='sw';b.setAttribute('aria-label','لوحة ألوان '+(i+1));
+  b.setAttribute('aria-pressed',i===0);b.innerHTML=`<span style="background:${p.g}"></span><span style="background:${p.b}"></span><span style="background:${p.t}"></span>`;
+  b.onclick=()=>{[...$('presets').children].forEach(x=>x.setAttribute('aria-pressed',x===b));S.col={...p};syncColorInputs();build()};
+  $('presets').appendChild(b)});
+const pickColor=(id,key,rebuild)=>$(id).addEventListener('input',e=>{S.col[key]=e.target.value;
+  [...$('presets').children].forEach(x=>x.setAttribute('aria-pressed',false));rebuild?(clearTimeout(deb),deb=setTimeout(build,150)):applyColors()});
+pickColor('cg','g');pickColor('ct','t');pickColor('cb','b',true);
+$('blur').addEventListener('input',e=>S.blur=+e.target.value);
+$('shuffle').onclick=()=>{S.seed=Math.floor(Math.random()*1e9);build()};
+$('replay').onclick=()=>{t=0;playing=true;$('play').textContent='إيقاف'};
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'إيقاف':'تشغيل'};
+if(!playing)$('play').textContent='تشغيل';
+
+syncColorInputs();count();setAR(9/16);build().then(()=>requestAnimationFrame(frame));
+</script>
+
+</body></html>

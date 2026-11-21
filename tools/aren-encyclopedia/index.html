@@ -1,0 +1,340 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>موسوعة آرين</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Aref+Ruqaa:wght@400;700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: scriptorium. Index of pages at the start side, the open page in the centre, name generator at the end. Book view swaps the centre for a two-column parchment volume. Dark shell, parchment reading surface. */
+:root {
+  --bg: #141312; --panel: #1d1b19; --raise: #282522; --line: #3a3530;
+  --fg: #eee5d3; --muted: #a59b8e; --brass: #d8a548; --brass-ink: #1d1508;
+  --paper: #f1e6cc; --paper-ink: #2b1f12; --paper-line: #cdb88e; --link: #7c3b16; --missing: #b03a2a;
+  --ui: "IBM Plex Sans Arabic", system-ui, sans-serif; --display: "Aref Ruqaa", "Amiri", serif; --read: "Amiri", "Times New Roman", serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font-family: var(--ui); font-size: 14px; }
+.wrap { max-width: 1480px; margin: 0 auto; padding-block: 14px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1.brand { font-family: var(--display); color: var(--brass); font-size: clamp(1.6rem, 3.2vw, 2.2rem); margin: 0; }
+.grow { flex: 1; }
+.btn { height: 36px; padding: 0 12px; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); font-weight: 600; }
+.btn.small { height: 30px; padding: 0 9px; }
+.btn.danger { color: #e07a66; }
+.btn[aria-pressed="true"] { border-color: var(--brass); color: var(--brass); }
+label.btn input { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+input[type=text], input[type=search], input[type=number], select, textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; padding: 6px 10px; min-height: 36px; min-width: 0; }
+.main { display: grid; grid-template-columns: 250px minmax(0, 1fr) 260px; gap: 12px; align-items: start; }
+.side { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 10px; min-width: 0; position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); max-height: calc(100vh - 24px); overflow-y: auto; }
+.side h2 { margin: 0; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .05em; }
+.cats { display: flex; flex-wrap: wrap; gap: 4px; }
+.cat { height: 28px; padding: 0 10px; border-radius: 14px; background: var(--raise); border: 1px solid var(--line); color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
+.cat[aria-pressed="true"] { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+.plist { display: grid; gap: 2px; }
+.pitem { text-align: start; background: none; border: 0; border-radius: 6px; padding: 7px 8px; color: inherit; font: inherit; cursor: pointer; display: flex; justify-content: space-between; gap: 6px; }
+.pitem:hover { background: var(--raise); }
+.pitem[aria-current="true"] { background: var(--raise); color: var(--brass); }
+.pitem small { color: var(--muted); }
+.page { background: var(--paper); color: var(--paper-ink); border-radius: 12px; padding: 28px clamp(18px, 4vw, 48px) 36px; min-width: 0; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+.pageHead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; border-bottom: 2px solid var(--paper-line); padding-bottom: 10px; margin-bottom: 16px; }
+.pageHead h1 { font-family: var(--display); font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere; text-wrap: balance; }
+.badge { background: rgba(43,31,18,.1); border: 1px solid var(--paper-line); border-radius: 12px; padding: 2px 10px; font-size: 12px; font-family: var(--ui); }
+.page .btn { background: rgba(43,31,18,.06); border-color: var(--paper-line); color: var(--paper-ink); }
+.page .btn.primary { background: var(--paper-ink); color: var(--paper); border-color: var(--paper-ink); }
+.prose { font-family: var(--read); font-size: 19px; line-height: 1.85; max-width: 68ch; }
+.prose h2 { font-family: var(--display); font-size: 1.5em; margin: 1.2em 0 .3em; color: #5a2d10; }
+.prose h3 { font-size: 1.15em; margin: 1em 0 .2em; }
+.prose p { margin: 0 0 .8em; }
+.prose ul { margin: 0 0 .8em; padding-inline-start: 1.4em; }
+.prose blockquote { margin: .8em 0; padding: .4em 1em; border-inline-start: 4px solid #a07a3a; background: rgba(160,122,58,.1); font-style: italic; }
+.prose a.wl { color: var(--link); text-decoration: underline; text-decoration-color: rgba(124,59,22,.4); text-underline-offset: 3px; cursor: pointer; }
+.prose a.wl.miss { color: var(--missing); text-decoration-style: dashed; }
+.prose .stat { font-family: var(--ui); font-size: 14px; border-top: 3px solid #7c3b16; border-bottom: 3px solid #7c3b16; background: rgba(124,59,22,.07); padding: 10px 14px; margin: .8em 0; line-height: 1.8; }
+.meta { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--paper-line); font-family: var(--ui); font-size: 13px; color: #6b5a44; display: grid; gap: 6px; }
+.meta a { color: var(--link); cursor: pointer; }
+.editor { display: grid; gap: 10px; font-family: var(--ui); }
+.editor input, .editor select, .editor textarea { background: #fbf5e6; color: var(--paper-ink); border-color: var(--paper-line); }
+.editor textarea { min-height: 380px; font-family: var(--read); font-size: 17px; line-height: 1.8; resize: vertical; }
+.erow { display: grid; grid-template-columns: minmax(0, 1fr) 170px 90px; gap: 8px; }
+.gen { display: grid; gap: 8px; }
+.names { display: grid; gap: 4px; }
+.name { display: flex; justify-content: space-between; align-items: center; gap: 6px; background: var(--raise); border: 1px solid var(--line); border-radius: 7px; padding: 4px 4px 4px 10px; font-family: var(--read); font-size: 17px; }
+.name span { padding-inline-start: 6px; overflow-wrap: anywhere; }
+.book { background: var(--paper); color: var(--paper-ink); border-radius: 12px; padding: 40px clamp(18px, 4vw, 56px); box-shadow: 0 10px 30px rgba(0,0,0,.4); min-width: 0; }
+.book .title { font-family: var(--display); text-align: center; font-size: clamp(2rem, 5vw, 3.4rem); margin: 0; color: #5a2d10; }
+.book .subtitle { text-align: center; font-family: var(--read); font-style: italic; margin: 4px 0 30px; color: #6b5a44; }
+.book .chapter { font-family: var(--display); font-size: 2rem; color: #5a2d10; border-bottom: 3px double #a07a3a; margin: 30px 0 14px; column-span: all; }
+.book .cols { columns: 2 320px; column-gap: 40px; column-rule: 1px solid var(--paper-line); }
+.book article { break-inside: avoid-column; margin-bottom: 18px; }
+.book article h3 { font-family: var(--display); font-size: 1.45rem; margin: 0 0 4px; color: #3b220e; }
+.book .prose { font-size: 16px; max-width: none; }
+.toast { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; z-index: 5; }
+.note { color: var(--muted); font-size: 12.5px; line-height: 1.7; margin: 0; }
+.note code { font-family: ui-monospace, monospace; direction: ltr; unicode-bidi: isolate; letter-spacing: 0; background: var(--raise); padding: 0 4px; border-radius: 4px; }
+@media (max-width: 1150px) { .main { grid-template-columns: 230px minmax(0, 1fr); } .genSide { grid-column: 1 / -1; position: static; max-height: none; } }
+@media (max-width: 760px) { .main { grid-template-columns: 1fr; } .side { position: static; max-height: none; } .erow { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+  <header>
+    <h1 class="brand">موسوعة آرين</h1>
+    <span class="grow"></span>
+    <div class="btns">
+      <button class="btn primary" id="newPage">+ صفحة جديدة</button>
+      <button class="btn" id="bookBtn" aria-pressed="false">📖 عرض الكتاب</button>
+      <button class="btn" id="exJson" hidden>تصدير JSON</button>
+      <button class="btn" id="exMd" hidden>تصدير Markdown</button>
+      <button class="btn" id="exBook" hidden>تصدير الكتاب HTML</button>
+      <label class="btn">استيراد<input type="file" id="imJson" accept=".json"></label>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="side" aria-label="فهرس الصفحات">
+      <input type="search" id="q" placeholder="ابحث في الموسوعة…" aria-label="بحث">
+      <div class="cats" id="cats"></div>
+      <div class="plist" id="plist"></div>
+      <p class="note" id="countNote"></p>
+    </aside>
+
+    <section id="pageView" class="page" aria-live="polite"></section>
+    <section id="bookView" class="book" hidden></section>
+
+    <aside class="side genSide" aria-label="مولّد الأسماء">
+      <h2>مولّد الأسماء</h2>
+      <div class="gen">
+        <select id="genType" aria-label="نوع الاسم"></select>
+        <button class="btn primary" id="genBtn">🎲 ولّد عشرة</button>
+        <div class="names" id="names"></div>
+        <p class="note">«+» تنشئ صفحة بالاسم في الفئة المناسبة. «⧉» تنسخه.</p>
+      </div>
+      <h2 style="margin-top:8px">صيغة الكتابة</h2>
+      <p class="note">
+        <code>## عنوان</code> · <code>**عريض**</code> · <code>*مائل*</code> · <code>- قائمة</code> · <code>&gt; اقتباس</code><br>
+        <code>[[اسم صفحة]]</code> رابط داخلي، والأحمر صفحة لم تُكتب بعد.<br>
+        <code>:::</code> في سطر قبل الإحصائيات وبعدها يصنع صندوق صفات.
+      </p>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+let toastT; const toast = m => { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400); };
+const CATS = { char: 'شخصيات', place: 'أماكن', faction: 'فصائل', creature: 'مخلوقات', item: 'عناصر', rule: 'قواعد وتعاويذ', event: 'أحداث', chapter: 'فصول القصة' };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const norm = s => s.trim().replace(/\s+/g, ' ');
+
+/* ---------- seed (original placeholder lore, editable) ---------- */
+const SEED = [
+  ['آرين', 'char', 'آخر سلالة [[الحارس العظيم]]. نشأ في [[مدينة الحارس]] ولا يعرف من ماضيه إلا قلادة نصفها مكسور.\n\n## الدوافع\n- معرفة سر البيضة المفقودة في [[مفقس التنانين]]\n- حماية المدينة من [[أخوية الظل]]\n\n## الصفات\n:::\nالصحة 28 · الدفاع 17 · الهجوم +5\nالسلاح: سيف الحارس (1d8+3)\nالقدرات: ضربة ساحقة، صيحة الحرب، ثبات\n:::\n\n> «سأحمي ما تركه الحارس العظيم.»', ['بطل']],
+  ['الحارس العظيم', 'char', 'حامي الأرض القديم الذي ختم التنانين قبل ثلاثة قرون. اختفى ليلة سقوط [[قلعة الظل]]، وترك سيفه في معبد [[مدينة الحارس]].', ['أسطورة']],
+  ['مدينة الحارس', 'place', 'العاصمة ومركز اللعبة. تقوم على تلّ في وسط القارة، وتحيط بها أسوار من حجر رمادي.\n\n## أماكن مهمة\n- معبد السيف\n- سوق الكثبان، حيث يبيع [[تجار الكثبان]] بضاعتهم\n- ثكنة [[حرس الحارس]]', ['عاصمة']],
+  ['مفقس التنانين', 'place', 'كهف حار في قلب [[جبال الرماد]]. فيه آخر بيوض التنانين التي خُتمت مع [[الحارس العظيم]]. سُرقت منه بيضة في [[الفصل الأول: البيضة المفقودة]].', ['زنزانة']],
+  ['جبال الرماد', 'place', 'سلسلة بركانية شمال القارة. سماؤها رمادية دائماً، وتسكنها [[ذئب الرماد|ذئاب الرماد]].', []],
+  ['أخوية الظل', 'faction', 'جماعة سرية تريد كسر ختم التنانين لتحكم بها. مقرها [[قلعة الظل]].\n\n## الرتب\n- الظل الأعلى\n- السحرة\n- النصال', ['معادية']],
+  ['قلعة الظل', 'place', 'حصن مهجور على الساحل الشرقي. أعادت [[أخوية الظل]] بناءه سراً.', []],
+  ['حرس الحارس', 'faction', 'جنود [[مدينة الحارس]]. يقودهم القائد سيلان، ويشكّون في نوايا [[آرين]].', ['حليفة']],
+  ['تجار الكثبان', 'faction', 'قوافل تعبر كثبان الذهب. يبيعون المعلومات لمن يدفع أكثر.', ['محايدة']],
+  ['ذئب الرماد', 'creature', 'ذئب رمادي بعينين متوهجتين، يصطاد في جماعات من ثلاثة إلى خمسة.\n\n:::\nالصحة 11 · الدفاع 13 · الهجوم +4\nالضرر: عضة 2d4+2\nالمبادرة +2\n:::', ['عدو']],
+  ['قواعد القتال', 'rule', '## الهجوم\nيرمي المهاجم d20 ويضيف الهجوم. إن ساوى المجموع دفاع الهدف أو تجاوزه، أصاب ورمى الضرر.\n\n## الضربة الحرجة\nالرمية 20 تصيب دائماً وتضاعف نرد الضرر. الرمية 1 تخطئ دائماً.\n\n## المبادرة\nكل مشارك يرمي d20 ويضيف معدّل الرشاقة. الأعلى يبدأ.', ['أساسي']],
+  ['الفصل الأول: البيضة المفقودة', 'chapter', 'تستيقظ [[مدينة الحارس]] على خبر سرقة بيضة من [[مفقس التنانين]]. يُتّهم [[آرين]]، فيخرج ليثبت براءته.\n\n## المشاهد\n- محاكمة في المعبد\n- الهروب عبر السوق\n- أول لقاء مع [[ذئب الرماد|ذئاب الرماد]]', ['فصل'], 1],
+];
+function seedPages() { return SEED.map(([title, cat, body, tags, order], i) => ({ id: 'p' + i + Date.now().toString(36), title, cat, body, tags, order: order || 0, updated: Date.now() })); }
+
+/* ---------- store ---------- */
+let pages;
+try { pages = JSON.parse(localStorage.getItem('aren-codex') || 'null'); } catch { pages = null; }
+if (!Array.isArray(pages) || !pages.length) pages = seedPages();
+let saveT; const persist = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('aren-codex', JSON.stringify(pages)); } catch { toast('تعذر الحفظ في المتصفح. صدّر JSON.'); } }, 300); };
+const byTitle = t => pages.find(p => p.title === norm(t));
+
+/* ---------- markup renderer (escape first, then a tiny safe subset) ---------- */
+const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function inline(s) {
+  return esc(s)
+    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, label) => `<a class="wl${byTitle(t) ? '' : ' miss'}" data-t="${t.trim()}" tabindex="0">${(label || t).trim()}</a>`)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+}
+function render(body) {
+  const lines = body.split('\n'); let out = '', list = false, stat = false, para = [];
+  const flush = () => { if (para.length) { out += `<p>${para.map(inline).join('<br>')}</p>`; para = []; } if (list) { out += '</ul>'; list = false; } };
+  for (const raw of lines) {
+    const l = raw.trimEnd();
+    if (l.trim() === ':::') { flush(); out += stat ? '</div>' : '<div class="stat">'; stat = !stat; continue; }
+    if (stat) { out += inline(l) + '<br>'; continue; }
+    if (!l.trim()) { flush(); continue; }
+    let m;
+    if ((m = l.match(/^###\s+(.*)/))) { flush(); out += `<h3>${inline(m[1])}</h3>`; }
+    else if ((m = l.match(/^##?\s+(.*)/))) { flush(); out += `<h2>${inline(m[1])}</h2>`; }
+    else if ((m = l.match(/^[-•]\s+(.*)/))) { if (para.length) { out += `<p>${para.map(inline).join('<br>')}</p>`; para = []; } if (!list) { out += '<ul>'; list = true; } out += `<li>${inline(m[1])}</li>`; }
+    else if ((m = l.match(/^>\s?(.*)/))) { flush(); out += `<blockquote>${inline(m[1])}</blockquote>`; }
+    else { if (list) { out += '</ul>'; list = false; } para.push(l); }
+  }
+  flush(); if (stat) out += '</div>';
+  return out;
+}
+const linksOf = body => [...body.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g)].map(m => norm(m[1]));
+
+/* ---------- index ---------- */
+let curId = null, catF = '', editing = false;
+function renderCats() {
+  $('cats').innerHTML = '';
+  for (const [k, v] of [['', 'الكل'], ...Object.entries(CATS)]) {
+    const b = document.createElement('button'); b.className = 'cat'; b.textContent = v; b.setAttribute('aria-pressed', String(k === catF));
+    b.onclick = () => { catF = k; renderCats(); renderList(); }; $('cats').appendChild(b);
+  }
+}
+function sorted(list) { return list.slice().sort((a, b) => a.cat === 'chapter' && b.cat === 'chapter' ? (a.order || 0) - (b.order || 0) : a.title.localeCompare(b.title, 'ar')); }
+function renderList() {
+  const q = $('q').value.trim();
+  const list = sorted(pages.filter(p => (!catF || p.cat === catF) && (!q || p.title.includes(q) || p.body.includes(q) || (p.tags || []).some(t => t.includes(q)))));
+  $('plist').innerHTML = '';
+  for (const p of list) {
+    const b = document.createElement('button'); b.className = 'pitem'; b.setAttribute('aria-current', String(p.id === curId));
+    const t = document.createElement('span'); t.textContent = p.title; const s = document.createElement('small'); s.textContent = CATS[p.cat] || '';
+    b.append(t, s); b.onclick = () => open(p.id); $('plist').appendChild(b);
+  }
+  if (!list.length) $('plist').innerHTML = '<p class="note">لا صفحات مطابقة.</p>';
+  $('countNote').textContent = `${pages.length.toLocaleString('ar')} صفحة · الأسماء والقصص مؤقتة وقابلة للتعديل`;
+}
+
+/* ---------- page view / editor ---------- */
+function open(id, edit = false) {
+  curId = id; editing = edit; setBook(false);
+  const p = pages.find(x => x.id === id); const v = $('pageView');
+  if (!p) { v.innerHTML = '<p class="note" style="color:#6b5a44">اختر صفحة من الفهرس.</p>'; renderList(); return; }
+  if (edit) {
+    v.innerHTML = `<div class="editor">
+      <div class="erow"><input type="text" id="eTitle" aria-label="العنوان"><select id="eCat" aria-label="الفئة">${Object.entries(CATS).map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</select><input type="number" id="eOrder" aria-label="ترتيب الفصل" title="ترتيب الفصل"></div>
+      <input type="text" id="eTags" placeholder="وسوم، مفصولة بفواصل" aria-label="وسوم">
+      <div class="btns"><button class="btn small" data-ins="## ">عنوان</button><button class="btn small" data-wrap="**">عريض</button><button class="btn small" data-wrap="*">مائل</button><button class="btn small" data-ins="- ">قائمة</button><button class="btn small" data-ins="> ">اقتباس</button><button class="btn small" data-link>رابط [[ ]]</button><button class="btn small" data-stat>صندوق صفات</button></div>
+      <textarea id="eBody" aria-label="المحتوى"></textarea>
+      <div class="btns"><button class="btn primary" id="eSave">حفظ</button><button class="btn" id="eCancel">إلغاء</button><span class="grow"></span><button class="btn danger" id="eDel">حذف الصفحة</button></div>
+    </div>`;
+    $('eTitle').value = p.title; $('eCat').value = p.cat; $('eOrder').value = p.order || 0; $('eTags').value = (p.tags || []).join('، '); $('eBody').value = p.body;
+    $('eOrder').hidden = p.cat !== 'chapter'; $('eCat').onchange = () => { $('eOrder').hidden = $('eCat').value !== 'chapter'; };
+    const ta = $('eBody');
+    const insert = (before, after = '') => { const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e); ta.setRangeText(before + sel + after, s, e, 'end'); if (!sel) ta.selectionStart = ta.selectionEnd = s + before.length; ta.focus(); };
+    for (const b of v.querySelectorAll('[data-ins]')) b.onclick = () => { const s = ta.selectionStart, ls = ta.value.lastIndexOf('\n', s - 1) + 1; ta.setRangeText(b.dataset.ins, ls, ls, 'end'); ta.focus(); };
+    for (const b of v.querySelectorAll('[data-wrap]')) b.onclick = () => insert(b.dataset.wrap, b.dataset.wrap);
+    v.querySelector('[data-link]').onclick = () => insert('[[', ']]');
+    v.querySelector('[data-stat]').onclick = () => insert('\n:::\nالصحة 0 · الدفاع 0 · الهجوم +0\n', ':::\n');
+    $('eSave').onclick = () => {
+      const title = norm($('eTitle').value); if (!title) { toast('اكتب عنواناً'); return; }
+      const clash = pages.find(x => x.title === title && x.id !== p.id); if (clash) { toast('توجد صفحة بهذا العنوان'); return; }
+      const old = p.title;
+      Object.assign(p, { title, cat: $('eCat').value, order: +$('eOrder').value || 0, tags: $('eTags').value.split(/[،,]/).map(s => s.trim()).filter(Boolean), body: $('eBody').value, updated: Date.now() });
+      if (old !== title) for (const x of pages) x.body = x.body.replace(new RegExp(`\\[\\[${old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\|[^\\]]+)?\\]\\]`, 'g'), (_, lab) => `[[${title}${lab || ''}]]`);
+      persist(); open(p.id); toast('حُفظت الصفحة');
+    };
+    $('eCancel').onclick = () => open(p.id);
+    let arm = null;
+    $('eDel').onclick = () => {
+      if (!arm) { $('eDel').textContent = 'تأكيد الحذف؟'; arm = setTimeout(() => { arm = null; if ($('eDel')) $('eDel').textContent = 'حذف الصفحة'; }, 3000); return; }
+      clearTimeout(arm); pages.splice(pages.indexOf(p), 1); persist(); toast('حُذفت الصفحة'); open(pages[0]?.id);
+    };
+    ta.focus();
+  } else {
+    const back = pages.filter(x => x.id !== p.id && linksOf(x.body).includes(p.title));
+    v.innerHTML = `<div class="pageHead"><h1></h1><span class="badge"></span><button class="btn small" id="editBtn">✎ تحرير</button></div>
+      <div class="prose">${render(p.body) || '<p style="color:#6b5a44">صفحة فارغة. اضغط «تحرير».</p>'}</div>
+      <div class="meta">${(p.tags || []).length ? `<div>الوسوم: ${p.tags.map(esc).join('، ')}</div>` : ''}<div>يشير إليها: ${back.length ? back.map(x => `<a data-id="${x.id}" tabindex="0">${esc(x.title)}</a>`).join('، ') : 'لا شيء بعد'}</div></div>`;
+    v.querySelector('h1').textContent = p.title; v.querySelector('.badge').textContent = (CATS[p.cat] || '') + (p.cat === 'chapter' && p.order ? ` ${p.order}` : '');
+    $('editBtn').onclick = () => open(p.id, true);
+    for (const a of v.querySelectorAll('.meta a')) a.onclick = () => open(a.dataset.id);
+  }
+  renderList();
+}
+function followLink(t) {
+  const p = byTitle(t); if (p) { open(p.id); return; }
+  const np = { id: 'p' + Date.now().toString(36), title: norm(t), cat: catF || 'place', body: '', tags: [], order: 0, updated: Date.now() };
+  pages.push(np); persist(); open(np.id, true); toast('صفحة جديدة. اكتب محتواها.');
+}
+document.addEventListener('click', e => { const a = e.target.closest('a.wl'); if (a) followLink(a.dataset.t); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter') { const a = e.target.closest?.('a.wl, .meta a'); if (a) a.click(); } });
+$('q').oninput = renderList;
+$('newPage').onclick = () => { let t = 'صفحة جديدة', n = 2; while (byTitle(t)) t = `صفحة جديدة ${n++}`; const p = { id: 'p' + Date.now().toString(36), title: t, cat: catF || 'char', body: '', tags: [], order: 0, updated: Date.now() }; pages.push(p); persist(); open(p.id, true); };
+
+/* ---------- book view ---------- */
+function bookHtml() {
+  let h = `<h1 class="title">آرين</h1><p class="subtitle">موسوعة سليل الحارس العظيم</p>`;
+  for (const [k, name] of Object.entries(CATS)) {
+    const list = sorted(pages.filter(p => p.cat === k)); if (!list.length) continue;
+    h += `<h2 class="chapter">${name}</h2><div class="cols">`;
+    for (const p of list) h += `<article><h3>${esc(p.title)}</h3><div class="prose">${render(p.body)}</div></article>`;
+    h += '</div>';
+  }
+  return h;
+}
+function setBook(on) { $('bookBtn').setAttribute('aria-pressed', String(on)); $('bookView').hidden = !on; $('pageView').hidden = on; if (on) $('bookView').innerHTML = bookHtml(); }
+$('bookBtn').onclick = () => setBook($('bookView').hidden);
+
+/* ---------- name generator (original syllable tables) ---------- */
+const syl = (...parts) => () => parts.map(pick).join('');
+const GEN = {
+  arab: ['أسماء عربية قديمة', 'char', syl(['زي', 'نا', 'را', 'سا', 'فا', 'لي', 'ها', 'دا', 'جا', 'قا', 'ما', 'عا', 'نو', 'سل', 'بد'], ['د', 'ر', 'ل', 'م', 'س', 'ن', 'ب', 'ف', 'ك', 'ي', 'ه'], ['ان', 'ين', 'ور', 'ار', 'يم', 'اء', 'ون', 'ة', 'ى', 'ير', 'اد'])],
+  elf: ['أسماء إلفية', 'char', syl(['إي', 'لا', 'سي', 'آل', 'ثي', 'نا', 'في', 'مي', 'أو'], ['لان', 'رين', 'ثال', 'ويل', 'سار', 'نيا', 'ليث', 'ميرا'], ['', '', 'دور', 'ين', 'يا', 'وس', 'ئيل'])],
+  dwarf: ['أسماء أقزام', 'char', syl(['غرو', 'بور', 'دور', 'ثرا', 'كاز', 'مور', 'بال', 'فين', 'تور'], ['ين', 'اك', 'ور', 'ام', 'ند', 'رك', 'غ'], ['', 'غر', 'دين', 'ثور', 'بالد'])],
+  orc: ['أسماء أورك', 'char', syl(['غرا', 'زوك', 'مور', 'كرا', 'شاغ', 'دروك', 'أوغ', 'برو'], ['ش', 'غ', 'ك', 'ز', 'ر', 'ث'], ['ار', 'وك', 'ول', 'اش', 'غ', 'ا'])],
+  title: ['ألقاب', 'char', () => pick(['حامي', 'ظل', 'نصل', 'صائد', 'قارئ', 'سيد', 'ابن', 'رفيق', 'حارس', 'منفي']) + ' ' + pick(['البوابة', 'الكثبان', 'اللهب', 'العاصفة', 'التنانين', 'النجوم', 'الشمال', 'الرماد', 'الريح', 'القمر', 'الصمت'])],
+  place: ['أماكن', 'place', () => pick(['وادي', 'جبل', 'غابة', 'قلعة', 'برج', 'ميناء', 'كهف', 'بحيرة', 'سهل', 'واحة', 'جزيرة', 'خرائب']) + ' ' + pick(['الرماد', 'الهمس', 'الذئاب', 'النجوم', 'الصدى', 'الملح', 'الضباب', 'العظام', 'الفجر', 'الحديد', 'الريح', 'الأفاعي', 'القمر'])],
+  tavern: ['حانات ونُزُل', 'place', () => pick(['حانة', 'نُزُل', 'استراحة']) + ' ' + pick(['التنين', 'الذئب', 'البومة', 'الكأس', 'المطرقة', 'الغريب', 'الجمل', 'الحصان']) + ' ' + pick(['النائم', 'الضاحك', 'الذهبي', 'المكسور', 'الأعور', 'الصدئ', 'العطشان'])],
+  faction: ['فصائل', 'faction', () => pick(['أخوية', 'فرسان', 'حراس', 'عصبة', 'نقابة', 'أبناء', 'سادة']) + ' ' + pick(['الظل', 'الرماد', 'النجمة', 'الكثبان', 'القمر الأحمر', 'الدرع الفضي', 'العين الثالثة', 'الفجر'])],
+  item: ['أسلحة وعناصر', 'item', () => pick(['سيف', 'درع', 'خاتم', 'عصا', 'تاج', 'قلادة', 'قوس', 'خنجر']) + ' ' + pick(['الحارس', 'العاصفة', 'الظلال', 'الفجر', 'اللهب', 'الصمت', 'الملوك', 'الجان'])],
+  spell: ['تعاويذ', 'rule', () => pick(['شعلة', 'درع', 'لعنة', 'نداء', 'سهم', 'همسة', 'قيد', 'بوابة']) + ' ' + pick(['الرماد', 'الأرواح', 'النجوم', 'الجليد', 'العاصفة', 'الظل', 'النور'])],
+};
+for (const [k, [n]] of Object.entries(GEN)) $('genType').insertAdjacentHTML('beforeend', `<option value="${k}">${n}</option>`);
+$('genBtn').onclick = () => {
+  const [, cat, fn] = GEN[$('genType').value], seen = new Set(), list = [];
+  for (let t = 0; t < 60 && list.length < 10; t++) { const n = fn(); if (!seen.has(n)) { seen.add(n); list.push(n); } }
+  $('names').innerHTML = '';
+  for (const n of list) {
+    const row = document.createElement('div'); row.className = 'name';
+    const s = document.createElement('span'); s.textContent = n;
+    const add = document.createElement('button'); add.className = 'btn small'; add.textContent = '+'; add.title = 'أنشئ صفحة'; add.setAttribute('aria-label', 'أنشئ صفحة ' + n);
+    add.onclick = () => { if (byTitle(n)) { open(byTitle(n).id); return; } const p = { id: 'p' + Date.now().toString(36), title: n, cat, body: '', tags: [], order: 0, updated: Date.now() }; pages.push(p); persist(); open(p.id, true); };
+    const cp = document.createElement('button'); cp.className = 'btn small'; cp.textContent = '⧉'; cp.setAttribute('aria-label', 'نسخ ' + n);
+    cp.onclick = async () => { try { await navigator.clipboard.writeText(n); toast('نُسخ'); } catch { toast('تعذر النسخ'); } };
+    const b = document.createElement('div'); b.className = 'btns'; b.append(add, cp); row.append(s, b); $('names').appendChild(row);
+  }
+};
+
+/* ---------- import / export ---------- */
+let downloads = null;
+(async () => { try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch { downloads = null; } if (downloads) for (const id of ['exJson', 'exMd', 'exBook']) $(id).hidden = false; })();
+async function offer(filename, data) { try { await downloads.save({ filename, data }); toast('تم الحفظ'); } catch (e) { if (e?.code !== 'declined') toast('تعذر الحفظ: ' + (e?.code || 'خطأ')); } }
+$('exJson').onclick = () => offer('aren-codex.json', JSON.stringify({ game: 'آرين', pages }, null, 1));
+$('exMd').onclick = () => offer('aren-codex.md', Object.entries(CATS).map(([k, n]) => { const l = sorted(pages.filter(p => p.cat === k)); return l.length ? `# ${n}\n\n` + l.map(p => `## ${p.title}\n\n${p.body}\n`).join('\n') : ''; }).filter(Boolean).join('\n'));
+$('exBook').onclick = () => {
+  const css = [...document.styleSheets].flatMap(s => { try { return [...s.cssRules].map(r => r.cssText); } catch { return []; } }).filter(t => /^(\.book|\.prose|:root|body)/.test(t)).join('\n');
+  offer('aren-book.html', `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>كتاب آرين</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap"><style>${css} body{background:#d9c49a;padding:20px} .book{max-width:1000px;margin:auto}</style></head><body><section class="book">${bookHtml()}</section></body></html>`);
+};
+$('imJson').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text()), list = (d.pages || []).filter(p => p && typeof p.title === 'string' && typeof p.body === 'string');
+    if (!list.length) throw 0;
+    let added = 0, merged = 0;
+    for (const p of list) {
+      const clean = { id: String(p.id || 'p' + Math.random().toString(36).slice(2)), title: norm(p.title).slice(0, 120), cat: CATS[p.cat] ? p.cat : 'place', body: p.body, tags: Array.isArray(p.tags) ? p.tags.map(String) : [], order: +p.order || 0, updated: +p.updated || Date.now() };
+      const ex = byTitle(clean.title); if (ex) { Object.assign(ex, clean, { id: ex.id }); merged++; } else { pages.push(clean); added++; }
+    }
+    persist(); renderList(); open(curId); toast(`أُضيفت ${added.toLocaleString('ar')} وحُدّثت ${merged.toLocaleString('ar')}`);
+  } catch { toast('الملف ليس تصديراً من الموسوعة'); }
+};
+
+/* ---------- boot ---------- */
+renderCats(); open((byTitle('آرين') || pages[0]).id); $('genBtn').click();
+})();
+</script>
+
+</body></html>

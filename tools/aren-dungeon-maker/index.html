@@ -1,0 +1,376 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>مرسم زنازين آرين</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Aref+Ruqaa:wght@700&family=Amiri:wght@700&display=swap">
+<style>
+/* Layout: drafting table. Tool strip on top, options at the start side, the sheet fills the rest. One deliberate dark look. */
+:root {
+  --bg: #121415; --panel: #1b1e1f; --raise: #252a2b; --line: #343b3d;
+  --fg: #ebe6da; --muted: #9aa29e; --brass: #d7a647; --brass-ink: #1c1508;
+  --ui: "IBM Plex Sans Arabic", system-ui, sans-serif; --display: "Aref Ruqaa", serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font-family: var(--ui); font-size: 14px; }
+.wrap { max-width: 1440px; margin: 0 auto; padding-block: 14px 30px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 12px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+h1 { font-family: var(--display); color: var(--brass); font-size: clamp(1.5rem, 3vw, 2.1rem); margin: 0; margin-inline-end: 8px; }
+.group { display: flex; flex-wrap: wrap; gap: 4px; }
+.sep { width: 1px; align-self: stretch; background: var(--line); }
+.tool, .btn { height: 36px; padding: 0 11px; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.tool[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); font-weight: 600; }
+.tool:hover, .btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); font-weight: 600; }
+.btn.danger { color: #e07a66; }
+label.btn input { display: none; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.main { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 12px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 16px; min-width: 0; }
+.panel h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .05em; }
+.objs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.obj { aspect-ratio: 1; background: var(--raise) center/70% no-repeat; border: 2px solid var(--line); border-radius: 8px; cursor: pointer; position: relative; padding: 0; color: inherit; }
+.obj span { position: absolute; inset: auto 0 2px; font-size: 10px; color: var(--muted); }
+.obj[aria-pressed="true"] { border-color: var(--brass); }
+.chk { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; }
+.chk input { accent-color: var(--brass); width: 16px; height: 16px; }
+.seg { display: flex; gap: 4px; }
+.seg button { flex: 1; height: 32px; background: var(--raise); border: 1px solid var(--line); border-radius: 6px; color: inherit; font: inherit; cursor: pointer; }
+.seg button[aria-pressed="true"] { border-color: var(--brass); color: var(--brass); }
+input[type=text], input[type=range] { width: 100%; }
+input[type=text] { height: 34px; background: var(--bg); border: 1px solid var(--line); border-radius: 7px; color: inherit; font: inherit; padding: 0 8px; }
+input[type=range] { accent-color: var(--brass); }
+.row { display: grid; grid-template-columns: 70px 1fr 34px; gap: 8px; align-items: center; }
+.row output { color: var(--muted); font-variant-numeric: tabular-nums; text-align: end; }
+.sheet { background: #0c0e0f; border: 1px solid var(--line); border-radius: 12px; padding: 10px; overflow: auto; min-width: 0; touch-action: none; }
+#cv { display: block; width: 100%; height: auto; cursor: crosshair; border-radius: 4px; }
+.note { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0; }
+.toast { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; z-index: 5; }
+@media (max-width: 800px) { .main { grid-template-columns: 1fr; } .sheet { order: -1; } }
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+  <header>
+    <h1>مرسم الزنازين</h1>
+    <div class="group" role="toolbar" aria-label="الأدوات" id="tools">
+      <button class="tool" data-t="room">▭ غرفة</button>
+      <button class="tool" data-t="brush">✎ ممر حر</button>
+      <button class="tool" data-t="erase">⌫ ردم</button>
+      <button class="tool" data-t="door">🚪 باب</button>
+      <button class="tool" data-t="obj">◆ عناصر</button>
+      <button class="tool" data-t="label">١ رقم/نص</button>
+      <button class="tool" data-t="remove">✕ حذف عنصر</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group">
+      <button class="btn" id="undo">↶ تراجع</button><button class="btn" id="redo">↷ إعادة</button>
+      <button class="btn primary" id="gen">🎲 زنزانة عشوائية</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group">
+      <button class="btn" id="exportPng" hidden>تصدير PNG</button>
+      <button class="btn" id="saveProj" hidden>حفظ مشروع</button>
+      <label class="btn">فتح مشروع<input type="file" id="openProj" accept=".json"></label>
+      <button class="btn danger" id="clear">مسح</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="panel">
+      <section id="pBrush" hidden>
+        <h2>الفرشاة</h2>
+        <div class="row"><label for="bSize">العرض</label><input type="range" id="bSize" min="1" max="4" value="1"><output id="bSizeV">1</output></div>
+      </section>
+      <section id="pObj" hidden>
+        <h2>العناصر</h2>
+        <div class="objs" id="objList"></div>
+      </section>
+      <section id="pLabel" hidden>
+        <h2>النص</h2>
+        <input type="text" id="lText" placeholder="اتركه فارغاً لرقم تلقائي" aria-label="نص التسمية">
+        <p class="note" style="margin-top:6px">الرقم التالي: <b id="nextNum">١</b></p>
+      </section>
+      <section>
+        <h2>الطراز</h2>
+        <div class="seg" id="style"><button data-v="ink" aria-pressed="true">حبر</button><button data-v="night">ليلي</button><button data-v="parch">رقّ</button></div>
+      </section>
+      <section>
+        <h2>العرض</h2>
+        <label class="chk"><input type="checkbox" id="oGrid" checked> شبكة داخل الغرف</label>
+        <label class="chk"><input type="checkbox" id="oHatch" checked> تظليل الجدران</label>
+      </section>
+      <p class="note" id="hint"></p>
+    </aside>
+    <div class="sheet"><canvas id="cv" aria-label="لوحة الزنزانة"></canvas></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const GW = 44, GH = 30, CS = 32, W = GW * CS, H = GH * CS;
+const cv = $('cv'), ctx = cv.getContext('2d');
+cv.width = W; cv.height = H;
+const ar = n => Number(n).toLocaleString('ar');
+let toastT; const toast = m => { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400); };
+
+/* ---------- state ---------- */
+let floor = new Uint8Array(GW * GH), doors = [], objs = [], labels = [], nextNum = 1;
+const opt = { style: 'ink', grid: true, hatch: true };
+const STYLES = {
+  ink: { paper: '#f4f1ea', floor: '#ffffff', wall: '#1b1b1b', hatch: '#2a2a2a', grid: 'rgba(0,0,0,.13)', text: '#111', obj: '#1b1b1b', objFill: '#ffffff' },
+  night: { paper: '#0f1a2a', floor: '#22344c', wall: '#d8e4f0', hatch: '#6f87a3', grid: 'rgba(216,228,240,.14)', text: '#eef4fa', obj: '#d8e4f0', objFill: '#22344c' },
+  parch: { paper: '#d9c49a', floor: '#efe2c2', wall: '#3b2a18', hatch: '#6a5232', grid: 'rgba(59,42,24,.18)', text: '#2c1e10', obj: '#3b2a18', objFill: '#efe2c2' },
+};
+const isF = (x, y) => x >= 0 && y >= 0 && x < GW && y < GH && floor[y * GW + x] === 1;
+
+/* ---------- object icons (drawn at cell centre, unit = CS) ---------- */
+const OBJ = {
+  stairs: ['درج', (c, S) => { c.fillStyle = S.objFill; c.fillRect(-13, -13, 26, 26); c.strokeRect(-13, -13, 26, 26); for (let i = 0; i < 5; i++) { const y = -13 + i * 6.5; c.beginPath(); c.moveTo(-13 + i * 2, y); c.lineTo(13 - i * 2, y); c.stroke(); } }],
+  pillar: ['عمود', (c, S) => { c.fillStyle = S.obj; c.beginPath(); c.arc(0, 0, 9, 0, 7); c.fill(); }],
+  chest: ['صندوق', (c, S) => { c.fillStyle = S.objFill; c.fillRect(-11, -7, 22, 15); c.strokeRect(-11, -7, 22, 15); c.beginPath(); c.moveTo(-11, -2); c.lineTo(11, -2); c.stroke(); c.fillStyle = S.obj; c.fillRect(-2, -4, 4, 5); }],
+  trap: ['فخ', (c) => { c.setLineDash([3, 3]); c.strokeRect(-12, -12, 24, 24); c.setLineDash([]); c.beginPath(); c.moveTo(-8, -8); c.lineTo(8, 8); c.moveTo(8, -8); c.lineTo(-8, 8); c.stroke(); }],
+  altar: ['مذبح', (c, S) => { c.fillStyle = S.objFill; c.fillRect(-12, -8, 24, 16); c.strokeRect(-12, -8, 24, 16); c.beginPath(); c.moveTo(0, -5); c.lineTo(0, 5); c.moveTo(-4, -1); c.lineTo(4, -1); c.stroke(); }],
+  statue: ['تمثال', (c, S) => { c.fillStyle = S.objFill; c.beginPath(); c.arc(0, 0, 12, 0, 7); c.fill(); c.stroke(); c.fillStyle = S.obj; c.beginPath(); c.arc(0, 0, 5, 0, 7); c.fill(); }],
+  barrel: ['برميل', (c, S) => { c.fillStyle = S.objFill; c.beginPath(); c.arc(0, 0, 10, 0, 7); c.fill(); c.stroke(); c.beginPath(); c.arc(0, 0, 6, 0, 7); c.stroke(); }],
+  torch: ['شعلة', (c) => { c.fillStyle = '#e0892e'; c.beginPath(); c.moveTo(0, -11); c.quadraticCurveTo(8, -2, 0, 6); c.quadraticCurveTo(-8, -2, 0, -11); c.fill(); c.fillStyle = '#f6d36b'; c.beginPath(); c.arc(0, 1, 3, 0, 7); c.fill(); }],
+  monster: ['عدو', (c) => { c.fillStyle = '#b8392a'; c.beginPath(); c.arc(0, 0, 11, 0, 7); c.fill(); c.strokeStyle = '#3a0d08'; c.stroke(); c.fillStyle = '#fff'; c.font = '700 13px "Amiri", serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('ع', 0, 1); }],
+  well: ['بئر', (c, S) => { c.fillStyle = S.objFill; c.beginPath(); c.arc(0, 0, 12, 0, 7); c.fill(); c.lineWidth = 4; c.stroke(); c.lineWidth = 2; c.fillStyle = '#3d6f8f'; c.beginPath(); c.arc(0, 0, 6, 0, 7); c.fill(); }],
+  bones: ['عظام', (c) => { c.lineWidth = 3; c.beginPath(); c.moveTo(-9, -6); c.lineTo(9, 6); c.moveTo(-9, 6); c.lineTo(9, -6); c.stroke(); c.lineWidth = 2; }],
+  rubble: ['ركام', (c, S) => { c.fillStyle = S.obj; for (const [x, y, r] of [[-6, -4, 4], [4, -6, 3], [6, 4, 4.5], [-4, 6, 3], [0, 0, 2.5]]) { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); } }],
+};
+
+/* ---------- render ---------- */
+function hash(x, y) { let h = x * 374761393 + y * 668265263; h = (h ^ (h >> 13)) * 1274126177; return ((h ^ (h >> 16)) >>> 0) / 4294967296; }
+function render(c = ctx) {
+  const S = STYLES[opt.style];
+  c.save(); c.fillStyle = S.paper; c.fillRect(0, 0, W, H);
+  // hatch band: wall cells touching floor (8-neighbour)
+  if (opt.hatch) {
+    c.strokeStyle = S.hatch; c.lineWidth = 1.4; c.lineCap = 'round';
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
+      if (isF(x, y)) continue;
+      let near = false; for (let j = -1; j <= 1 && !near; j++) for (let i = -1; i <= 1; i++) if (isF(x + i, y + j)) { near = true; break; }
+      if (!near) continue;
+      c.save(); c.beginPath(); c.rect(x * CS, y * CS, CS, CS); c.clip();
+      for (let k = 0; k < 3; k++) {
+        const a = hash(x * 3 + k, y) * Math.PI, cx = x * CS + hash(x, y * 7 + k) * CS, cy = y * CS + hash(x * 5 + k, y * 3) * CS, len = 9 + hash(y, x + k) * 8;
+        const dx = Math.cos(a), dy = Math.sin(a), px = -dy * 4, py = dx * 4;
+        for (let m = -1; m <= 1; m++) { c.beginPath(); c.moveTo(cx + px * m - dx * len / 2, cy + py * m - dy * len / 2); c.lineTo(cx + px * m + dx * len / 2, cy + py * m + dy * len / 2); c.stroke(); }
+      }
+      c.restore();
+    }
+  }
+  // floor
+  c.fillStyle = S.floor;
+  for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) if (isF(x, y)) c.fillRect(x * CS, y * CS, CS, CS);
+  if (opt.grid) {
+    c.strokeStyle = S.grid; c.lineWidth = 1; c.beginPath();
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) if (isF(x, y)) {
+      if (isF(x + 1, y)) { c.moveTo((x + 1) * CS, y * CS); c.lineTo((x + 1) * CS, (y + 1) * CS); }
+      if (isF(x, y + 1)) { c.moveTo(x * CS, (y + 1) * CS); c.lineTo((x + 1) * CS, (y + 1) * CS); }
+    }
+    c.stroke();
+  }
+  // walls on floor/rock edges
+  c.strokeStyle = S.wall; c.lineWidth = 4; c.lineCap = 'square'; c.beginPath();
+  for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) if (isF(x, y)) {
+    const X = x * CS, Y = y * CS;
+    if (!isF(x, y - 1)) { c.moveTo(X, Y); c.lineTo(X + CS, Y); }
+    if (!isF(x, y + 1)) { c.moveTo(X, Y + CS); c.lineTo(X + CS, Y + CS); }
+    if (!isF(x - 1, y)) { c.moveTo(X, Y); c.lineTo(X, Y + CS); }
+    if (!isF(x + 1, y)) { c.moveTo(X + CS, Y); c.lineTo(X + CS, Y + CS); }
+  }
+  c.stroke();
+  // doors: edge v = between (x,y) and (x+1,y); h = between (x,y) and (x,y+1)
+  for (const d of doors) {
+    c.save();
+    if (d.dir === 'v') { c.translate((d.x + 1) * CS, d.y * CS + CS / 2); c.rotate(Math.PI / 2); } else c.translate(d.x * CS + CS / 2, (d.y + 1) * CS);
+    c.fillStyle = S.floor; c.fillRect(-CS / 2 + 2, -6, CS - 4, 12);
+    c.strokeStyle = S.wall; c.lineWidth = 2.2;
+    if (d.kind === 'secret') { c.font = '700 14px "Amiri", serif'; c.fillStyle = S.wall; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('س', 0, 1); }
+    else { c.strokeRect(-9, -5, 18, 10); if (d.kind === 'locked') { c.fillStyle = S.wall; c.fillRect(-2, -2, 4, 4); } }
+    c.restore();
+  }
+  // objects
+  for (const o of objs) { c.save(); c.translate(o.x * CS + CS / 2, o.y * CS + CS / 2); c.strokeStyle = STYLES[opt.style].obj; c.lineWidth = 2; OBJ[o.type][1](c, S); c.restore(); }
+  // labels
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (const l of labels) {
+    const num = /^[\d٠-٩]+$/.test(l.text);
+    c.font = `700 ${num ? 22 : 18}px "Amiri", "IBM Plex Sans Arabic", serif`;
+    c.lineWidth = 4; c.strokeStyle = S.floor; c.lineJoin = 'round'; c.strokeText(l.text, l.x, l.y); c.fillStyle = S.text; c.fillText(l.text, l.x, l.y);
+  }
+  c.restore();
+}
+let dirty = true; const loop = () => { if (dirty) { dirty = false; render(); } requestAnimationFrame(loop); };
+
+/* ---------- history + persistence ---------- */
+const snapshot = () => JSON.stringify({ floor: Array.from(floor).join(''), doors, objs, labels, nextNum, opt });
+function apply(json) {
+  const d = JSON.parse(json);
+  if (typeof d.floor !== 'string' || d.floor.length !== GW * GH || /[^01]/.test(d.floor)) throw new Error('bad');
+  floor = Uint8Array.from(d.floor, ch => +ch);
+  doors = (d.doors || []).filter(x => Number.isInteger(x.x) && Number.isInteger(x.y));
+  objs = (d.objs || []).filter(x => OBJ[x.type]); labels = (d.labels || []).map(l => ({ x: +l.x, y: +l.y, text: String(l.text).slice(0, 40) }));
+  nextNum = +d.nextNum || 1; Object.assign(opt, d.opt || {}); syncOpt(); dirty = true;
+}
+const undoS = [], redoS = [];
+function push() { undoS.push(snapshot()); if (undoS.length > 80) undoS.shift(); redoS.length = 0; }
+$('undo').onclick = () => { const s = undoS.pop(); if (!s) return; redoS.push(snapshot()); apply(s); persist(); };
+$('redo').onclick = () => { const s = redoS.pop(); if (!s) return; undoS.push(snapshot()); apply(s); persist(); };
+let saveT; function persist() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('aren-dungeon', snapshot()); } catch { /* storage blocked */ } }, 400); $('nextNum').textContent = ar(nextNum); }
+
+/* ---------- tools ---------- */
+let tool = 'room', objType = 'stairs', drag = null;
+const HINTS = { room: 'اسحب لرسم غرفة مستطيلة.', brush: 'اسحب لحفر ممر حر بعرض الفرشاة.', erase: 'اسحب مستطيلاً لردمه بالصخر.', door: 'انقر على حافة بين خليتين. النقرات المتتالية: باب، مقفل، سري، حذف.', obj: 'اختر عنصراً ثم انقر على خلية.', label: 'انقر لوضع رقم الغرفة أو نص.', remove: 'انقر على عنصر أو نص أو باب لحذفه.' };
+function setTool(t) {
+  tool = t;
+  for (const b of document.querySelectorAll('.tool')) b.setAttribute('aria-pressed', String(b.dataset.t === t));
+  $('pBrush').hidden = t !== 'brush'; $('pObj').hidden = t !== 'obj'; $('pLabel').hidden = t !== 'label';
+  $('hint').textContent = HINTS[t];
+}
+const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
+const cell = (px, py) => [Math.max(0, Math.min(GW - 1, Math.floor(px / CS))), Math.max(0, Math.min(GH - 1, Math.floor(py / CS)))];
+function fillRect(a, b, v) { const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]); for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) floor[y * GW + x] = v; if (!v) cleanup(); }
+function brushAt(c) { const s = +$('bSize').value; for (let j = 0; j < s; j++) for (let i = 0; i < s; i++) { const x = c[0] + i - (s >> 1), y = c[1] + j - (s >> 1); if (x >= 0 && y >= 0 && x < GW && y < GH) floor[y * GW + x] = 1; } }
+function cleanup() { objs = objs.filter(o => isF(o.x, o.y)); doors = doors.filter(d => isF(d.x, d.y) || (d.dir === 'v' ? isF(d.x + 1, d.y) : isF(d.x, d.y + 1))); }
+function nearestEdge(px, py) {
+  const x = px / CS, y = py / CS, fx = x - Math.floor(x), fy = y - Math.floor(y);
+  const dV = Math.min(fx, 1 - fx), dH = Math.min(fy, 1 - fy);
+  if (dV < dH) return { dir: 'v', x: Math.round(x) - 1, y: Math.floor(y) };
+  return { dir: 'h', x: Math.floor(x), y: Math.round(y) - 1 };
+}
+let preview = null;
+cv.addEventListener('pointerdown', e => {
+  cv.setPointerCapture(e.pointerId);
+  const [px, py] = pos(e), c = cell(px, py);
+  if (tool === 'room' || tool === 'erase') { push(); drag = { a: c, base: floor.slice() }; }
+  else if (tool === 'brush') { push(); drag = { brush: true }; brushAt(c); }
+  else if (tool === 'door') {
+    const ed = nearestEdge(px, py); if (ed.x < -1 || ed.y < -1) return;
+    const i = doors.findIndex(d => d.x === ed.x && d.y === ed.y && d.dir === ed.dir);
+    push();
+    if (i < 0) doors.push({ ...ed, kind: 'door' });
+    else { const order = ['door', 'locked', 'secret']; const k = order.indexOf(doors[i].kind); if (k === 2) doors.splice(i, 1); else doors[i].kind = order[k + 1]; }
+  }
+  else if (tool === 'obj') { if (!isF(...c)) { toast('ضع العناصر داخل الغرف'); return; } push(); objs = objs.filter(o => o.x !== c[0] || o.y !== c[1]); objs.push({ type: objType, x: c[0], y: c[1] }); }
+  else if (tool === 'label') {
+    push(); const t = $('lText').value.trim();
+    labels.push({ x: px, y: py, text: t || ar(nextNum) }); if (!t) nextNum++;
+  }
+  else if (tool === 'remove') {
+    let i = labels.findIndex(l => Math.abs(l.x - px) < 22 && Math.abs(l.y - py) < 16);
+    if (i >= 0) { push(); labels.splice(i, 1); }
+    else if ((i = objs.findIndex(o => o.x === c[0] && o.y === c[1])) >= 0) { push(); objs.splice(i, 1); }
+    else { const ed = nearestEdge(px, py); i = doors.findIndex(d => d.x === ed.x && d.y === ed.y && d.dir === ed.dir); if (i >= 0) { push(); doors.splice(i, 1); } }
+  }
+  dirty = true; persist();
+});
+cv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const c = cell(...pos(e));
+  if (drag.brush) brushAt(c);
+  else { floor.set(drag.base); fillRect(drag.a, c, tool === 'room' ? 1 : 0); }
+  dirty = true;
+});
+const end = () => { if (drag) { drag = null; persist(); } };
+cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input[type=text]')) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); (e.shiftKey ? $('redo') : $('undo')).click(); }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); $('redo').click(); }
+});
+
+/* ---------- random dungeon ---------- */
+function generate() {
+  push();
+  floor = new Uint8Array(GW * GH); doors = []; objs = []; labels = []; nextNum = 1;
+  const rooms = [], rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  for (let tries = 0; tries < 300 && rooms.length < 10; tries++) {
+    const w = rnd(4, 9), h = rnd(4, 7), x = rnd(1, GW - w - 1), y = rnd(1, GH - h - 1);
+    if (rooms.some(r => x < r.x + r.w + 2 && x + w + 2 > r.x && y < r.y + r.h + 2 && y + h + 2 > r.y)) continue;
+    rooms.push({ x, y, w, h, cx: x + (w >> 1), cy: y + (h >> 1) });
+  }
+  for (const r of rooms) for (let j = 0; j < r.h; j++) for (let i = 0; i < r.w; i++) floor[(r.y + j) * GW + r.x + i] = 1;
+  const inRoom = (x, y) => rooms.some(r => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
+  // connect in order of x so corridors stay short; carve L-shapes and drop a door where a corridor enters a room
+  rooms.sort((a, b) => a.cx - b.cx);
+  const carve = (x, y, px, py) => {
+    if (floor[y * GW + x]) { if (!inRoom(px, py) && inRoom(x, y)) { const dir = px !== x ? 'v' : 'h'; doors.push({ dir, x: dir === 'v' ? Math.min(x, px) : x, y: dir === 'h' ? Math.min(y, py) : y, kind: Math.random() < .12 ? 'secret' : Math.random() < .15 ? 'locked' : 'door' }); } return; }
+    if (inRoom(px, py) && !inRoom(x, y)) { const dir = px !== x ? 'v' : 'h'; doors.push({ dir, x: dir === 'v' ? Math.min(x, px) : x, y: dir === 'h' ? Math.min(y, py) : y, kind: 'door' }); }
+    floor[y * GW + x] = 1;
+  };
+  for (let i = 1; i < rooms.length; i++) {
+    const a = rooms[i - 1], b = rooms[i]; let x = a.cx, y = a.cy;
+    const horizFirst = Math.random() < .5;
+    const stepX = () => { while (x !== b.cx) { const px = x; x += Math.sign(b.cx - x); carve(x, y, px, y); } };
+    const stepY = () => { while (y !== b.cy) { const py = y; y += Math.sign(b.cy - y); carve(x, y, x, py); } };
+    if (horizFirst) { stepX(); stepY(); } else { stepY(); stepX(); }
+  }
+  // dedupe doors that landed on the same edge
+  const seen = new Set(); doors = doors.filter(d => { const k = d.dir + d.x + ',' + d.y; if (seen.has(k)) return false; seen.add(k); return true; });
+  const free = r => { for (let t = 0; t < 20; t++) { const x = rnd(r.x, r.x + r.w - 1), y = rnd(r.y, r.y + r.h - 1); if (!objs.some(o => o.x === x && o.y === y)) return [x, y]; } return null; };
+  rooms.forEach((r, i) => {
+    labels.push({ x: (r.x + r.w / 2) * CS, y: (r.y + r.h / 2) * CS, text: ar(i + 1) }); nextNum = i + 2;
+    const put = t => { const p = free(r); if (p) objs.push({ type: t, x: p[0], y: p[1] }); };
+    if (i === 0) put('stairs');
+    if (i === rooms.length - 1) { put('altar'); put('monster'); put('chest'); }
+    else {
+      const roll = Math.random();
+      if (roll < .25) put('chest'); else if (roll < .45) { put('monster'); put('monster'); } else if (roll < .55) put('trap'); else if (roll < .65) put('well');
+      if (r.w >= 6 && r.h >= 5 && Math.random() < .5) { objs.push({ type: 'pillar', x: r.x + 1, y: r.y + 1 }, { type: 'pillar', x: r.x + r.w - 2, y: r.y + 1 }, { type: 'pillar', x: r.x + 1, y: r.y + r.h - 2 }, { type: 'pillar', x: r.x + r.w - 2, y: r.y + r.h - 2 }); }
+      if (Math.random() < .4) put(Math.random() < .5 ? 'barrel' : 'rubble');
+      if (Math.random() < .3) put('torch');
+    }
+  });
+  objs = objs.filter((o, i) => objs.findIndex(p => p.x === o.x && p.y === o.y) === i);
+  dirty = true; persist();
+  toast(`زنزانة من ${ar(rooms.length)} غرف`);
+}
+$('gen').onclick = generate;
+
+/* ---------- panel wiring ---------- */
+for (const b of document.querySelectorAll('.tool')) b.onclick = () => setTool(b.dataset.t);
+$('bSize').oninput = e => { $('bSizeV').value = e.target.value; };
+function syncOpt() { for (const b of $('style').children) b.setAttribute('aria-pressed', String(b.dataset.v === opt.style)); $('oGrid').checked = opt.grid; $('oHatch').checked = opt.hatch; }
+for (const b of $('style').children) b.onclick = () => { opt.style = b.dataset.v; syncOpt(); dirty = true; persist(); buildObjButtons(); };
+$('oGrid').onchange = e => { opt.grid = e.target.checked; dirty = true; persist(); };
+$('oHatch').onchange = e => { opt.hatch = e.target.checked; dirty = true; persist(); };
+function buildObjButtons() {
+  $('objList').innerHTML = '';
+  for (const [k, [name, draw]] of Object.entries(OBJ)) {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), S = STYLES.ink;
+    x.translate(32, 30); x.scale(1.6, 1.6); x.strokeStyle = S.obj; x.lineWidth = 2; draw(x, { ...S, objFill: '#2a2f30', obj: '#e8e2d4' });
+    const b = document.createElement('button'); b.className = 'obj'; b.style.backgroundImage = `url(${c.toDataURL()})`; b.setAttribute('aria-label', name); b.setAttribute('aria-pressed', String(k === objType));
+    b.innerHTML = `<span>${name}</span>`; b.onclick = () => { objType = k; for (const y of $('objList').children) y.setAttribute('aria-pressed', String(y === b)); };
+    $('objList').appendChild(b);
+  }
+}
+let armC = null;
+$('clear').onclick = () => {
+  if (!armC) { $('clear').textContent = 'تأكيد المسح؟'; armC = setTimeout(() => { armC = null; $('clear').textContent = 'مسح'; }, 3000); return; }
+  clearTimeout(armC); armC = null; $('clear').textContent = 'مسح'; push(); floor = new Uint8Array(GW * GH); doors = []; objs = []; labels = []; nextNum = 1; dirty = true; persist();
+};
+
+/* ---------- files ---------- */
+let downloads = null;
+(async () => { try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch { downloads = null; } if (downloads) { $('exportPng').hidden = false; $('saveProj').hidden = false; } })();
+async function offer(filename, data) { try { await downloads.save({ filename, data }); toast('تم الحفظ'); } catch (e) { if (e?.code !== 'declined') toast('تعذر الحفظ: ' + (e?.code || 'خطأ')); } }
+$('exportPng').onclick = () => { const c = document.createElement('canvas'); c.width = W * 2; c.height = H * 2; const x = c.getContext('2d'); x.scale(2, 2); render(x); c.toBlob(b => offer('aren-dungeon.png', b), 'image/png'); };
+$('saveProj').onclick = () => offer('aren-dungeon.json', snapshot());
+$('openProj').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; try { const s = await f.text(); push(); apply(s); persist(); toast('فُتح المشروع'); } catch { toast('هذا الملف ليس مشروع زنزانة صالحاً'); } };
+
+/* ---------- boot ---------- */
+setTool('room'); buildObjButtons(); syncOpt();
+let loaded = false; try { const s = localStorage.getItem('aren-dungeon'); if (s) { apply(s); loaded = true; } } catch { /* fresh start */ }
+if (!loaded) { generate(); undoS.length = 0; }
+persist();
+document.fonts.ready.then(() => { dirty = true; });
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body></html>

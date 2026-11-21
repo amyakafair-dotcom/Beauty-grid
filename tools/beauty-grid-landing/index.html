@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beauty-Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@200;300;400;500&family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: a white field like the logo's, one living body of serum that changes form as you scroll, text in a calm column beside it. */
+  --field:#FFFFFF;     /* page background, same white as the logo */
+  --blush:#F8EFEC;     /* cards and soft surfaces */
+  --ink:#2B2728;       /* text, the wordmark's charcoal */
+  --ink-soft:#766A6A;  /* secondary text */
+  --rose:#C48A80;      /* rose-gold from the tiles */
+  --gold:#B4935A;      /* gold from the sparkle */
+  --display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --body:"IBM Plex Sans Arabic","Alexandria",system-ui,sans-serif;
+  --accent-face:"Amiri","Alexandria",serif;
+  --latin:"Marcellus","Alexandria",serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--field);color:var(--ink);
+  font-family:var(--body);font-weight:400;font-size:16px;line-height:1.8;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:2px}
+
+/* The liquid floats in front of the page, see-through, and stays in view while the page scrolls. */
+#body3d{position:fixed;left:0;top:0;width:10px;height:10px;display:block;z-index:5;pointer-events:none}
+.top,main,footer{position:relative;z-index:1}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.col{max-width:640px}
+
+/* Header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;max-width:1180px;margin:0 auto}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;direction:ltr}
+.mark{
+  width:44px;height:37px;flex:none;
+  background:url("logo.png") no-repeat;background-size:141.7px auto;background-position:-51.4px -28.8px;
+}
+.brand b{font-family:var(--latin);font-weight:400;font-size:17px;letter-spacing:.16em}
+.top-cta{
+  font-family:var(--display);font-weight:400;font-size:13px;text-decoration:none;
+  border:1px solid var(--ink);border-radius:999px;padding:7px 16px;background:var(--field);
+  transition:background .2s,color .2s;
+}
+.top-cta:hover{background:var(--ink);color:var(--field)}
+
+/* Hero */
+.hero{position:relative;height:clamp(560px,82vh,780px)}
+.hero-inner{
+  height:100%;max-width:1180px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.lede{max-width:320px}
+.slogan{font-family:var(--latin);font-size:13px;letter-spacing:.14em;color:var(--gold);margin:0 0 12px;direction:ltr;text-align:right}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;padding:0;list-style:none}
+.tags li{
+  font-family:var(--display);font-size:10.5px;letter-spacing:.02em;
+  background:var(--ink);color:var(--field);padding:2px 8px;border-radius:2px;line-height:1.7;
+}
+h1{
+  font-family:var(--display);font-weight:200;
+  font-size:clamp(28px,3.9vw,44px);line-height:1.4;margin:0 0 14px;text-wrap:balance;
+}
+h1 em,h2 em{font-style:normal;font-family:var(--accent-face);font-weight:700;color:var(--rose);font-size:1.1em}
+.lede p{margin:0;font-size:14px;line-height:1.9;max-width:30ch}
+.index{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;text-align:left}
+.index a{
+  font-family:var(--display);font-weight:300;font-size:12.5px;text-decoration:none;color:var(--ink-soft);
+  display:inline-flex;gap:10px;align-items:baseline;transition:color .2s;
+}
+.index a:hover{color:var(--ink)}
+.index a span{font-variant-numeric:tabular-nums;font-size:10.5px;direction:ltr}
+.hint{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  font-family:var(--display);font-size:11px;font-weight:300;color:var(--field);
+  background:var(--ink);border-radius:999px;padding:4px 14px;
+}
+
+/* Sections */
+section{padding:84px 0}
+.eyebrow{font-family:var(--display);font-weight:400;font-size:12px;color:var(--gold);margin:0 0 10px}
+h2{font-family:var(--display);font-weight:200;font-size:clamp(23px,2.8vw,32px);line-height:1.5;margin:0 0 32px;max-width:22ch;text-wrap:balance}
+
+.offers{display:flex;flex-direction:column;border-top:1px solid var(--ink)}
+.offer{display:grid;grid-template-columns:44px 1fr;gap:6px 14px;padding:24px 0;border-bottom:1px solid rgba(43,39,40,.16)}
+.offer .n{font-family:var(--latin);font-size:15px;color:var(--gold);direction:ltr;text-align:right;font-variant-numeric:tabular-nums;padding-top:4px}
+.offer h3{font-family:var(--display);font-weight:400;font-size:19px;margin:0 0 6px;line-height:1.5}
+.offer p{margin:0 0 12px;font-size:14.5px;max-width:44ch}
+.offer ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.offer li{font-size:13.5px;color:var(--ink-soft);padding-inline-start:16px;position:relative;line-height:1.7}
+.offer li::before{content:"";position:absolute;inset-inline-start:0;top:.8em;width:7px;height:1px;background:var(--rose)}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;background:var(--blush);border-radius:6px;padding:20px 18px 22px}
+.steps li::before{content:counter(s);font-family:var(--latin);font-size:30px;line-height:1;color:var(--rose);display:block;margin-bottom:10px}
+.steps h3{font-family:var(--display);font-weight:400;font-size:16px;margin:0 0 6px}
+.steps p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.8}
+.reads{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:0;list-style:none}
+.reads li{font-size:13px;border:1px solid var(--rose);border-radius:999px;padding:3px 14px;line-height:1.8;background:var(--field)}
+.note{margin:20px 0 0;font-size:13.5px;color:var(--ink-soft);max-width:58ch}
+
+.who p{margin:0 0 14px;max-width:48ch;font-size:15.5px}
+.places{margin:22px 0 0;padding:0;list-style:none;border-top:1px solid var(--ink)}
+.places li{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid rgba(43,39,40,.16);font-size:14.5px}
+.places span{color:var(--ink-soft);font-size:13px;text-align:left}
+
+.contact h2{margin-bottom:14px}
+.contact p{margin:0 0 24px;max-width:46ch}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  font-family:var(--display);font-weight:400;font-size:14.5px;text-decoration:none;background:var(--field);
+  border-radius:999px;padding:11px 24px;border:1px solid var(--ink);transition:background .2s,color .2s;
+}
+.btn.fill{background:var(--ink);color:var(--field)}
+.btn.fill:hover{background:var(--field);color:var(--ink)}
+.btn:hover{background:var(--ink);color:var(--field)}
+.pending{margin:16px 0 0;font-size:12.5px;color:var(--ink-soft)}
+.stage{display:none}
+.full-logo{display:block;width:170px;height:auto;margin:10px 0 0;max-width:100%}
+footer{padding:22px 0 40px;font-size:12.5px;color:var(--ink-soft)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(43,39,40,.16);padding-top:18px}
+
+@media (max-width:820px){
+  .hero{height:auto;min-height:0;padding-bottom:36px}
+  .hero-inner{flex-direction:column;align-items:flex-start;justify-content:flex-start;padding-top:min(52vh,400px);gap:18px}
+  .index{flex-direction:row;flex-wrap:wrap;gap:6px 16px;text-align:right}
+  .hint{position:static;transform:none;display:inline-block;margin:18px 24px 0}
+  .col{max-width:none}
+  .steps{grid-template-columns:1fr;gap:12px}
+  section{padding:56px 0}
+  /* on a phone the text sections are solid; the liquid shows in the hero and in its own stages */
+  section{background:var(--field)}
+  .stage{display:flex;align-items:flex-start;justify-content:center;height:78vh;padding-top:9vh;position:relative;z-index:1}
+  .stage p{
+    margin:0;font-family:var(--display);font-weight:300;font-size:15px;color:var(--ink);
+    background:rgba(255,255,255,.86);border-radius:999px;padding:5px 16px;
+  }
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<canvas id="body3d" aria-hidden="true"></canvas>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="Beauty Grid"><span class="mark"></span><b>BEAUTY GRID</b></a>
+  <a class="top-cta" href="#contact">اطلب عرضاً تجريبياً</a>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="lede">
+        <p class="slogan" lang="en">THE TECH BEHIND YOUR BEAUTY</p>
+        <ul class="tags" aria-label="ما نقدمه">
+          <li>ERP</li><li>قوالب محتوى</li><li>تحليل الوجه</li>
+        </ul>
+        <h1>علامتك التجميلية، <em>منظَّمة</em> من المعمل إلى الزبونة.</h1>
+        <p>نظام واحد لمنتجي مستحضرات التجميل: يضبط الإنتاج والمخزون، يجهّز المحتوى، ويقرأ بشرة زبونتك ليرشّح لها منتجك.</p>
+      </div>
+    </div>
+  </div>
+
+  <section id="offers">
+    <div class="wrap"><div class="col">
+      <p class="eyebrow">الخدمات</p>
+      <h2>ثلاث أدوات للمنتِج: <em>التصنيع</em>، الظهور، والبيع.</h2>
+      <div class="offers">
+        <article class="offer">
+          <span class="n">01</span>
+          <div>
+            <h3>نظام ERP لمنتجي التجميل</h3>
+            <ul>
+              <li>سجل لكل تشغيلة: المكونات، الكميات، التاريخ</li>
+              <li>مخزون المواد الخام والعبوات مع تنبيه النقص</li>
+              <li>تواريخ الصلاحية لكل تشغيلة</li>
+              <li>تكلفة العبوة الواحدة وهامش الربح</li>
+            </ul>
+          </div>
+        </article>
+        <article class="offer">
+          <span class="n">02</span>
+          <div>
+            <h3>قوالب فيديو ومنشورات</h3>
+            <p>قوالب جاهزة لعلامات التجميل. تضعين اسمك وصورة منتجك وتنشرين.</p>
+            <ul>
+              <li>منشورات وكاروسيل وستوري بالعربية</li>
+              <li>قوالب ريلز قصيرة للمنتج والمكونات</li>
+              <li>هوية واحدة ثابتة على كل الصفحات</li>
+            </ul>
+          </div>
+        </article>
+        <article class="offer">
+          <span class="n">03</span>
+          <div>
+            <h3>تحليل الوجه بالذكاء الاصطناعي</h3>
+            <p>خدمة تضعها علامتك أمام زبوناتها: صورة واحدة، ثم ترشيح من منتجاتك أنت.</p>
+            <ul>
+              <li>رابط باسم علامتك في بايو إنستغرام أو واتساب</li>
+              <li>نتيجة مفهومة بالعربية</li>
+              <li>ترشيح من كتالوجك، لا من منتجات غيرك</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div></div>
+  </section>
+
+  <div class="stage" data-form="1"><p>قطرة واحدة من سيرومك</p></div>
+  <div class="stage" data-form="2"><p>تلامس البشرة</p></div>
+  <div class="stage" data-form="3"><p>والتحليل يقرأ الوجه</p></div>
+
+  <section id="scan">
+    <div class="wrap"><div class="col">
+      <p class="eyebrow">تحليل الوجه</p>
+      <h2>من سؤال "أي منتج يناسب بشرتي؟" إلى <em>إجابة</em> في ثوانٍ.</h2>
+      <ol class="steps">
+        <li><h3>صورة سيلفي</h3><p>الزبونة تفتح رابط علامتك وتلتقط صورة في ضوء النهار، بلا مكياج.</p></li>
+        <li><h3>قراءة البشرة</h3><p>التحليل يقرأ المؤشرات الظاهرة ويعطي درجة لكل واحد.</p></li>
+        <li><h3>ترشيح من منتجاتك</h3><p>كل نتيجة تُربط بمنتج من كتالوجك، مع زر للطلب عبر واتساب.</p></li>
+      </ol>
+      <ul class="reads" aria-label="المؤشرات المقروءة">
+        <li>البقع والتصبغات</li><li>الحبوب</li><li>الدهنية</li><li>الرطوبة</li><li>المسام</li><li>الهالات</li><li>الملمس</li>
+      </ul>
+      <p class="note">التحليل إرشاد تجميلي وليس تشخيصاً طبياً. نختبر الدقة على البشرة القمحية والداكنة قبل تفعيل الخدمة لأي علامة.</p>
+    </div></div>
+  </section>
+
+  <section id="who" class="who">
+    <div class="wrap"><div class="col">
+      <p class="eyebrow">لمن</p>
+      <h2>لكل منتِج <em>تجميل</em>، صغيراً كان أو كبيراً.</h2>
+      <p>نعمل مع علامات العناية بالبشرة والشعر والمكياج والعطور، من العلامة الناشئة في البيت إلى المصنع الذي ينتج لعلامات أخرى.</p>
+      <p>العمل كله عن بُعد. تبدئين بأداة واحدة وتضيفين الباقي حين تحتاجين.</p>
+      <ul class="places">
+        <li>علامة ناشئة من البيت <span>قوالب المحتوى أولاً</span></li>
+        <li>علامة تبيع عبر إنستغرام وواتساب <span>تحليل الوجه</span></li>
+        <li>معمل بعدة منتجات وتشغيلات <span>نظام ERP</span></li>
+        <li>مصنّع لعلامات أخرى <span>ERP وسجلات التشغيلات</span></li>
+      </ul>
+    </div></div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap"><div class="col">
+      <p class="eyebrow">تواصل</p>
+      <h2>اطلبي عرضاً <em>تجريبياً</em> لعلامتك.</h2>
+      <p>أرسلي اسم العلامة وما تنتجينه. نرد عليك بما يناسبك من الأدوات الثلاث.</p>
+      <div class="actions">
+        <a class="btn fill" href="#contact">واتساب</a>
+        <a class="btn" href="#contact">إنستغرام</a>
+      </div>
+      <p class="slogan" lang="en" style="margin:40px 0 0">The tech behind your beauty</p>
+      <img class="full-logo" src="logo.png" alt="شعار Beauty Grid" width="170" height="170">
+    </div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span style="direction:ltr;font-family:var(--latin);letter-spacing:.14em">BEAUTY GRID · The tech behind your beauty</span>
+    <span>أدوات لمنتجي مستحضرات التجميل</span>
+  </div>
+</footer>
+
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+uniform vec2 uRes;
+uniform float uT, uP, uYaw, uPitch, uTouch, uSkin;
+
+vec3 rotX(vec3 p, float a){ float c = cos(a), s = sin(a); return vec3(p.x, c*p.y - s*p.z, s*p.y + c*p.z); }
+vec3 rotY(vec3 p, float a){ float c = cos(a), s = sin(a); return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z); }
+vec3 toObj(vec3 v){ return rotY(rotX(v, -uPitch), -uYaw); }
+vec3 toView(vec3 v){ return rotX(rotY(v, uYaw), uPitch); }
+
+float smin(float a, float b, float k){ float h = clamp(0.5 + 0.5*(b - a)/k, 0.0, 1.0); return mix(b, a, h) - k*h*(1.0 - h); }
+float smax(float a, float b, float k){ return -smin(-a, -b, k); }
+float tile(vec3 p, vec2 c, vec2 h){
+  vec3 q = abs(p - vec3(c, 0.0)) - vec3(h - 0.03, 0.05);
+  return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - 0.03;
+}
+float ellipsoid(vec3 p, vec3 r){ float k0 = length(p/r); float k1 = length(p/(r*r)); return k0*(k0 - 1.0)/k1; }
+float roundCone(vec3 p, float r1, float r2, float h){
+  float b = (r1 - r2)/h; float a = sqrt(1.0 - b*b);
+  vec2 q = vec2(length(p.xz), p.y); float k = dot(q, vec2(-b, a));
+  if (k < 0.0) return length(q) - r1;
+  if (k > a*h) return length(q - vec2(0.0, h)) - r2;
+  return dot(q, vec2(a, b)) - r1;
+}
+
+// The logo mark: eight tiles and a sparkle, as glossy gel.
+float gridForm(vec3 p){
+  vec3 q = p + vec3(-0.05, 0.25, 0.0);
+  float d = tile(q, vec2(-0.63, 0.42), vec2(0.15, 0.10));
+  d = min(d, tile(q, vec2(-0.22, 0.53), vec2(0.20, 0.21)));
+  d = min(d, tile(q, vec2( 0.28, 0.53), vec2(0.24, 0.21)));
+  d = min(d, tile(q, vec2(-0.69, 0.08), vec2(0.21, 0.18)));
+  d = min(d, tile(q, vec2(-0.17,-0.09), vec2(0.25, 0.35)));
+  d = min(d, tile(q, vec2( 0.33, 0.08), vec2(0.19, 0.18)));
+  d = min(d, tile(q, vec2(-0.63,-0.30), vec2(0.15, 0.14)));
+  d = min(d, tile(q, vec2( 0.27,-0.30), vec2(0.13, 0.14)));
+  vec3 s = abs(q - vec3(0.66, 0.84, 0.0));
+  d = min(d, (s.x + s.y + s.z*1.6 - 0.17)*0.5);
+  return d;
+}
+// A hanging serum drop.
+float dropForm(vec3 p){
+  return roundCone(p - vec3(0.0, -0.36, 0.0), 0.50, 0.035, 1.12);
+}
+// The drop lands: a pool with rings, a thread of serum still falling into it.
+float skinForm(vec3 p){
+  vec3 q = p - vec3(0.0, -0.28, 0.0);
+  float r = length(q.xz);
+  float pool = (length(vec3(q.x, q.y*5.0, q.z)) - 0.88)/5.0;
+  pool += 0.012*sin(r*18.0 - uT*2.6)*exp(-r*1.2);
+  float bead = length(p - vec3(0.0, 0.46 + 0.05*sin(uT*1.5), 0.0)) - 0.11;
+  vec3 c = p; c.y -= clamp(c.y, -0.22, 0.40);
+  float thread = length(c) - 0.028;
+  return smin(smin(pool, thread, 0.14), bead, 0.10);
+}
+// An abstract face, the surface the analysis reads.
+float faceForm(vec3 p){
+  vec3 q = p; q.x *= 1.0 + 0.22*smoothstep(0.1, -0.8, q.y);
+  float d = ellipsoid(q, vec3(0.60, 0.82, 0.62));
+  d = smin(d, ellipsoid(p - vec3(0.0, -0.05, 0.58), vec3(0.085, 0.20, 0.12)), 0.12);
+  vec3 e = vec3(abs(p.x), p.y, p.z);
+  d = smax(d, -(length(e - vec3(0.25, 0.17, 0.64)) - 0.12), 0.10);
+  return d;
+}
+float form(float id, vec3 p){
+  if (id < 0.5) return gridForm(p);
+  if (id < 1.5) return dropForm(p);
+  if (id < 2.5) return skinForm(p);
+  if (id < 3.5) return faceForm(p);
+  return gridForm(p);
+}
+float map(vec3 p){
+  float i = min(floor(uP), 3.0);
+  float f = clamp(uP - i, 0.0, 1.0);
+  float e = f*f*(3.0 - 2.0*f);
+  float d = mix(form(i, p), form(i + 1.0, p), e);
+  float flow = sin(3.14159*e);
+  d += (0.006 + 0.028*uTouch + 0.045*flow) * sin(p.x*6.0 + uT*1.6)*sin(p.y*5.0 - uT*1.3)*sin(p.z*6.0 + uT*1.1);
+  return d;
+}
+vec3 normalAt(vec3 p){
+  vec2 k = vec2(1.0, -1.0); float h = 0.004;
+  return normalize(k.xyy*map(p + k.xyy*h) + k.yyx*map(p + k.yyx*h) + k.yxy*map(p + k.yxy*h) + k.xxx*map(p + k.xxx*h));
+}
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7)))*43758.5453); }
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy/uRes*2.0 - 1.0)*1.35;
+  vec3 ro = toObj(vec3(uv, 2.4));
+  vec3 rd = toObj(vec3(0.0, 0.0, -1.0));
+
+  // march to the liquid
+  float t = 0.0, d = 1.0, near = 1.0; bool hit = false;
+  for (int i = 0; i < 64; i++){
+    d = map(ro + rd*t);
+    near = min(near, d);
+    if (d < 0.002){ hit = true; break; }
+    t += d*0.85;
+    if (t > 4.8) break;
+  }
+
+  // the patch of skin under the pool, only while the drop is landing
+  vec4 outc = vec4(0.0);
+  float tp = -1.0;
+  if (uSkin > 0.01 && abs(rd.y) > 0.001){
+    tp = (-0.30 - ro.y)/rd.y;
+    if (tp > 0.0){
+      vec3 hp = ro + rd*tp; float r = length(hp.xz);
+      float a = uSkin*(1.0 - smoothstep(0.92, 1.28, r));
+      vec3 skin = vec3(0.78, 0.59, 0.46);
+      float pore = hash(floor(hp.xz*70.0));
+      skin *= 0.95 + 0.07*hash(floor(hp.xz*18.0)) - 0.10*step(0.93, pore);
+      skin = mix(skin*0.86, skin, smoothstep(0.55, 1.0, r));           // damp where the serum spreads
+      skin += 0.10*(1.0 - smoothstep(0.0, 0.9, r));
+      outc = vec4(skin*a, a);
+    }
+  }
+
+  if (hit && (tp < 0.0 || t < tp || uSkin <= 0.01)){
+    vec3 p = ro + rd*t;
+    vec3 n = normalAt(p);
+    vec3 nv = toView(n);
+    float ndv = clamp(nv.z, 0.0, 1.0);
+    // gold on one side, rose on the other, as in the logo
+    vec3 tint = mix(vec3(0.84, 0.69, 0.43), vec3(0.91, 0.61, 0.56), smoothstep(-0.7, 0.7, p.x*0.7 - p.y*0.35));
+    vec3 col = mix(tint*vec3(0.74, 0.58, 0.54), tint + 0.10, pow(ndv, 1.3));
+    vec3 l = normalize(vec3(-0.45, 0.75, 0.5));
+    col *= 0.78 + 0.32*max(dot(nv, l), 0.0);
+    // light gathering on the far side of a clear liquid
+    col += vec3(1.0, 0.90, 0.74)*0.38*pow(max(dot(nv, normalize(vec3(0.5, -0.6, 0.6))), 0.0), 4.0);
+    vec3 r = reflect(vec3(0.0, 0.0, -1.0), nv);
+    // a studio softbox reflected in the surface
+    float win = smoothstep(-0.66, -0.58, r.x)*(1.0 - smoothstep(-0.26, -0.18, r.x))
+              * smoothstep(0.24, 0.32, r.y)*(1.0 - smoothstep(0.64, 0.72, r.y));
+    col = mix(col, vec3(1.0), win*0.88);
+    col += 1.1*pow(max(dot(r, l), 0.0), 90.0);
+    float fres = pow(1.0 - ndv, 3.0);
+    col = mix(col, vec3(1.0, 0.96, 0.93), fres*0.5);
+    float a = max(mix(0.50, 0.95, fres), win*0.9);
+    col = clamp(col, 0.0, 1.0);
+    outc = vec4(col*a + outc.rgb*(1.0 - a), a + outc.a*(1.0 - a));
+  } else if (!hit && near < 0.012){
+    float a = (1.0 - smoothstep(0.0, 0.012, near))*0.55;     // soft edge
+    vec3 col = vec3(0.86, 0.62, 0.52);
+    outc = vec4(col*a + outc.rgb*(1.0 - a), a + outc.a*(1.0 - a));
+  }
+  gl_FragColor = outc;
+}
+</script>
+<script>
+(function(){
+  var canvas = document.getElementById('body3d');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var gl = null;
+  try { gl = canvas.getContext('webgl', {alpha:true, premultipliedAlpha:true, antialias:false}); } catch (e) {}
+  if (!gl){ canvas.style.display = 'none'; return; }
+
+  function sh(type, src){
+    var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)){ console.log('shader: ' + gl.getShaderInfoLog(s)); return null; }
+    return s;
+  }
+  var vs = sh(gl.VERTEX_SHADER, 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }');
+  var fs = sh(gl.FRAGMENT_SHADER, document.getElementById('fs').textContent);
+  if (!vs || !fs){ canvas.style.display = 'none'; return; }
+  var prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)){ console.log('link: ' + gl.getProgramInfoLog(prog)); canvas.style.display = 'none'; return; }
+  gl.useProgram(prog);
+  var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = {};
+  ['uRes','uT','uP','uYaw','uPitch','uTouch','uSkin'].forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
+  gl.clearColor(0, 0, 0, 0);
+
+  var LAST = 4, tilt = [0, 0, 0.55, 0, 0];
+  var W = 1, H = 1, small = false, box = 0;
+  var P = 0, Ps = 0, yaw = 0, pitch = 0, tYaw = 0, tPitch = 0, lastMove = -1e9, touch = 0;
+
+  var stages = [].slice.call(document.querySelectorAll('.stage'));
+  var gaS = 1, moving = 0, lastY = 0;
+  function inStage(){
+    for (var i = 0; i < stages.length; i++){
+      var r = stages[i].getBoundingClientRect();
+      if (r.height > 0 && r.top < H * 0.35 && r.bottom > H * 0.55) return true;
+    }
+    return false;
+  }
+  function readScroll(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    if (small && stages.length === 3 && stages[0].offsetHeight > 0){
+      // phone: each stage centred on screen shows its form; the hero shows the logo, the end shows it again
+      var mid = y + H * 0.45;
+      var A = [H * 0.45], i;
+      for (i = 0; i < 3; i++){ var r = stages[i].getBoundingClientRect(); A.push(r.top + y + r.height * 0.42); }
+      A.push(Math.max(A[3] + H * 0.6, max + H * 0.45));
+      if (mid <= A[0]) P = 0;
+      else if (mid >= A[4]) P = LAST;
+      else { for (i = 0; i < 4; i++){ if (mid < A[i + 1]){ P = i + (mid - A[i]) / (A[i + 1] - A[i]); break; } } }
+      return;
+    }
+    P = max > 0 ? Math.max(0, Math.min(1, y / max)) * LAST : 0;
+  }
+  function resize(){
+    W = Math.max(1, window.innerWidth); H = Math.max(1, window.innerHeight); small = W < 820;
+    box = 0; readScroll();
+    if (reduce){ Ps = P; draw(1); }
+  }
+  function onPoint(x, y){
+    tYaw = Math.max(-1, Math.min(1, (x - W/2) / (W/2))) * 0.6;
+    tPitch = Math.max(-1, Math.min(1, (y - H/2) / (H/2))) * 0.32;
+    touch = 1; lastMove = performance.now();
+  }
+  window.addEventListener('pointermove', function(e){ onPoint(e.clientX, e.clientY); }, {passive:true});
+  window.addEventListener('touchmove', function(e){
+    if (e.touches && e.touches[0]) onPoint(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+  window.addEventListener('scroll', function(){ readScroll(); if (reduce){ Ps = P; draw(1); } }, {passive:true});
+  window.addEventListener('resize', resize);
+
+  function draw(t){
+    // Large and central in the hero; below it the liquid steps aside so the text can be read.
+    var k = Math.max(0, Math.min(1, Ps / 0.55)); k = k*k*(3 - 2*k);
+    var cx, cy, R, GA;
+    if (small){
+      var top = Math.min(H * 0.52, 400);
+      cx = W / 2; cy = (86 + top*0.5) + (H*0.42 - (86 + top*0.5)) * k;
+      R = Math.min(W*0.36, top*0.36) + (Math.min(W*0.40, H*0.27) - Math.min(W*0.36, top*0.36)) * k;
+      GA = (inStage() || k < 0.05) ? 1 : 0.30;
+    } else {
+      cx = W*0.5 + (W*0.24 - W*0.5) * k; cy = H*0.52;
+      R = Math.min(W*0.20, H*0.30);
+      GA = 1 - 0.45*k;
+    }
+    var size = Math.round(R * 2.7);
+    if (size !== box){
+      box = size;
+      var scale = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 2);
+      canvas.width = Math.round(size * scale); canvas.height = Math.round(size * scale);
+      canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    canvas.style.left = Math.round(cx - size/2) + 'px';
+    canvas.style.top = Math.round(cy - size/2) + 'px';
+    GA = GA + (1 - GA) * Math.min(1, moving * 0.85);   // shows up while the page moves or the form changes
+    gaS += (GA - gaS) * 0.12;
+    canvas.style.opacity = gaS.toFixed(3);
+
+    var i0 = Math.min(LAST - 1, Math.floor(Ps)), f = Ps - i0;
+    var basePitch = tilt[i0] + (tilt[i0 + 1] - tilt[i0]) * f + pitch;
+    var skin = Math.max(0, 1 - Math.abs(Ps - 2) * 1.6);
+    gl.uniform2f(U.uRes, canvas.width, canvas.height);
+    gl.uniform1f(U.uT, t); gl.uniform1f(U.uP, Ps);
+    gl.uniform1f(U.uYaw, yaw); gl.uniform1f(U.uPitch, basePitch);
+    gl.uniform1f(U.uTouch, touch); gl.uniform1f(U.uSkin, skin);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  function frame(now){
+    var t = now / 1000;
+    if (now - lastMove > 2400){               // nobody is touching: sway gently
+      tYaw = Math.sin(t*0.45) * 0.30;
+      tPitch = Math.sin(t*0.31) * 0.07;
+    }
+    yaw += (tYaw - yaw) * 0.06;
+    pitch += (tPitch - pitch) * 0.06;
+    Ps += (P - Ps) * 0.07;                    // the liquid follows the scroll with a soft lag
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var v = Math.abs(y - lastY) / 10 + Math.abs(P - Ps) * 3 + touch * 0.5;
+    lastY = y;
+    moving += (Math.min(1, v) - moving) * (v > moving ? 0.3 : 0.04);
+    touch *= 0.95;
+    draw(t);
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  if (!reduce) requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

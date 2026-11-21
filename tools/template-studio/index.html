@@ -1,0 +1,988 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>استوديو القوالب</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=Marhey:wght@500;700&family=El+Messiri:wght@400;700&family=Tajawal:wght@400;700&family=Lalezar&family=Cairo:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Almarai:wght@400;700&family=Reem+Kufi:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Lemonada:wght@400;700&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Rakkas&family=Kufam:wght@400;700&family=Alexandria:wght@400;700&family=Changa:wght@400;700&family=Mada:wght@400;700&family=Noto+Kufi+Arabic:wght@400;700&family=Noto+Sans+Arabic:wght@400;700&family=Baloo+Bhaijaan+2:wght@400;700&family=Markazi+Text:wght@400;700&family=Sedgwick+Ave+Display&family=Playfair+Display:wght@700&family=Anton&family=Bebas+Neue&family=Poppins:wght@500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* Layout: three panes — template gallery (start side), live stage (centre), editor (end side); stacks on phones. */
+:root{
+  --bg:#ECEEF3; --panel:#FFFFFF; --ink:#15171C; --muted:#555B67; --line:#D7DBE3; --soft:#F4F5F8;
+  --accent:#3349C9; --accent-ink:#FFFFFF; --stage:#DADDE5;
+  --ui:'Readex Pro', 'Tajawal', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1115; --panel:#171A21; --ink:#E9ECF2; --muted:#A0A7B4; --line:#2A2F3A; --soft:#1E222B;
+  --accent:#8A9CFF; --accent-ink:#0F1115; --stage:#0A0C10; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1115; --panel:#171A21; --ink:#E9ECF2; --muted:#A0A7B4; --line:#2A2F3A; --soft:#1E222B;
+  --accent:#8A9CFF; --accent-ink:#0F1115; --stage:#0A0C10; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px}
+.app{height:100%;display:flex;flex-direction:column}
+header.bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-direction:column;gap:2px;margin-inline-end:auto}
+.brand h1{margin:0;font-size:19px;font-weight:700}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--ink);font:500 13px var(--ui);padding:10px 14px;min-height:40px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px var(--ui);padding:10px 16px;min-height:42px;border-radius:10px;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,label.file:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+main.panes{flex:1;min-height:0;display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr) minmax(300px,360px)}
+.pane{min-height:0;overflow:auto;background:var(--panel)}
+.gallery{border-inline-end:1px solid var(--line);display:flex;flex-direction:column}
+.editor{border-inline-start:1px solid var(--line)}
+.gtools{position:sticky;top:0;z-index:2;background:var(--panel);padding:14px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
+.gtools input{width:100%;box-sizing:border-box}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--soft);color:var(--ink);font:500 12px var(--ui);padding:7px 11px;min-height:34px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.count{color:var(--muted);font-size:12px}
+.grid{padding:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.thumb{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:start;color:var(--ink);font-family:var(--ui);content-visibility:auto;contain-intrinsic-size:150px 220px}
+.thumb[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.thumb .tv{position:relative;overflow:hidden;border-radius:8px;width:100%}
+.thumb .tv>.inner{position:absolute;top:0;right:0;transform-origin:top right;pointer-events:none}
+.thumb .meta{display:flex;justify-content:space-between;gap:6px;font-size:11px;color:var(--muted)}
+.thumb .meta b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.stagewrap{min-height:0;display:flex;flex-direction:column;background:var(--stage)}
+.stagehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 16px;color:var(--muted);font-size:13px}
+.stagehead strong{color:var(--ink);font-weight:600}
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px 16px 20px;overflow:hidden}
+.frame{position:relative;box-shadow:0 18px 50px rgba(0,0,0,.25);border-radius:6px;overflow:hidden;flex:none}
+.frame>.inner{position:absolute;top:0;right:0;transform-origin:top right}
+.editor .sec{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.editor h2{margin:0;font-size:14px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lab{font-size:12px;color:var(--muted);font-weight:500}
+input[type=text],input[type=search],textarea,select{font:400 14px var(--ui);color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:9px 11px;min-height:40px;box-sizing:border-box;width:100%}
+textarea{min-height:76px;resize:vertical;line-height:1.6}
+.imgrow{display:flex;align-items:center;gap:10px}
+.imgrow .pv{width:64px;height:64px;border-radius:10px;background:var(--soft) center/cover no-repeat;border:1px solid var(--line);flex:none}
+label.file{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer;font:600 13px var(--ui);background:var(--panel)}
+label.file input{position:absolute;opacity:0;width:1px;height:1px}
+.linkbtn{border:0;background:none;color:var(--accent);font:500 13px var(--ui);cursor:pointer;padding:8px 4px;min-height:40px}
+.colors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.colors .field input[type=color]{width:100%;height:40px;border:1px solid var(--line);border-radius:9px;background:var(--soft);padding:3px;cursor:pointer}
+.pals{display:flex;flex-wrap:wrap;gap:8px}
+.pal{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;cursor:pointer;padding:0;background:none;min-height:36px}
+.pal span{width:18px;height:34px;display:block}
+.pal[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+.actions{padding:16px;display:flex;flex-direction:column;gap:10px}
+.note{color:var(--muted);font-size:12px;line-height:1.6;margin:0}
+.frame{user-select:none;-webkit-user-select:none}
+.frame>.inner{touch-action:none}
+.frame [data-dk],.frame [data-icon]{cursor:move}
+.frame [data-dk]:hover,.frame [data-icon]:hover{outline:2px dashed rgba(120,140,255,.7);outline-offset:4px}
+.frame .picked{outline:3px solid #6C83FF!important;outline-offset:4px}
+.icongrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.icongrid button{aspect-ratio:1;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:10px;cursor:grab;display:flex;align-items:center;justify-content:center;padding:0;min-height:44px}
+.icongrid button svg{width:24px;height:24px}
+.selbox{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.selbox .row{display:flex;gap:8px;flex-wrap:wrap}
+input[type=range]{width:100%;accent-color:var(--accent)}
+details.lib{border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+details.lib>summary{cursor:pointer;padding:12px 14px;font-weight:600;min-height:20px}
+details.lib .body{padding:0 12px 12px;display:flex;flex-direction:column;gap:10px}
+.libgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.libgrid button{aspect-ratio:1;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;cursor:grab;display:flex;align-items:center;justify-content:center;padding:0;min-height:44px}
+.libgrid button svg{width:26px;height:26px}
+.qchips{display:flex;flex-wrap:wrap;gap:6px}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:12px 18px;border-radius:10px;font-weight:500;z-index:50;max-width:calc(100% - 32px)}
+#exportHost{position:absolute;left:-14000px;top:0}
+@media (max-width:1100px){
+  .app{height:auto}
+  main.panes{grid-template-columns:1fr}
+  .stagewrap{order:1;min-height:70vh}
+  .editor{order:2;border:0;border-top:1px solid var(--line)}
+  .gallery{order:3;border:0;border-top:1px solid var(--line);max-height:80vh}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app" dir="rtl" lang="ar">
+  <header class="bar">
+    <div class="brand">
+      <h1>استوديو القوالب</h1>
+      <p>1000 قالب للبروفايل والمنشورات، وأكثر من 13 ألف أيقونة مجانية. اختاري قالبًا، عدّلي النص والصور والألوان، ثم صدّري الصورة.</p>
+    </div>
+    <div class="seg" role="group" aria-label="مقاس التصميم" id="fmtSeg">
+      <button type="button" data-fmt="post" aria-pressed="true">منشور 4:5</button>
+      <button type="button" data-fmt="square" aria-pressed="false">مربع 1:1</button>
+      <button type="button" data-fmt="story" aria-pressed="false">ستوري 9:16</button>
+    </div>
+    <button type="button" class="btn primary" id="exportBtn">تصدير PNG</button>
+  </header>
+
+  <main class="panes">
+    <aside class="pane gallery" aria-label="القوالب">
+      <div class="gtools">
+        <input type="search" id="q" placeholder="ابحثي برقم القالب أو اسمه" aria-label="بحث في القوالب">
+        <div class="chips" id="cats" role="group" aria-label="نوع القالب"></div>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+    </aside>
+
+    <section class="stagewrap" aria-label="معاينة">
+      <div class="stagehead"><span>القالب <strong id="curName"></strong></span><span id="curSize" dir="ltr"></span></div>
+      <div class="stage" id="stage"><div class="frame" id="frame"><div class="inner" id="frameInner"></div></div></div>
+    </section>
+
+    <aside class="pane editor" aria-label="تعديل القالب" id="editor"></aside>
+  </main>
+</div>
+<div id="exportHost" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const FMT = { post:{w:1080,h:1350,label:'1080 × 1350'}, square:{w:1080,h:1080,label:'1080 × 1080'}, story:{w:1080,h:1920,label:'1080 × 1920'} };
+
+const PAL = [
+  {n:'ليل نيون', c:{bg:'#0E1016',surface:'#1A1D27',text:'#FFFFFF',muted:'#C9CDD8',accent:'#4D8DFF',accent2:'#B57BFF'}},
+  {n:'رخام',     c:{bg:'#F6F4F0',surface:'#FFFFFF',text:'#14151B',muted:'#4A4D57',accent:'#1D63C4',accent2:'#7A4FD0'}},
+  {n:'بنفسجي',     c:{bg:'#5B34B0',surface:'#6B44C2',text:'#F4EEFF',muted:'#E1D6F7',accent:'#FFFFFF',accent2:'#E2D0FF'}},
+  {n:'أزرق ليلي',  c:{bg:'#0F2A6B',surface:'#1B3B87',text:'#F2F6FF',muted:'#C8D6F5',accent:'#8FB6FF',accent2:'#FFD27A'}},
+  {n:'كهرماني',     c:{bg:'#FBF3E4',surface:'#FFFFFF',text:'#3A2408',muted:'#6B4E2A',accent:'#9A5A10',accent2:'#1D63C4'}},
+  {n:'أسود ذهبي',c:{bg:'#121212',surface:'#1F1F1F',text:'#F5EBDD',muted:'#BFB3A3',accent:'#D9A441',accent2:'#F5EBDD'}},
+  {n:'وردي',     c:{bg:'#FCEFF1',surface:'#FFFFFF',text:'#3B1F2B',muted:'#6E4A57',accent:'#C2366B',accent2:'#6B4FD0'}},
+  {n:'نعناع',    c:{bg:'#E7F3EF',surface:'#FFFFFF',text:'#123B33',muted:'#3F6359',accent:'#1C7C64',accent2:'#2F5BB7'}},
+  {n:'رمل',      c:{bg:'#E9DCC8',surface:'#F5EDE1',text:'#2E241B',muted:'#5E5043',accent:'#8A4E24',accent2:'#2F5BB7'}},
+  {n:'بحري',     c:{bg:'#062C3A',surface:'#0C3D50',text:'#EAF7FB',muted:'#B6D6E0',accent:'#5CC8E8',accent2:'#FFD27A'}},
+  {n:'طين',      c:{bg:'#F2E3D5',surface:'#FFF8F1',text:'#3A1F14',muted:'#6E4A3A',accent:'#A3412A',accent2:'#2F5BB7'}},
+  {n:'ليموني',   c:{bg:'#FFF9DB',surface:'#FFFFFF',text:'#2B2A12',muted:'#5C5A33',accent:'#7A6000',accent2:'#2F5BB7'}},
+  {n:'سماوي',    c:{bg:'#EAF4FF',surface:'#FFFFFF',text:'#0E2340',muted:'#3D5675',accent:'#1F5FBF',accent2:'#C2366B'}},
+  {n:'بنفسجي داكن',c:{bg:'#1B1030',surface:'#2A1A47',text:'#F3ECFF',muted:'#C9B8E8',accent:'#B48CFF',accent2:'#FFD27A'}},
+  {n:'زيتوني',   c:{bg:'#2F3A26',surface:'#3C4931',text:'#F1F3E6',muted:'#C8CFB4',accent:'#C9D77E',accent2:'#F2B66D'}},
+  {n:'خوخي',     c:{bg:'#FFE9DE',surface:'#FFF7F2',text:'#3D1E12',muted:'#6E4636',accent:'#B53A0B',accent2:'#6B4FD0'}},
+  {n:'رمادي أنيق',c:{bg:'#F2F2F0',surface:'#FFFFFF',text:'#1C1C1C',muted:'#555555',accent:'#1C1C1C',accent2:'#8C6A35'}},
+  {n:'كحلي ذهبي',c:{bg:'#0B1B33',surface:'#132A4D',text:'#F4EFE6',muted:'#C3CAD6',accent:'#E0B15C',accent2:'#8FB6FF'}},
+  {n:'زمردي',    c:{bg:'#0C3B2E',surface:'#13503F',text:'#EAF5EF',muted:'#B9D6C8',accent:'#6FD3A8',accent2:'#FFD27A'}},
+  {n:'نبيذي',    c:{bg:'#3B0D19',surface:'#521426',text:'#FBECEF',muted:'#E0B8C2',accent:'#FF8FA8',accent2:'#FFD27A'}},
+];
+const FP = [
+  {head:'Marhey',body:'Readex Pro',latin:'Sedgwick Ave Display',hw:700},
+  {head:'El Messiri',body:'Tajawal',latin:'Playfair Display',hw:700},
+  {head:'Lalezar',body:'Cairo',latin:'Anton',hw:400},
+  {head:'Aref Ruqaa',body:'Almarai',latin:'Playfair Display',hw:700},
+  {head:'Reem Kufi',body:'IBM Plex Sans Arabic',latin:'Bebas Neue',hw:700},
+  {head:'Lemonada',body:'Readex Pro',latin:'Poppins',hw:700},
+  {head:'Amiri',body:'Noto Naskh Arabic',latin:'Playfair Display',hw:700},
+  {head:'Rakkas',body:'Tajawal',latin:'Anton',hw:400},
+  {head:'Kufam',body:'Alexandria',latin:'Space Grotesk',hw:700},
+  {head:'Changa',body:'Cairo',latin:'Bebas Neue',hw:700},
+  {head:'Alexandria',body:'Almarai',latin:'Poppins',hw:700},
+  {head:'Mada',body:'Tajawal',latin:'Space Grotesk',hw:700},
+  {head:'Noto Kufi Arabic',body:'Noto Sans Arabic',latin:'Bebas Neue',hw:700},
+  {head:'Baloo Bhaijaan 2',body:'Cairo',latin:'Poppins',hw:700},
+  {head:'Markazi Text',body:'IBM Plex Sans Arabic',latin:'Playfair Display',hw:700},
+];
+const AR_FONTS = ['Alan Sans','Alexandria','Alkalami','Almarai','Alyamama','Amiri','Amiri Quran','Aref Ruqaa','Aref Ruqaa Ink','Badeen Display','Baloo Bhaijaan 2','Beiruti','Blaka','Blaka Hollow','Blaka Ink','Cairo','Cairo Play','Changa','El Messiri','Estedad','Fustat','Gulzar','Handjet','Harmattan','IBM Plex Sans Arabic','Jomhuria','Katibeh','Kufam','Lalezar','Lateef','Lemonada','Mada','Marhey','Markazi Text','Mirza','Noto Kufi Arabic','Noto Naskh Arabic','Noto Sans Arabic','Oi','Parastoo','Playpen Sans Arabic','Qahiri','Rakkas','Readex Pro','Reem Kufi','Reem Kufi Fun','Reem Kufi Ink','Rubik','Ruwudu','Scheherazade New','Tajawal','Vazirmatn','Vibes','Zain'];
+const LAT_FONTS = ['Sedgwick Ave Display','Playfair Display','Anton','Bebas Neue','Poppins','Space Grotesk'];
+const DECO = ['بسيط','توهّج نيون','إطار','دوائر ناعمة'];
+
+// ---------- helpers ----------
+const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const nl = s => esc(s).replace(/\n/g, '<br>');
+function rgb(h){ const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+const A = (h, a) => { const [r,g,b] = rgb(h); return `rgba(${r},${g},${b},${a})`; };
+const isDark = h => { const [r,g,b] = rgb(h); return (0.299*r + 0.587*g + 0.114*b) < 140; };
+const fam = (n, fb) => `'${n}', ${fb}`;
+const HEAD = x => fam(x.f.head, "'Readex Pro', sans-serif");
+const BODY = x => fam(x.f.body, "'Readex Pro', sans-serif");
+const LAT = x => fam(x.f.latin, "'Poppins', sans-serif");
+let CUR = null; // context of the template being rendered, used by the image placeholder
+const bgi = (u, st) => u
+  ? `<div data-img="1" style="background-image:url('${esc(u)}');background-size:cover;background-position:center;background-repeat:no-repeat;${st}"></div>`
+  : `<div data-img="1" style="background:linear-gradient(135deg, ${A(CUR.c.accent,.28)} 0%, ${A(CUR.c.accent2,.22)} 100%), ${CUR.c.surface};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:${A(CUR.c.text,.75)};overflow:hidden;${st}"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg><span style="font-size:24px;font-weight:600">اضغطي لرفع صورة</span></div>`;
+function glow(x, col){
+  if (x.d !== 1) return '';
+  return isDark(x.c.bg) ? `text-shadow:0 0 4px #FFFFFF, 0 0 16px ${col}, 0 0 36px ${col}, 0 0 70px ${col};` : `text-shadow:0 8px 30px ${A(col,.45)};`;
+}
+const frame = x => x.d === 2 ? `<div style="position:absolute;inset:26px;pointer-events:none;border:2px solid ${A(x.c.accent,.6)};border-radius:30px"></div>` : '';
+const orbs = x => x.d === 3 ? `<div style="position:absolute;pointer-events:none;width:680px;height:680px;border-radius:50%;top:-260px;left:-260px;background:radial-gradient(circle, ${A(x.c.accent2,.38)} 0%, ${A(x.c.accent2,0)} 70%)"></div><div style="position:absolute;pointer-events:none;width:760px;height:760px;border-radius:50%;bottom:-320px;right:-280px;background:radial-gradient(circle, ${A(x.c.accent,.32)} 0%, ${A(x.c.accent,0)} 70%)"></div>` : '';
+const root = (x, inner) => `<div dir="rtl" style="width:1080px;height:${x.H}px;position:relative;overflow:hidden;box-sizing:border-box;background:${x.c.bg};color:${x.c.text};font-family:${BODY(x)}">${orbs(x)}<div style="position:relative;height:100%">${inner}</div>${frame(x)}</div>`;
+const lat = (x, txt, st) => `<span dir="ltr" style="font-family:${LAT(x)};${st}">${txt}</span>`;
+const ICONS = {
+  insta:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
+  truck:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
+  wallet:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14.5h2"/></svg>',
+};
+
+// ---------- the 10 layouts ----------
+const LAYOUTS = [
+ { key:'cover', name:'غلاف',
+   fields:[['eyebrow','عنوان صغير (إنجليزي)'],['brand','اسم العلامة'],['headline','العنوان الرئيسي','area'],['slogan','الشعار'],['bottomTitle','سطر سفلي'],['bottomSub','وصف سفلي'],['chip1','وسم 1'],['chip2','وسم 2'],['chip3','وسم 3']],
+   text:{"eyebrow": "SMALL TITLE", "brand": "BRAND", "headline": "اكتبي العنوان الرئيسي هنا", "slogan": "Your slogan here", "bottomTitle": "سطر مختصر يلخّص الفكرة", "bottomSub": "وصف قصير تحت السطر", "chip1": "TAG 1", "chip2": "TAG 2", "chip3": "TAG 3"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `${bgi(x.im(0), 'position:absolute;inset:0')}
+     <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg, ${A(c.bg,.88)} 0%, ${A(c.bg,.2)} 38%, ${A(c.bg,0)} 58%, ${A(c.bg,.92)} 100%)"></div>
+     <div style="position:absolute;top:80px;right:80px;left:80px;display:flex;flex-direction:column;gap:16px">
+       ${lat(x, t('eyebrow'), `align-self:flex-end;font-weight:600;font-size:20px;letter-spacing:6px;color:${c.muted}`)}
+       <div dir="ltr" style="text-align:right;font-family:${LAT(x)};font-size:180px;line-height:1.02;${glow(x,c.accent)}">${t('brand')}</div>
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:54px;line-height:1.4">${t('headline')}</div>
+       <div dir="ltr" style="text-align:right;font-family:${LAT(x)};font-weight:600;font-size:34px;letter-spacing:2px;color:${c.accent2}">${t('slogan')}</div>
+     </div>
+     <div style="position:absolute;bottom:80px;right:80px;left:80px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+       <div style="display:flex;flex-direction:column;gap:6px"><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:40px">${t('bottomTitle')}</span><span style="font-size:22px;color:${c.muted}">${t('bottomSub')}</span></div>
+       <div dir="ltr" style="display:flex;gap:12px;font-family:${LAT(x)};font-size:20px;font-weight:600">${['chip1','chip2','chip3'].map(k => `<span style="padding:10px 20px;border:1.5px solid ${A(c.text,.7)};border-radius:999px;white-space:nowrap">${t(k)}</span>`).join('')}</div>
+     </div>`); } },
+
+ { key:'about', name:'تعريف',
+   fields:[['eyebrow','عنوان صغير (إنجليزي)'],['headline','العنوان','area'],['para','الفقرة','area'],['n1','رقم 1'],['c1','وصف 1'],['n2','رقم 2'],['c2','وصف 2'],['n3','رقم 3'],['c3','وصف 3']],
+   text:{"eyebrow": "ABOUT US", "headline": "عنوان يعرّف بعلامتك", "para": "فقرة قصيرة تعرّف بعلامتك: من أنتِ، وماذا تقدّمين، ولمن.", "n1": "01", "c1": "وصف قصير للنقطة الأولى", "n2": "02", "c2": "وصف قصير للنقطة الثانية", "n3": "03", "c3": "وصف قصير للنقطة الثالثة"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;display:flex;flex-direction:column">
+       ${bgi(x.im(0), `height:${Math.round(x.H*0.42)}px;flex:none`)}
+       <div style="flex:1;min-height:0;padding:60px 80px 64px;display:flex;flex-direction:column;gap:30px">
+         <div style="display:flex;flex-direction:column;gap:12px">
+           ${lat(x, t('eyebrow'), `text-align:right;font-weight:600;font-size:18px;letter-spacing:5px;color:${c.accent}`)}
+           <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:64px;line-height:1.28;${glow(x,c.accent2)}">${t('headline')}</div>
+         </div>
+         <div style="font-size:28px;line-height:1.7;color:${c.muted}">${t('para')}</div>
+         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:auto">
+           ${[1,2,3].map(i => `<div style="background:${c.surface};border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:10px"><span dir="ltr" style="text-align:right;font-family:${LAT(x)};font-size:58px;line-height:1;color:${c.accent}">${t('n'+i)}</span><span style="font-size:22px;line-height:1.5">${t('c'+i)}</span></div>`).join('')}
+         </div>
+       </div></div>`); } },
+
+ { key:'product', name:'منتج',
+   fields:[['lab1','عنوان أعلى يسار (إنجليزي)'],['lab2','عنوان أعلى يمين (إنجليزي)'],['name','اسم المنتج'],['size','الحجم'],['i1','مكوّن 1'],['d1','وصف 1'],['i2','مكوّن 2'],['d2','وصف 2'],['i3','مكوّن 3'],['d3','وصف 3'],['i4','مكوّن 4'],['d4','وصف 4'],['headline','العنوان','area'],['para','الفقرة','area'],['useT','عنوان الاستخدام'],['use','طريقة الاستخدام','area'],['suitT','عنوان المناسبة'],['suit','يناسب']],
+   text:{"lab1": "BRAND NAME", "lab2": "PRODUCT LINE", "name": "PRODUCT", "size": "00 ml", "i1": "الميزة الأولى", "d1": "سطر يشرح الميزة", "i2": "الميزة الثانية", "d2": "سطر يشرح الميزة", "i3": "الميزة الثالثة", "d3": "سطر يشرح الميزة", "i4": "الميزة الرابعة", "d4": "سطر يشرح الميزة", "headline": "وصف المنتج في جملة واحدة", "para": "فقرة قصيرة عن فائدة المنتج وطريقة عمله.", "useT": "طريقة الاستخدام", "use": "اكتبي خطوات الاستخدام هنا.", "suitT": "يناسب", "suit": "لمن يناسب هذا المنتج"},
+   render(x){ const c = x.c, t = x.t;
+     const call = (i, d, near) => `<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:10px">${near === 'left'
+        ? `<span style="font-size:22px;font-weight:700;white-space:nowrap">${t(i)}</span><span style="flex:1;height:1.5px;background:${c.text}"></span><span style="width:9px;height:9px;border-radius:50%;background:${c.text}"></span>`
+        : `<span style="width:9px;height:9px;border-radius:50%;background:${c.text}"></span><span style="flex:1;height:1.5px;background:${c.text}"></span><span style="font-size:22px;font-weight:700;white-space:nowrap">${t(i)}</span>`}</div><span style="font-size:18px;line-height:1.5;color:${c.muted}">${t(d)}</span></div>`;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:52px 72px 60px;display:flex;flex-direction:column;gap:22px">
+       <div dir="ltr" style="display:flex;justify-content:space-between;font-family:${LAT(x)};font-weight:600;font-size:18px;letter-spacing:5px"><span>${t('lab1')}</span><span>${t('lab2')}</span></div>
+       <div dir="ltr" style="text-align:center;font-family:${LAT(x)};font-size:170px;line-height:1;letter-spacing:6px;white-space:nowrap;${glow(x,c.accent2)}">${t('name')}</div>
+       <div style="flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px minmax(0,1fr);gap:34px;align-items:center">
+         <div style="display:flex;flex-direction:column;gap:44px">${call('i1','d1','left')}${call('i2','d2','left')}</div>
+         <div style="position:relative;height:100%;max-height:560px;min-height:220px">
+           ${bgi(x.im(0), `position:absolute;inset:0;border-radius:190px 190px 28px 28px;box-shadow:0 30px 60px ${A('#000000',.35)}`)}
+           <div dir="ltr" style="position:absolute;top:-6px;left:-56px;width:108px;height:108px;border-radius:50%;background:${c.bg};border:2px solid ${c.text};display:flex;align-items:center;justify-content:center;font-family:${LAT(x)};font-weight:600;font-size:22px">${t('size')}</div>
+         </div>
+         <div style="display:flex;flex-direction:column;gap:44px">${call('i3','d3','right')}${call('i4','d4','right')}</div>
+       </div>
+       <div style="text-align:center;display:flex;flex-direction:column;gap:10px"><div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:46px;line-height:1.3">${t('headline')}</div><div style="font-size:22px;line-height:1.6;color:${c.muted}">${t('para')}</div></div>
+       <div style="display:flex;gap:28px;padding-top:22px;border-top:1.5px solid ${A(c.text,.4)}">
+         <div style="flex:2;display:flex;flex-direction:column;gap:4px"><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:22px;color:${c.accent2}">${t('useT')}</span><span style="font-size:19px;line-height:1.5">${t('use')}</span></div>
+         <span style="width:1.5px;background:${A(c.text,.4)}"></span>
+         <div style="flex:1.2;display:flex;flex-direction:column;gap:4px"><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:22px;color:${c.accent2}">${t('suitT')}</span><span style="font-size:19px;line-height:1.5">${t('suit')}</span></div>
+       </div></div>`); } },
+
+ { key:'routine', name:'روتين',
+   fields:[['headline','العنوان'],['s1t','الخطوة 1'],['s1d','وصف الخطوة 1'],['s2t','الخطوة 2'],['s2d','وصف الخطوة 2'],['s3t','الخطوة 3'],['s3d','وصف الخطوة 3'],['k1t','بطاقة 1'],['k1d','وصف البطاقة 1'],['k2t','بطاقة 2'],['k2d','وصف البطاقة 2']],
+   text:{"headline": "عنوان الخطوات", "s1t": "الخطوة الأولى", "s1d": "شرح قصير للخطوة", "s2t": "الخطوة الثانية", "s2d": "شرح قصير للخطوة", "s3t": "الخطوة الثالثة", "s3d": "شرح قصير للخطوة", "k1t": "ملاحظة أولى", "k1d": "تفصيل قصير للملاحظة", "k2t": "ملاحظة ثانية", "k2d": "تفصيل قصير للملاحظة"},
+   render(x){ const c = x.c, t = x.t; const cols = [c.accent, c.accent2, c.accent];
+     return root(x, `<div style="height:100%;display:flex;flex-direction:column">
+       <div style="position:relative;height:${Math.round(x.H*0.32)}px;flex:none">${bgi(x.im(0), 'position:absolute;inset:0')}<div style="position:absolute;left:0;right:0;bottom:0;height:62%;pointer-events:none;background:linear-gradient(180deg, ${A(c.bg,0)} 0%, ${c.bg} 100%)"></div></div>
+       <div style="flex:1;min-height:0;padding:0 80px 64px;display:flex;flex-direction:column;gap:28px">
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:70px;line-height:1.2;${glow(x,c.accent2)}">${t('headline')}</div>
+         <div style="display:flex;flex-direction:column;gap:18px">
+           ${[1,2,3].map(i => `<div style="display:flex;align-items:center;gap:30px;padding:22px 30px;border:1.5px solid ${A(cols[i-1],.6)};border-radius:22px"><span dir="ltr" style="font-family:${LAT(x)};font-size:84px;line-height:1;width:76px;text-align:center;color:${x.d===1 ? c.text : cols[i-1]};${glow(x,cols[i-1])}">${i}</span><div style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:30px;font-weight:700">${t('s'+i+'t')}</span><span style="font-size:22px;color:${c.muted}">${t('s'+i+'d')}</span></div></div>`).join('')}
+         </div>
+         <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:auto">
+           ${[1,2].map(i => `<div style="background:${c.surface};border-radius:18px;padding:24px 28px;display:flex;flex-direction:column;gap:6px"><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:30px;color:${i===1?c.accent:c.accent2}">${t('k'+i+'t')}</span><span style="font-size:21px;line-height:1.5;color:${c.muted}">${t('k'+i+'d')}</span></div>`).join('')}
+         </div>
+       </div></div>`); } },
+
+ { key:'ingredients', name:'مكونات',
+   fields:[['eyebrow','عنوان صغير (إنجليزي)'],['headline','العنوان','area'],['intro','مقدمة','area'],['g1','مكوّن 1'],['e1','وصف 1','area'],['g2','مكوّن 2'],['e2','وصف 2','area'],['g3','مكوّن 3'],['e3','وصف 3','area'],['g4','مكوّن 4'],['e4','وصف 4','area']],
+   text:{"eyebrow": "INSIDE", "headline": "عنوان قسم المكونات", "intro": "سطر يقدّم المكونات أو العناصر.", "g1": "العنصر الأول", "e1": "وصف قصير لدوره", "g2": "العنصر الثاني", "e2": "وصف قصير لدوره", "g3": "العنصر الثالث", "e3": "وصف قصير لدوره", "g4": "العنصر الرابع", "e4": "وصف قصير لدوره"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:72px 80px;display:flex;flex-direction:column;gap:28px">
+       <div style="display:flex;flex-direction:column;gap:12px">${lat(x, t('eyebrow'), `text-align:right;font-weight:600;font-size:18px;letter-spacing:5px;color:${c.accent}`)}
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:62px;line-height:1.28;${glow(x,c.accent)}">${t('headline')}</div>
+       <div style="font-size:26px;line-height:1.6;color:${c.muted}">${t('intro')}</div></div>
+       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px">
+         ${[1,2,3,4].map(i => `<div style="background:${c.surface};border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:12px"><span dir="ltr" style="width:56px;height:56px;border-radius:50%;border:2px solid ${c.accent};display:flex;align-items:center;justify-content:center;font-family:${LAT(x)};font-size:22px;color:${c.accent}">0${i}</span><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:32px;line-height:1.3">${t('g'+i)}</span><span style="font-size:21px;line-height:1.55;color:${c.muted}">${t('e'+i)}</span></div>`).join('')}
+       </div>
+       ${bgi(x.im(0), `flex:1;min-height:150px;border-radius:28px;margin-top:auto`)}
+     </div>`); } },
+
+ { key:'offer', name:'عرض',
+   fields:[['badge','نص الشارة'],['eyebrow','سطر تمهيدي'],['headline','العنوان','area'],['price','السعر'],['cta','زر الطلب'],['terms','الشروط','area']],
+   text:{"badge": "[الخصم]", "eyebrow": "سطر تمهيدي للعرض", "headline": "عنوان العرض", "price": "[السعر]", "cta": "نص الزر", "terms": "[شروط العرض ومدته]"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;display:flex;flex-direction:column">
+       <div style="position:relative;height:${Math.round(x.H*0.46)}px;flex:none">${bgi(x.im(0), 'position:absolute;inset:0')}
+         <div style="position:absolute;bottom:-80px;left:80px;width:180px;height:180px;border-radius:50%;background:${c.accent};color:${c.bg};display:flex;align-items:center;justify-content:center;text-align:center;font-family:${HEAD(x)};font-weight:${x.hw};font-size:34px;line-height:1.2;padding:16px;box-sizing:border-box;box-shadow:0 18px 40px ${A('#000000',.25)}">${t('badge')}</div></div>
+       <div style="flex:1;min-height:0;padding:56px 80px 64px;display:flex;flex-direction:column;gap:22px">
+         <span style="font-size:28px;font-weight:700;color:${c.accent}">${t('eyebrow')}</span>
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:70px;line-height:1.25;${glow(x,c.accent2)}">${t('headline')}</div>
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:84px;line-height:1.1;color:${c.accent2}">${t('price')}</div>
+         <span style="align-self:flex-start;background:${c.text};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:32px;padding:18px 48px;border-radius:999px">${t('cta')}</span>
+         <span style="margin-top:auto;font-size:19px;line-height:1.6;color:${c.muted}">${t('terms')}</span>
+       </div></div>`); } },
+
+ { key:'tips', name:'نصائح',
+   fields:[['eyebrow','سطر تمهيدي'],['headline','العنوان','area'],['p1','نصيحة 1'],['q1','شرح 1'],['p2','نصيحة 2'],['q2','شرح 2'],['p3','نصيحة 3'],['q3','شرح 3'],['p4','نصيحة 4'],['q4','شرح 4'],['p5','نصيحة 5'],['q5','شرح 5']],
+   text:{"eyebrow": "سطر تمهيدي", "headline": "عنوان قائمة النصائح", "p1": "النصيحة الأولى", "q1": "شرح قصير للنصيحة", "p2": "النصيحة الثانية", "q2": "شرح قصير للنصيحة", "p3": "النصيحة الثالثة", "q3": "شرح قصير للنصيحة", "p4": "النصيحة الرابعة", "q4": "شرح قصير للنصيحة", "p5": "النصيحة الخامسة", "q5": "شرح قصير للنصيحة"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:72px 80px;display:flex;flex-direction:column;gap:26px">
+       <div style="display:flex;align-items:center;justify-content:space-between;gap:30px">
+         <div style="display:flex;flex-direction:column;gap:8px;flex:1"><span style="font-size:24px;font-weight:700;color:${c.accent}">${t('eyebrow')}</span><div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:62px;line-height:1.25;${glow(x,c.accent2)}">${t('headline')}</div></div>
+         ${bgi(x.im(0), `width:200px;height:200px;flex:none;border-radius:50%;border:8px solid ${c.surface}`)}
+       </div>
+       <div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;gap:14px">
+         ${[1,2,3,4,5].map(i => `<div style="display:flex;align-items:center;gap:24px"><span dir="ltr" style="flex:none;width:66px;height:66px;border-radius:50%;background:${c.accent};color:${c.bg};display:flex;align-items:center;justify-content:center;font-family:${LAT(x)};font-size:30px">${i}</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:30px;font-weight:700">${t('p'+i)}</span><span style="font-size:22px;color:${c.muted}">${t('q'+i)}</span></div></div>`).join('')}
+       </div></div>`); } },
+
+ { key:'faq', name:'أسئلة',
+   fields:[['eyebrow','عنوان صغير (إنجليزي)'],['headline','العنوان'],['q1','سؤال 1','area'],['a1','جواب 1','area'],['q2','سؤال 2','area'],['a2','جواب 2','area'],['q3','سؤال 3','area'],['a3','جواب 3','area'],['q4','سؤال 4','area'],['a4','جواب 4','area']],
+   text:{"eyebrow": "FAQ", "headline": "الأسئلة الشائعة", "q1": "اكتبي السؤال الأول هنا؟", "a1": "اكتبي الإجابة هنا.", "q2": "اكتبي السؤال الثاني هنا؟", "a2": "اكتبي الإجابة هنا.", "q3": "اكتبي السؤال الثالث هنا؟", "a3": "اكتبي الإجابة هنا.", "q4": "اكتبي السؤال الرابع هنا؟", "a4": "اكتبي الإجابة هنا."},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:76px 80px;display:flex;flex-direction:column;gap:26px">
+       <div style="display:flex;flex-direction:column;gap:10px">${lat(x, t('eyebrow'), `text-align:right;font-weight:600;font-size:20px;letter-spacing:6px;color:${c.accent}`)}
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:66px;line-height:1.25;${glow(x,c.accent)}">${t('headline')}</div></div>
+       <div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly">
+         ${[1,2,3,4].map(i => `<div style="display:flex;flex-direction:column;gap:10px;padding:20px 0;border-bottom:1.5px solid ${A(c.text,.18)}"><div style="display:flex;align-items:center;gap:18px"><span style="flex:none;width:54px;height:54px;border-radius:14px;background:${c.accent};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:28px;display:flex;align-items:center;justify-content:center">س</span><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:30px;line-height:1.35">${t('q'+i)}</span></div><span style="padding-right:72px;font-size:22px;line-height:1.6;color:${c.muted}">${t('a'+i)}</span></div>`).join('')}
+       </div></div>`); } },
+
+ { key:'quote', name:'اقتباس',
+   fields:[['quote','نص الاقتباس','area'],['by','القائل'],['slogan','الشعار']],
+   text:{"quote": "اكتبي الاقتباس أو الرسالة هنا", "by": "— اسم القائل", "slogan": "Your slogan here"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:90px 90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center">
+       <div dir="ltr" style="font-family:'Playfair Display', serif;font-size:300px;line-height:.7;height:160px;color:${c.accent2}">&ldquo;</div>
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:62px;line-height:1.5;${glow(x,c.accent2)}">${t('quote')}</div>
+       <span style="font-size:28px;color:${c.muted}">${t('by')}</span>
+       ${bgi(x.im(0), `width:240px;height:240px;border-radius:50%;border:8px solid ${c.surface};flex:none`)}
+       ${lat(x, t('slogan'), `font-weight:600;font-size:32px;letter-spacing:2px;color:${c.accent}`)}
+     </div>`); } },
+
+ { key:'contact', name:'تواصل',
+   fields:[['headline','العنوان'],['sub','سطر تحت العنوان'],['r1l','عنوان الصف 1'],['r1v','قيمة الصف 1'],['r2l','عنوان الصف 2'],['r2v','قيمة الصف 2'],['r3l','عنوان الصف 3'],['r3v','قيمة الصف 3'],['cta','زر الطلب'],['slogan','الشعار']],
+   text:{"headline": "عنوان التواصل", "sub": "سطر قصير تحت العنوان", "r1l": "انستغرام", "r1v": "[@حسابك]", "r2l": "التوصيل", "r2v": "[مناطق التوصيل]", "r3l": "الدفع", "r3v": "[طرق الدفع]", "cta": "نص الزر", "slogan": "Your slogan here"},
+   render(x){ const c = x.c, t = x.t; const ic = ['insta','truck','wallet'];
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:72px 80px;display:flex;flex-direction:column;gap:26px">
+       <div style="display:flex;flex-direction:column;gap:8px"><div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:68px;line-height:1.25;${glow(x,c.accent)}">${t('headline')}</div><span style="font-size:26px;color:${c.muted}">${t('sub')}</span></div>
+       ${bgi(x.im(0), `height:${Math.round(x.H*0.28)}px;flex:none;border-radius:32px`)}
+       <div style="display:flex;flex-direction:column;gap:16px">
+         ${[1,2,3].map(i => `<div style="background:${c.surface};border-radius:20px;padding:20px 26px;display:flex;align-items:center;gap:20px"><span style="flex:none;width:58px;height:58px;border-radius:16px;background:${A(c.accent,.18)};color:${c.accent};display:flex;align-items:center;justify-content:center">${ICONS[ic[i-1]].replace(/currentColor/g, c.accent)}</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;color:${c.muted}">${t('r'+i+'l')}</span><span style="font-size:28px;font-weight:700">${t('r'+i+'v')}</span></div></div>`).join('')}
+       </div>
+       <span style="margin-top:auto;text-align:center;background:${c.accent};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:34px;padding:22px;border-radius:999px">${t('cta')}</span>
+       ${lat(x, t('slogan'), `text-align:center;font-weight:600;font-size:26px;letter-spacing:2px;color:${c.muted}`)}
+     </div>`); } },
+
+ { key:'split', name:'تقسيم', fields:[['eyebrow','سطر تمهيدي'],['headline','العنوان','area'],['para','الفقرة','area'],['cta','الزر'],['foot','سطر أخير']],
+   text:{"eyebrow": "سطر تمهيدي", "headline": "العنوان الرئيسي هنا", "para": "فقرة قصيرة توضّح الفكرة.", "cta": "نص الزر", "foot": "[@حسابك]"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+       <div style="padding:80px 72px 80px 48px;display:flex;flex-direction:column;justify-content:center;gap:28px">
+         <span style="font-size:26px;font-weight:700;color:${c.accent}">${t('eyebrow')}</span>
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:72px;line-height:1.22;${glow(x,c.accent2)}">${t('headline')}</div>
+         <div style="font-size:26px;line-height:1.7;color:${c.muted}">${t('para')}</div>
+         <span style="align-self:flex-start;background:${c.accent};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:28px;padding:18px 40px;border-radius:999px">${t('cta')}</span>
+         <span style="font-size:22px;color:${c.muted}">${t('foot')}</span>
+       </div>
+       ${bgi(x.im(0), 'height:100%')}</div>`); } },
+
+ { key:'stat', name:'رقم', fields:[['eyebrow','سطر تمهيدي'],['big','الرقم'],['unit','بجانب الرقم'],['label','العنوان','area'],['para','الفقرة','area']],
+   text:{"eyebrow": "سطر تمهيدي", "big": "00", "unit": "الوحدة", "label": "ماذا يعني هذا الرقم", "para": "سطر يشرح الرقم."},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:84px 80px 72px;display:flex;flex-direction:column;gap:22px">
+       <span style="font-size:28px;font-weight:700;color:${c.accent}">${t('eyebrow')}</span>
+       <div style="display:flex;align-items:baseline;gap:24px"><span dir="ltr" style="font-family:${LAT(x)};font-size:330px;line-height:.95;color:${c.accent};${glow(x,c.accent)}">${t('big')}</span><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:72px">${t('unit')}</span></div>
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:56px;line-height:1.3">${t('label')}</div>
+       <div style="font-size:26px;line-height:1.7;color:${c.muted}">${t('para')}</div>
+       ${bgi(x.im(0), 'flex:1;min-height:150px;border-radius:28px;margin-top:12px')}</div>`); } },
+
+ { key:'checklist', name:'مميزات', fields:[['headline','العنوان','area'],['sub','سطر تحت العنوان'],['f1','ميزة 1'],['f2','ميزة 2'],['f3','ميزة 3'],['f4','ميزة 4'],['f5','ميزة 5']],
+   text:{"headline": "عنوان قائمة المميزات", "sub": "سطر قصير تحت العنوان", "f1": "الميزة الأولى", "f2": "الميزة الثانية", "f3": "الميزة الثالثة", "f4": "الميزة الرابعة", "f5": "الميزة الخامسة"},
+   render(x){ const c = x.c, t = x.t;
+     const ck = `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${c.bg}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:76px 80px;display:flex;flex-direction:column;gap:26px">
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:66px;line-height:1.25;${glow(x,c.accent)}">${t('headline')}</div>
+       <span style="font-size:26px;color:${c.muted}">${t('sub')}</span>
+       <div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;gap:14px">
+         ${[1,2,3,4,5].map(i => `<div style="display:flex;align-items:center;gap:22px;background:${c.surface};border-radius:20px;padding:20px 24px"><span style="flex:none;width:58px;height:58px;border-radius:50%;background:${c.accent};display:flex;align-items:center;justify-content:center">${ck}</span><span style="font-size:30px;font-weight:700">${t('f'+i)}</span></div>`).join('')}
+       </div>
+       ${bgi(x.im(0), `height:${Math.round(x.H*0.16)}px;flex:none;border-radius:24px`)}</div>`); } },
+
+ { key:'announce', name:'إعلان', fields:[['badge','الشارة'],['headline','العنوان','area'],['para','الفقرة','area'],['date','سطر التاريخ'],['cta','الزر']],
+   text:{"badge": "جديد", "headline": "عنوان الإعلان", "para": "فقرة قصيرة عن الخبر.", "date": "[التاريخ]", "cta": "نص الزر"},
+   render(x){ const c = x.c, t = x.t;
+     const cal = `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${c.accent}" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`;
+     return root(x, `<div style="height:100%;display:flex;flex-direction:column">
+       <div style="position:relative;height:${Math.round(x.H*0.48)}px;flex:none">${bgi(x.im(0), 'position:absolute;inset:0')}
+         <span style="position:absolute;top:56px;right:56px;background:${c.accent};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:42px;padding:14px 38px;border-radius:999px">${t('badge')}</span></div>
+       <div style="flex:1;min-height:0;padding:56px 80px 64px;display:flex;flex-direction:column;gap:22px">
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:72px;line-height:1.22;${glow(x,c.accent2)}">${t('headline')}</div>
+         <div style="font-size:26px;line-height:1.7;color:${c.muted}">${t('para')}</div>
+         <div style="display:flex;align-items:center;gap:14px;font-size:26px;font-weight:600">${cal}<span>${t('date')}</span></div>
+         <span style="margin-top:auto;align-self:flex-start;background:${c.text};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:30px;padding:18px 46px;border-radius:999px">${t('cta')}</span>
+       </div></div>`); } },
+
+ { key:'gallery', name:'معرض', slots:4, fields:[['headline','العنوان'],['sub','سطر تحت العنوان'],['tag','الوسم']],
+   text:{"headline": "عنوان المعرض", "sub": "سطر قصير تحت العنوان", "tag": "[#الوسم]"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:72px 72px 64px;display:flex;flex-direction:column;gap:24px">
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:68px;line-height:1.25;${glow(x,c.accent)}">${t('headline')}</div>
+       <span style="font-size:26px;color:${c.muted}">${t('sub')}</span>
+       <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:18px">
+         ${[0,1,2,3].map(i => bgi(x.im(i), 'border-radius:24px;min-height:0')).join('')}
+       </div>
+       <span style="text-align:center;font-size:30px;font-weight:700;color:${c.accent}">${t('tag')}</span></div>`); } },
+
+ { key:'howto', name:'طريقة الاستخدام', fields:[['headline','العنوان','area'],['s1t','الخطوة 1'],['s1d','شرح 1','area'],['s2t','الخطوة 2'],['s2d','شرح 2','area'],['s3t','الخطوة 3'],['s3d','شرح 3','area'],['note','ملاحظة','area']],
+   text:{"headline": "طريقة الاستخدام", "s1t": "الخطوة 1", "s1d": "شرح قصير للخطوة", "s2t": "الخطوة 2", "s2d": "شرح قصير للخطوة", "s3t": "الخطوة 3", "s3d": "شرح قصير للخطوة", "note": "ملاحظة أو تنبيه هنا."},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;display:flex;flex-direction:column">
+       ${bgi(x.im(0), `height:${Math.round(x.H*0.34)}px;flex:none`)}
+       <div style="flex:1;min-height:0;padding:52px 64px 56px;display:flex;flex-direction:column;gap:26px">
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:64px;line-height:1.25;${glow(x,c.accent2)}">${t('headline')}</div>
+         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px">
+           ${[1,2,3].map(i => `<div style="background:${c.surface};border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:10px"><span dir="ltr" style="text-align:right;font-family:${LAT(x)};font-size:72px;line-height:1;color:${c.accent};${glow(x,c.accent)}">${i}</span><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:34px">${t('s'+i+'t')}</span><span style="font-size:20px;line-height:1.55;color:${c.muted}">${t('s'+i+'d')}</span></div>`).join('')}
+         </div>
+         <span style="margin-top:auto;font-size:19px;line-height:1.6;color:${c.muted}">${t('note')}</span>
+       </div></div>`); } },
+
+ { key:'event', name:'موعد', fields:[['eyebrow','سطر تمهيدي'],['headline','العنوان','area'],['day','اليوم'],['month','الشهر'],['time','الوقت'],['place','المكان'],['cta','الزر']],
+   text:{"eyebrow": "سطر تمهيدي", "headline": "اسم المناسبة", "day": "[00]", "month": "[الشهر]", "time": "[الوقت]", "place": "[المكان]", "cta": "نص الزر"},
+   render(x){ const c = x.c, t = x.t;
+     const ic = (d) => `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${c.accent}" stroke-width="1.8" aria-hidden="true">${d}</svg>`;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:80px;display:flex;flex-direction:column;gap:30px">
+       <span style="font-size:28px;font-weight:700;color:${c.accent}">${t('eyebrow')}</span>
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:78px;line-height:1.2;${glow(x,c.accent2)}">${t('headline')}</div>
+       <div style="display:flex;align-items:center;gap:36px">
+         <div style="background:${c.surface};border-radius:28px;padding:26px 44px;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:96px;line-height:1;color:${c.accent}">${t('day')}</span><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:32px">${t('month')}</span></div>
+         <div style="display:flex;flex-direction:column;gap:20px;font-size:30px;font-weight:600">
+           <div style="display:flex;align-items:center;gap:14px">${ic('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}<span>${t('time')}</span></div>
+           <div style="display:flex;align-items:center;gap:14px">${ic('<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>')}<span>${t('place')}</span></div>
+         </div>
+       </div>
+       ${bgi(x.im(0), 'flex:1;min-height:180px;border-radius:32px')}
+       <span style="text-align:center;background:${c.accent};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:32px;padding:20px;border-radius:999px">${t('cta')}</span></div>`); } },
+
+ { key:'poll', name:'تصويت', slots:2, fields:[['headline','السؤال','area'],['aLabel','الخيار الأول'],['bLabel','الخيار الثاني'],['hint','سطر أخير']],
+   text:{"headline": "اكتبي السؤال هنا؟", "aLabel": "الخيار الأول", "bLabel": "الخيار الثاني", "hint": "سطر يدعو للتعليق"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:72px 64px;display:flex;flex-direction:column;gap:28px">
+       <div style="text-align:center;font-family:${HEAD(x)};font-weight:${x.hw};font-size:76px;line-height:1.2;${glow(x,c.accent)}">${t('headline')}</div>
+       <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px">
+         ${[['aLabel','A',c.accent],['bLabel','B',c.accent2]].map(([k, L, col], i) => `<div style="display:flex;flex-direction:column;gap:16px;min-height:0">${bgi(x.im(i), `flex:1;min-height:0;border-radius:28px;border:4px solid ${col}`)}<div style="display:flex;align-items:center;gap:14px;justify-content:center"><span dir="ltr" style="width:60px;height:60px;border-radius:50%;background:${col};color:${c.bg};display:flex;align-items:center;justify-content:center;font-family:${LAT(x)};font-size:30px">${L}</span><span style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:36px">${t(k)}</span></div></div>`).join('')}
+       </div>
+       <span style="text-align:center;font-size:26px;color:${c.muted}">${t('hint')}</span></div>`); } },
+
+ { key:'carousel', name:'غلاف كاروسيل', fields:[['kicker','الشارة'],['headline','العنوان','area'],['sub','سطر تحت العنوان'],['count','العدّاد'],['swipe','نص السحب']],
+   text:{"kicker": "تصنيف", "headline": "عنوان السلسلة", "sub": "سطر قصير تحت العنوان", "count": "1/5", "swipe": "اسحبي"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `${bgi(x.im(0), 'position:absolute;inset:0')}
+       <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg, ${A(c.bg,.1)} 0%, ${A(c.bg,.35)} 40%, ${A(c.bg,.95)} 78%)"></div>
+       <div style="position:absolute;right:80px;left:80px;bottom:80px;display:flex;flex-direction:column;gap:24px">
+         <span style="align-self:flex-start;background:${c.accent};color:${c.bg};font-family:${HEAD(x)};font-weight:${x.hw};font-size:30px;padding:12px 30px;border-radius:999px">${t('kicker')}</span>
+         <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:84px;line-height:1.2;${glow(x,c.accent2)}">${t('headline')}</div>
+         <span style="font-size:28px;color:${c.muted}">${t('sub')}</span>
+         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:22px;border-top:1.5px solid ${A(c.text,.35)}">
+           <span dir="ltr" style="font-family:${LAT(x)};font-size:30px;letter-spacing:3px">${t('count')}</span>
+           <span style="display:flex;align-items:center;gap:12px;font-size:30px;font-weight:700"><span>${t('swipe')}</span><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="${c.text}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span>
+         </div>
+       </div>`); } },
+
+ { key:'word', name:'كلمة', fields:[['word','الكلمة'],['caption','السطر تحتها'],['foot','سطر أخير']],
+   text:{"word": "كلمة", "caption": "سطر قصير تحت الكلمة", "foot": "Your slogan here"},
+   render(x){ const c = x.c, t = x.t;
+     return root(x, `<div style="height:100%;box-sizing:border-box;padding:90px 80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center">
+       ${bgi(x.im(0), `width:230px;height:230px;border-radius:50%;flex:none;border:8px solid ${c.surface}`)}
+       <div style="font-family:${HEAD(x)};font-weight:${x.hw};font-size:220px;line-height:1.15;color:${c.accent};${glow(x,c.accent)}">${t('word')}</div>
+       <div style="font-size:44px;line-height:1.4;color:${c.muted}">${t('caption')}</div>
+       ${lat(x, t('foot'), `font-weight:600;font-size:30px;letter-spacing:3px;color:${c.text}`)}</div>`); } },
+
+];
+
+// ---------- 1000 templates: 20 layouts × 50 variants ----------
+const TPLS = [];
+for (let v = 0; v < 50; v++) for (let L = 0; L < LAYOUTS.length; L++) {
+  // spread palette, font pairing and decoration so no two variants of one layout share all three
+  const lay = LAYOUTS[L], p = (v + L * 7) % PAL.length, f = (v * 2 + Math.floor(v / 20) * 7 + L) % FP.length, d = (v + Math.floor(v / 10) + L) % 4;
+  TPLS.push({ id: TPLS.length, num: TPLS.length + 1, L, p, f, d, name: `${lay.name} · ${PAL[p].n}` });
+}
+
+// ---------- state ----------
+const KEY = 'template-studio-v1';
+let edits = {}; let sel = 0; let fmt = 'post'; let cat = -1; let query = '';
+try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); edits = s.edits || {}; sel = s.sel ?? 0; fmt = FMT[s.fmt] ? s.fmt : 'post'; } catch (e) {}
+function save(){
+  const data = { edits, sel, fmt };
+  try { localStorage.setItem(KEY, JSON.stringify(data)); }
+  catch (e) { // images too large for browser storage: keep the rest
+    try { const lite = JSON.parse(JSON.stringify(data)); Object.values(lite.edits).forEach(x => Object.keys(x).forEach(k => /^img\d*$/.test(k) && delete x[k])); localStorage.setItem(KEY, JSON.stringify(lite)); } catch (e2) {}
+  }
+}
+const E = id => (edits[id] ||= {});
+
+function ctx(tpl, f = fmt){
+  const e = edits[tpl.id] || {}, lay = LAYOUTS[tpl.L], fp = FP[tpl.f];
+  const texts = { ...lay.text, ...(e.texts || {}) };
+  const fonts = { head: e.head || fp.head, body: e.body || fp.body, latin: e.latin || fp.latin };
+  const hw = e.head && e.head !== fp.head ? 700 : fp.hw;
+  return { c: { ...PAL[tpl.p].c, ...(e.colors || {}) }, f: fonts, hw, t: k => nl(texts[k]), im: i => (i === 0 ? e.img : e['img' + (i + 1)]) || '', H: FMT[f].h, d: e.deco ?? tpl.d };
+}
+const html = (tpl, f) => { CUR = ctx(tpl, f); return LAYOUTS[tpl.L].render(CUR); };
+
+// ---------- free positioning + icon layer ----------
+const ICON_SET = {
+  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  heart:'<path d="M12 20s-7-4.4-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.6-9 9-9 9z"/>',
+  leaf:'<path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15z"/><path d="M5 19l8-8"/>',
+  drop:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16.5 9"/>',
+  flower:'<circle cx="12" cy="12" r="2.5"/><path d="M12 9.5c-1.5-3-1-6 0-6s1.5 3 0 6zM12 14.5c1.5 3 1 6 0 6s-1.5-3 0-6zM9.5 12c-3 1.5-6 1-6 0s3-1.5 6 0zM14.5 12c3-1.5 6-1 6 0s-3 1.5-6 0z"/>',
+  shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8c-2-4-6-3-5 0M12 8c2-4 6-3 5 0"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  pin:'<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  insta:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>',
+  truck:'<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  arrow:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  bubble:'<path d="M4 5h16v11H9l-5 4z"/>',
+};
+const ICON_NAMES = {star:'نجمة',heart:'قلب',leaf:'ورقة',drop:'قطرة',sparkle:'لمعة',sun:'شمس',moon:'هلال',check:'علامة صح',flower:'زهرة',shield:'درع',gift:'هدية',clock:'ساعة',pin:'موقع',phone:'هاتف',insta:'انستغرام',truck:'توصيل',arrow:'سهم',bubble:'رسالة'};
+const iconColor = (ic, x) => ({ accent:x.c.accent, accent2:x.c.accent2, text:x.c.text, white:'#FFFFFF' })[ic.color] || x.c.accent;
+const iconSvg = (name, col, fill, w = '100%') => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="${fill ? col : 'none'}" stroke="${col}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_SET[name] || ''}</svg>`;
+const libSvg = (o, col, w = '100%') => `<svg width="${w}" height="${w}" viewBox="${o.vb}" ${o.t === 's' ? `fill="none" stroke="${col}" stroke-width="${o.sw || 2}" stroke-linecap="round" stroke-linejoin="round"` : `fill="${col}"`} aria-hidden="true">${String(o.svg).replace(/%C%/g, col)}</svg>`;
+function iconHTML(ic, x){ const col = iconColor(ic, x);
+  return `<div data-icon="${ic.id}" style="position:absolute;left:${ic.x}px;top:${ic.y}px;width:${ic.size}px;height:${ic.size}px">${ic.svg ? libSvg(ic, col) : iconSvg(ic.name, col, ic.fill)}</div>`; }
+const posT = p => `translate(${p.dx || 0}px, ${p.dy || 0}px) scale(${p.s || 1})`;
+function movable(n){
+  if (n.closest('[data-img]') && !n.dataset.img) return false;
+  if (n.dataset.img) return true;
+  if ([...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim())) return true;
+  return n.children.length === 1 && n.firstElementChild.tagName.toLowerCase() === 'svg';
+}
+function mount(box, tpl, f, interactive){
+  box.innerHTML = html(tpl, f); const x = CUR;
+  const r = box.firstElementChild, e = edits[tpl.id] || {}, pos = e.pos || {};
+  const els = [...r.querySelectorAll('*')].filter(n => n.tagName !== 'BR' && !n.closest('svg'));
+  els.forEach((n, i) => {
+    const k = 'n' + i;
+    if (pos[k]) n.style.transform = posT(pos[k]);
+    if (interactive && movable(n)) n.dataset.dk = k;
+  });
+  if (e.icons && e.icons.length) r.insertAdjacentHTML('beforeend', e.icons.map(ic => iconHTML(ic, x)).join(''));
+}
+
+// ---------- fonts on demand ----------
+const loaded = new Set([...FP.flatMap(x => [x.head, x.body, x.latin]), 'Readex Pro']);
+function ensureFont(name){
+  if (!name || loaded.has(name)) return; loaded.add(name);
+  const q = name.replace(/ /g, '+'); const l = document.createElement('link'); l.rel = 'stylesheet';
+  l.href = `https://fonts.googleapis.com/css2?family=${q}:wght@400;700&display=swap`;
+  l.onerror = () => { l.href = `https://fonts.googleapis.com/css2?family=${q}&display=swap`; l.onerror = null; };
+  document.head.appendChild(l);
+  document.fonts.load(`40px '${name}'`).then(() => { renderStage(); refreshThumb(sel); }).catch(() => {});
+}
+
+// ---------- gallery ----------
+const $ = id => document.getElementById(id);
+const grid = $('grid');
+function buildCats(){
+  const box = $('cats'); box.innerHTML = '';
+  [['الكل', -1], ...LAYOUTS.map((l, i) => [l.name, i])].forEach(([n, i]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = n; b.setAttribute('aria-pressed', String(i === cat));
+    b.addEventListener('click', () => { cat = i; buildCats(); buildGallery(); }); box.appendChild(b);
+  });
+}
+const THUMB_W = 132;
+function thumbInto(tv, tpl){ const s = THUMB_W / 1080; tv.innerHTML = `<div class="inner" style="width:1080px;height:${FMT[fmt].h}px;transform:scale(var(--k, ${s}))"></div>`; mount(tv.firstElementChild, tpl, fmt, false); }
+function buildGallery(){
+  const q = query.trim();
+  const list = TPLS.filter(t => (cat < 0 || t.L === cat) && (!q || String(t.num) === q || t.name.includes(q)));
+  $('count').textContent = `${list.length} قالب`;
+  grid.innerHTML = ''; curList = list; shown = 0; moreThumbs();
+}
+let curList = [], shown = 0;
+function moreThumbs(){
+  const frag = document.createDocumentFragment();
+  curList.slice(shown, shown + 60).forEach(t => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'thumb'; b.dataset.id = t.id;
+    b.setAttribute('aria-label', `قالب ${t.num}: ${t.name}`); b.setAttribute('aria-current', String(t.id === sel));
+    b.innerHTML = `<div class="tv" style="aspect-ratio:1080/${FMT[fmt].h}"></div><span class="meta"><b>${t.num}</b><span>${esc(t.name)}</span></span>`; thumbInto(b.firstElementChild, t);
+    b.addEventListener('click', () => select(t.id)); frag.appendChild(b);
+  });
+  shown = Math.min(curList.length, shown + 60); grid.appendChild(frag); fitThumbs();
+}
+const sentinel = document.createElement('div'); sentinel.style.height = '1px'; grid.after(sentinel);
+new IntersectionObserver(en => { if (en.some(x => x.isIntersecting) && shown < curList.length) moreThumbs(); }, { rootMargin: '600px' }).observe(sentinel);
+function fitThumbs(){
+  const first = grid.querySelector('.tv'); if (!first) return;
+  grid.style.setProperty('--k', String(first.clientWidth / 1080));
+}
+function refreshThumb(id){
+  const b = grid.querySelector(`.thumb[data-id="${id}"] .tv`); if (b) thumbInto(b, TPLS[id]);
+}
+new ResizeObserver(fitThumbs).observe(grid);
+
+// ---------- stage ----------
+function renderStage(){
+  const tpl = TPLS[sel]; mount($('frameInner'), tpl, fmt, true); markPicked();
+  $('curName').textContent = `${tpl.num} · ${tpl.name}`; $('curSize').textContent = FMT[fmt].label; fitStage();
+}
+function fitStage(){
+  const st = $('stage'), H = FMT[fmt].h; const cs = getComputedStyle(st);
+  const aw = st.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const ah = st.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const k = Math.max(0.1, Math.min(aw / 1080, (ah > 120 ? ah : 9999) / H, 1));
+  const fr = $('frame'); fr.style.width = `${1080 * k}px`; fr.style.height = `${H * k}px`;
+  const inn = $('frameInner'); inn.style.width = '1080px'; inn.style.height = `${H}px`; inn.style.transform = `scale(${k})`; STAGE_K = k;
+}
+new ResizeObserver(fitStage).observe($('stage'));
+
+// ---------- editor ----------
+let tick = 0;
+function changed(){ renderStage(); clearTimeout(tick); tick = setTimeout(() => { refreshThumb(sel); save(); }, 250); }
+function el(tag, props = {}, ...kids){ const n = document.createElement(tag); Object.assign(n, props); kids.forEach(k => n.append(k)); return n; }
+function section(title){ const s = el('div', { className: 'sec' }); s.append(el('h2', { textContent: title })); return s; }
+function select(id){
+  sel = id; picked = null; grid.querySelectorAll('.thumb').forEach(b => b.setAttribute('aria-current', String(+b.dataset.id === id)));
+  renderStage(); buildEditor(); save();
+}
+function buildEditor(){
+  const tpl = TPLS[sel], lay = LAYOUTS[tpl.L], e = edits[tpl.id] || {}, fp = FP[tpl.f], x = ctx(tpl);
+  const ed = $('editor'); ed.innerHTML = '';
+
+  const sT = section('النصوص');
+  lay.fields.forEach(([k, label, type]) => {
+    const id = `f-${k}`; const val = (e.texts && k in e.texts) ? e.texts[k] : lay.text[k];
+    const inp = type === 'area' ? el('textarea', { id, value: val }) : el('input', { id, type: 'text', value: val });
+    inp.addEventListener('input', () => { (E(tpl.id).texts ||= {})[k] = inp.value; changed(); });
+    sT.append(el('div', { className: 'field' }, el('label', { htmlFor: id, textContent: label }), inp));
+  });
+  ed.append(sT);
+
+  const sI = section(lay.slots > 1 ? 'الصور' : 'الصورة');
+  for (let i = 0; i < (lay.slots || 1); i++) {
+    const key = i === 0 ? 'img' : 'img' + (i + 1);
+    const pv = el('div', { className: 'pv' }); if (x.im(i)) pv.style.backgroundImage = `url('${x.im(i)}')`;
+    const file = el('input', { type: 'file', accept: 'image/*', id: 'f-' + key });
+    file.addEventListener('change', () => {
+      const fl = file.files && file.files[0]; if (!fl) return;
+      const r = new FileReader(); r.onload = () => { E(tpl.id)[key] = r.result; pv.style.backgroundImage = `url('${r.result}')`; changed(); }; r.readAsDataURL(fl);
+    });
+    const reset = el('button', { type: 'button', className: 'linkbtn', textContent: 'إزالة' });
+    reset.addEventListener('click', () => { delete E(tpl.id)[key]; pv.style.backgroundImage = ''; changed(); });
+    sI.append(el('div', { className: 'imgrow' }, pv, el('label', { className: 'file' }, lay.slots > 1 ? `رفع الصورة ${i + 1}` : 'رفع صورة', file), reset));
+  }
+  sI.append(el('p', { className: 'note', textContent: 'الصورة تملأ مكانها في القالب وتُقصّ من الأطراف عند الحاجة. بدون صورة يظهر مكان فارغ ملوّن.' }));
+  ed.append(sI);
+
+  const sC = section('الألوان');
+  const pals = el('div', { className: 'pals', role: 'group' }); pals.setAttribute('aria-label', 'لوحات ألوان جاهزة');
+  PAL.forEach((p, i) => {
+    const b = el('button', { type: 'button', className: 'pal', title: p.n }); b.setAttribute('aria-label', `لوحة ${p.n}`);
+    const active = !e.colors && tpl.p === i || (e.colors && JSON.stringify(e.colors) === JSON.stringify(p.c));
+    b.setAttribute('aria-pressed', String(!!active));
+    ['bg','surface','accent','accent2'].forEach(k => { const s = el('span'); s.style.background = p.c[k]; b.append(s); });
+    b.addEventListener('click', () => { E(tpl.id).colors = { ...p.c }; changed(); buildEditor(); }); pals.append(b);
+  });
+  sC.append(pals);
+  const names = { bg:'الخلفية', surface:'البطاقات', text:'النص', muted:'النص الثانوي', accent:'اللون الأساسي', accent2:'اللون الثاني' };
+  const cg = el('div', { className: 'colors' });
+  Object.keys(names).forEach(k => {
+    const id = `c-${k}`; const inp = el('input', { type: 'color', id, value: x.c[k] });
+    inp.addEventListener('input', () => { (E(tpl.id).colors ||= { ...PAL[tpl.p].c })[k] = inp.value; changed(); });
+    cg.append(el('div', { className: 'field' }, el('label', { htmlFor: id, textContent: names[k] }), inp));
+  });
+  sC.append(cg); ed.append(sC);
+
+  const sF = section('الخطوط');
+  const fsel = (key, label, list, cur) => {
+    const id = `ff-${key}`; const s = el('select', { id });
+    list.forEach(n => { const o = el('option', { value: n, textContent: n }); if (n === cur) o.selected = true; s.append(o); });
+    s.addEventListener('change', () => { E(tpl.id)[key] = s.value; ensureFont(s.value); changed(); });
+    return el('div', { className: 'field' }, el('label', { htmlFor: id, textContent: label }), s);
+  };
+  sF.append(fsel('head', 'خط العناوين', AR_FONTS, x.f.head), fsel('body', 'خط النص', AR_FONTS, x.f.body), fsel('latin', 'الخط الإنجليزي', LAT_FONTS, x.f.latin));
+  ed.append(sF);
+
+  const sD = section('اللمسة');
+  const dsel = el('select', { id: 'f-deco' });
+  DECO.forEach((n, i) => { const o = el('option', { value: i, textContent: n }); if (i === x.d) o.selected = true; dsel.append(o); });
+  dsel.addEventListener('change', () => { E(tpl.id).deco = +dsel.value; changed(); });
+  sD.append(el('div', { className: 'field' }, el('label', { htmlFor: 'f-deco', textContent: 'الزخرفة' }), dsel));
+  ed.append(sD);
+
+  const sM = section('الموضع والأيقونات');
+  sM.append(el('p', { className: 'note', textContent: 'اسحبي أي نص أو صورة أو أيقونة في المعاينة لتغيير مكانه. اضغطي على مكان الصورة الفارغ لرفع صورة، أو اضغطي مرتين على صورة لتغييرها.' }));
+  const selBox = el('div', { id: 'selBox' }); sM.append(selBox);
+  sM.append(el('span', { className: 'lab', textContent: 'أيقونات: اسحبيها إلى التصميم أو اضغطي لإضافتها' }));
+  const ig = el('div', { className: 'icongrid' });
+  Object.keys(ICON_SET).forEach(name => {
+    const b = el('button', { type: 'button', draggable: true, title: ICON_NAMES[name] }); b.setAttribute('aria-label', `إضافة أيقونة ${ICON_NAMES[name]}`);
+    b.innerHTML = iconSvg(name, 'currentColor', false, 24);
+    b.addEventListener('click', () => addIcon(name, 540, FMT[fmt].h / 2));
+    b.addEventListener('dragstart', ev => { ev.dataTransfer.setData('text/plain', 'icon:' + name); ev.dataTransfer.effectAllowed = 'copy'; });
+    ig.append(b);
+  });
+  sM.append(ig);
+  sM.append(buildLibrary());
+  const rp = el('button', { type: 'button', className: 'btn', textContent: 'إعادة كل العناصر لأماكنها' });
+  rp.addEventListener('click', () => { const e2 = E(tpl.id); delete e2.pos; picked = null; changed(); buildSel(); toast('عادت العناصر لأماكنها الأصلية'); });
+  sM.append(rp);
+  ed.append(sM); buildSel();
+
+  const act = el('div', { className: 'actions' });
+  const exp = el('button', { type: 'button', className: 'btn primary', textContent: 'تصدير PNG' }); exp.addEventListener('click', exportPNG);
+  const rs = el('button', { type: 'button', className: 'btn', textContent: 'استعادة القالب الأصلي' });
+  let armed = false;
+  rs.addEventListener('click', () => {
+    if (!armed) { armed = true; rs.textContent = 'اضغطي مرة أخرى للتأكيد'; setTimeout(() => { armed = false; rs.textContent = 'استعادة القالب الأصلي'; }, 3000); return; }
+    delete edits[tpl.id]; picked = null; changed(); buildEditor(); toast('عاد القالب لحالته الأصلية');
+  });
+  act.append(exp, rs, el('p', { className: 'note', textContent: 'تعديلاتك تُحفظ في هذا المتصفح فقط. النصوص بين قوسين مربعين [ ] أماكن لمعلوماتك أنتِ.' }));
+  ed.append(act);
+}
+
+// ---------- icon library (13k+ free icons, loaded on demand) ----------
+const LIB = { meta: null, all: [], loading: null, sets: {} };
+const AR_ICON = {
+  'نجمة':'star','نجوم':'star','قلب':'heart','حب':'heart','ورقة':'leaf','ورق':'leaf','نبات':'plant','زهرة':'flower','ورد':'flower','وردة':'flower',
+  'قطرة':'drop','ماء':'droplet water','شمس':'sun','قمر':'moon','هلال':'moon','سحاب':'cloud','غيمة':'cloud','غيوم':'cloud','نار':'flame fire','برق':'bolt lightning',
+  'هدية':'gift','تسوق':'shopping cart bag','سلة':'basket cart','حقيبة':'bag','توصيل':'truck delivery','شاحنة':'truck','هاتف':'phone','جوال':'phone mobile device',
+  'موقع':'map-pin location','خريطة':'map','رسالة':'message chat','دردشة':'chat message','بريد':'mail','ساعة':'clock','وقت':'clock time','تقويم':'calendar','تاريخ':'calendar',
+  'صح':'check','علامة':'check','سهم':'arrow','يسار':'arrow-left','يمين':'arrow-right','أعلى':'arrow-up','أسفل':'arrow-down','وجه':'face mood','ابتسامة':'smile mood-smile',
+  'عين':'eye','يد':'hand','عطر':'perfume spray','زجاجة':'bottle','تاج':'crown','خصم':'discount percent','نسبة':'percent','سعر':'tag price currency','نقود':'cash coin currency',
+  'عملة':'coin currency','بطاقة':'credit-card card','درع':'shield','أمان':'shield lock','قفل':'lock','منزل':'home house','بيت':'home house','جائزة':'award trophy medal','كأس':'trophy cup',
+  'كاميرا':'camera','صورة':'photo image','فيديو':'video','موسيقى':'music','انستغرام':'instagram','انستقرام':'instagram','واتساب':'whatsapp','تيك':'tiktok','فيسبوك':'facebook','يوتيوب':'youtube',
+  'سؤال':'question help','معلومة':'info','تنبيه':'alert bell','جرس':'bell','بحث':'search','إعدادات':'settings','مستخدم':'user','شخص':'user person','امرأة':'woman','رجل':'man','طفل':'baby',
+  'صحة':'heartbeat health','دواء':'pill','مختبر':'flask','ميزان':'scale','رياضة':'barbell run','طعام':'food','تفاحة':'apple','قهوة':'coffee','شاي':'tea cup','كوب':'cup mug',
+  'سفر':'plane travel','طائرة':'plane','احتفال':'confetti party','بالون':'balloon','لمعة':'sparkle','بريق':'sparkle','سحر':'wand magic','فرشاة':'brush','ألوان':'palette color','رسم':'pencil brush',
+  'قلم':'pencil pen','كتاب':'book','عمل':'briefcase','مبنى':'building','تحميل':'download','مشاركة':'share','رابط':'link','إضافة':'plus','حذف':'trash','مرآة':'mirror','مشط':'comb',
+  'ماكياج':'makeup lipstick','أحمر':'lipstick','صابون':'soap','رغوة':'bubble foam','فقاعة':'bubble','نظافة':'clean sparkle wash','حماية':'shield','طبيعي':'leaf plant','عضوي':'leaf plant',
+  'عرض':'discount tag','جديد':'new sparkle badge','شارة':'badge','قائمة':'list','شبكة':'grid','نقطة':'point dot','دائرة':'circle','مربع':'square','مثلث':'triangle','موجة':'wave',
+};
+const ICON_QUICK = [['نجمة','star'],['قلب','heart'],['ورقة','leaf'],['قطرة','drop'],['شمس','sun'],['هدية','gift'],['توصيل','truck'],['رسالة','message'],['خصم','discount'],['تاج','crown'],['لمعة','sparkle'],['هاتف','phone']];
+function loadLibrary(){
+  if (LIB.loading) return LIB.loading;
+  if (window.__ICONS__) { // standalone file: icons are embedded in the page
+    const packs = window.__ICONS__; LIB.meta = packs.meta;
+    packs.sets.forEach(set => { LIB.sets[set.k] = set; set.i.forEach(([n, b]) => LIB.all.push({ s: set.k, n, b, t: set.t, sw: set.sw, vb: set.vb })); });
+    return (LIB.loading = Promise.resolve(LIB.all));
+  }
+  LIB.loading = fetch('icons/index.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(meta => {
+    LIB.meta = meta;
+    return Promise.all(meta.map(m => fetch(m.file).then(r => r.json()).then(set => {
+      LIB.sets[set.k] = set;
+      set.i.forEach(([n, b]) => LIB.all.push({ s: set.k, n, b, t: set.t, sw: set.sw, vb: set.vb }));
+    })));
+  }).then(() => LIB.all);
+  LIB.loading.catch(() => { LIB.loading = null; });
+  return LIB.loading;
+}
+function searchIcons(q, setKey){
+  const toks = q.trim().toLowerCase().split(/\s+/).filter(Boolean).map(tk => {
+    if (/[؀-ۿ]/.test(tk)) { const w = AR_ICON[tk] || AR_ICON[tk.replace(/^ال/, '')] || AR_ICON[tk.replace(/(ات|ة)$/, '')]; return w ? w.split(' ') : ['\u0000']; }
+    return [tk];
+  });
+  return LIB.all.filter(o => (!setKey || o.s === setKey) && toks.every(alts => alts.some(a => o.n.includes(a))));
+}
+function buildLibrary(){
+  const det = el('details', { className: 'lib' });
+  det.append(el('summary', { textContent: 'مكتبة الأيقونات المجانية (+13 ألف)' }));
+  const body = el('div', { className: 'body' }); det.append(body);
+  const q = el('input', { type: 'search', id: 'lib-q', placeholder: 'ابحثي بالعربية أو الإنجليزية: نجمة، gift…' });
+  const setSel = el('select', { id: 'lib-set' }); setSel.append(el('option', { value: '', textContent: 'كل المكتبات' }));
+  const quick = el('div', { className: 'qchips' });
+  ICON_QUICK.forEach(([ar]) => { const b = el('button', { type: 'button', className: 'chip', textContent: ar }); b.addEventListener('click', () => { q.value = ar; run(); }); quick.append(b); });
+  const info = el('span', { className: 'count', textContent: 'جارٍ تحميل الأيقونات…' });
+  const gridL = el('div', { className: 'libgrid' });
+  const more = el('button', { type: 'button', className: 'btn', textContent: 'عرض المزيد', hidden: true });
+  const lic = el('p', { className: 'note', textContent: 'الأيقونات من مكتبات مفتوحة المصدر ومجانية للاستخدام التجاري: Tabler وIconoir وPhosphor وHeroicons (رخصة MIT) وLucide (رخصة ISC).' });
+  body.append(el('label', { htmlFor: 'lib-q', className: 'lab', textContent: 'بحث' }), q, el('label', { htmlFor: 'lib-set', className: 'lab', textContent: 'المكتبة' }), setSel, quick, info, gridL, more, lic);
+  let results = [], n = 0, timer = 0;
+  function page(){
+    const frag = document.createDocumentFragment();
+    results.slice(n, n + 120).forEach(o => {
+      const idx = LIB.all.indexOf(o);
+      const b = el('button', { type: 'button', draggable: true, title: o.n }); b.setAttribute('aria-label', `إضافة أيقونة ${o.n}`);
+      b.innerHTML = libSvg({ svg: o.b, t: o.t, sw: o.sw, vb: o.vb }, 'currentColor', 26);
+      b.addEventListener('click', () => addIcon(o, 540, FMT[fmt].h / 2));
+      b.addEventListener('dragstart', ev => { ev.dataTransfer.setData('text/plain', 'lib:' + idx); ev.dataTransfer.effectAllowed = 'copy'; });
+      frag.append(b);
+    });
+    n = Math.min(results.length, n + 120); gridL.append(frag); more.hidden = n >= results.length;
+  }
+  function run(){
+    if (!LIB.all.length) return;
+    results = q.value.trim() ? searchIcons(q.value, setSel.value) : LIB.all.filter(o => !setSel.value || o.s === setSel.value);
+    gridL.innerHTML = ''; n = 0;
+    info.textContent = results.length ? `${results.length.toLocaleString('ar')} أيقونة` : 'لا توجد نتائج. جرّبي كلمة أخرى أو اكتبيها بالإنجليزية.';
+    page();
+  }
+  q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 200); });
+  setSel.addEventListener('change', run); more.addEventListener('click', page);
+  det.addEventListener('toggle', () => {
+    if (!det.open) return;
+    loadLibrary().then(() => {
+      if (setSel.options.length === 1) LIB.meta.forEach(m => setSel.append(el('option', { value: m.k, textContent: `${m.label} (${m.n})` })));
+      run();
+    }).catch(() => { info.textContent = 'تعذّر تحميل الأيقونات. أعيدي فتح القائمة للمحاولة مرة أخرى.'; });
+  });
+  return det;
+}
+
+// ---------- dragging on the stage ----------
+let STAGE_K = 1, picked = null, drag = null;
+const inner = () => $('frameInner');
+function markPicked(){
+  inner().querySelectorAll('.picked').forEach(n => n.classList.remove('picked'));
+  if (!picked) return;
+  const n = picked.startsWith('i:') ? inner().querySelector(`[data-icon="${picked.slice(2)}"]`) : inner().querySelector(`[data-dk="${picked}"]`);
+  if (n) n.classList.add('picked'); else picked = null;
+}
+function getIcon(id){ return (E(TPLS[sel].id).icons || []).find(i => i.id === id); }
+function commit(){ clearTimeout(tick); tick = setTimeout(() => { refreshThumb(sel); save(); }, 250); }
+function addIcon(spec, cx, cy){
+  const e = E(TPLS[sel].id); e.icons ||= [];
+  const base = typeof spec === 'string' ? { name: spec } : { name: spec.n, svg: spec.b, t: spec.t, sw: spec.sw, vb: spec.vb };
+  const ic = { id: Math.random().toString(36).slice(2, 9), ...base, size: 120, x: Math.round(cx - 60), y: Math.round(cy - 60), color: 'accent', fill: false };
+  e.icons.push(ic); picked = 'i:' + ic.id; renderStage(); buildSel(); commit();
+}
+inner().addEventListener('pointerdown', ev => {
+  const t = ev.target.closest('[data-icon],[data-dk]');
+  if (!t || !inner().contains(t)) { picked = null; markPicked(); buildSel(); return; }
+  ev.preventDefault();
+  const e = E(TPLS[sel].id);
+  if (t.dataset.icon) { const ic = getIcon(t.dataset.icon); if (!ic) return; picked = 'i:' + ic.id; drag = { t, ic, x0: ic.x, y0: ic.y, sx: ev.clientX, sy: ev.clientY }; }
+  else { const k = t.dataset.dk; e.pos ||= {}; const p = e.pos[k] || { dx: 0, dy: 0, s: 1 }; picked = k; drag = { t, k, p: { ...p }, sx: ev.clientX, sy: ev.clientY }; }
+  t.setPointerCapture(ev.pointerId); markPicked(); buildSel();
+});
+inner().addEventListener('pointermove', ev => {
+  if (!drag) return;
+  const dx = (ev.clientX - drag.sx) / STAGE_K, dy = (ev.clientY - drag.sy) / STAGE_K;
+  if (drag.ic) { drag.ic.x = Math.round(drag.x0 + dx); drag.ic.y = Math.round(drag.y0 + dy); drag.t.style.left = drag.ic.x + 'px'; drag.t.style.top = drag.ic.y + 'px'; }
+  else { const p = { ...drag.p, dx: Math.round(drag.p.dx + dx), dy: Math.round(drag.p.dy + dy) }; E(TPLS[sel].id).pos[drag.k] = p; drag.t.style.transform = posT(p); }
+});
+const slotFile = document.createElement('input'); slotFile.type = 'file'; slotFile.accept = 'image/*'; slotFile.hidden = true; document.body.appendChild(slotFile);
+let slotKey = 'img';
+function pickImage(n){
+  const all = [...inner().querySelectorAll('[data-img]')]; const i = Math.max(0, all.indexOf(n));
+  slotKey = i === 0 ? 'img' : 'img' + (i + 1); slotFile.value = ''; slotFile.click();
+}
+slotFile.addEventListener('change', () => {
+  const fl = slotFile.files && slotFile.files[0]; if (!fl) return;
+  const r = new FileReader(); r.onload = () => { E(TPLS[sel].id)[slotKey] = r.result; changed(); buildEditor(); }; r.readAsDataURL(fl);
+});
+inner().addEventListener('dblclick', ev => { const n = ev.target.closest('[data-img]'); if (n) pickImage(n); });
+const endDrag = ev => {
+  if (!drag) return;
+  const moved = ev && Math.hypot(ev.clientX - drag.sx, ev.clientY - drag.sy) > 5;
+  const t = drag.t; drag = null; commit();
+  if (!moved && ev && ev.type === 'pointerup' && t.dataset.img && !/url\(/.test(t.style.backgroundImage)) pickImage(t);
+};
+inner().addEventListener('pointerup', endDrag); inner().addEventListener('pointercancel', endDrag);
+const stageEl = $('stage');
+stageEl.addEventListener('dragover', ev => { if ([...ev.dataTransfer.types].includes('text/plain')) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; } });
+stageEl.addEventListener('drop', ev => {
+  const d = ev.dataTransfer.getData('text/plain'); const lib = d.startsWith('lib:') ? LIB.all[+d.slice(4)] : null;
+  if (!d.startsWith('icon:') && !lib) return; ev.preventDefault();
+  const r = $('frame').getBoundingClientRect();
+  addIcon(lib || d.slice(5), Math.max(0, Math.min(1080, (ev.clientX - r.left) / STAGE_K)), Math.max(0, Math.min(FMT[fmt].h, (ev.clientY - r.top) / STAGE_K)));
+});
+$('frame').tabIndex = 0; $('frame').setAttribute('aria-label', 'معاينة القالب: اختاري عنصرًا ثم حرّكيه بالأسهم');
+$('frame').addEventListener('keydown', ev => {
+  if (!picked) return; const step = ev.shiftKey ? 20 : 4;
+  const mv = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[ev.key];
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { if (picked.startsWith('i:')) { ev.preventDefault(); removePicked(); } return; }
+  if (!mv) return; ev.preventDefault();
+  if (picked.startsWith('i:')) { const ic = getIcon(picked.slice(2)); if (ic) { ic.x += mv[0]; ic.y += mv[1]; } }
+  else { const e = E(TPLS[sel].id); e.pos ||= {}; const p = e.pos[picked] || { dx: 0, dy: 0, s: 1 }; e.pos[picked] = { ...p, dx: p.dx + mv[0], dy: p.dy + mv[1] }; }
+  renderStage(); commit();
+});
+function removePicked(){
+  const e = E(TPLS[sel].id); e.icons = (e.icons || []).filter(i => 'i:' + i.id !== picked); picked = null; renderStage(); buildSel(); commit();
+}
+function buildSel(){
+  const box = document.getElementById('selBox'); if (!box) return; box.innerHTML = '';
+  if (!picked) { box.className = ''; return; }
+  box.className = 'selbox';
+  const isIcon = picked.startsWith('i:'); const e = E(TPLS[sel].id);
+  if (isIcon) {
+    const ic = getIcon(picked.slice(2)); if (!ic) { picked = null; return buildSel(); }
+    box.append(el('strong', { textContent: `أيقونة: ${ICON_NAMES[ic.name] || ic.name || ''}` }));
+    const sz = el('input', { type: 'range', min: 40, max: 500, step: 4, value: ic.size, id: 'sel-size' });
+    sz.addEventListener('input', () => { const c = ic.x + ic.size / 2, m = ic.y + ic.size / 2; ic.size = +sz.value; ic.x = Math.round(c - ic.size / 2); ic.y = Math.round(m - ic.size / 2); renderStage(); commit(); });
+    box.append(el('div', { className: 'field' }, el('label', { htmlFor: 'sel-size', textContent: 'الحجم' }), sz));
+    const cs = el('select', { id: 'sel-color' });
+    [['accent','اللون الأساسي'],['accent2','اللون الثاني'],['text','لون النص'],['white','أبيض']].forEach(([v, n]) => { const o = el('option', { value: v, textContent: n }); if (ic.color === v) o.selected = true; cs.append(o); });
+    cs.addEventListener('change', () => { ic.color = cs.value; renderStage(); commit(); });
+    box.append(el('div', { className: 'field' }, el('label', { htmlFor: 'sel-color', textContent: 'اللون' }), cs));
+    if (!ic.svg) {
+      const fl = el('input', { type: 'checkbox', id: 'sel-fill', checked: !!ic.fill });
+      fl.addEventListener('change', () => { ic.fill = fl.checked; renderStage(); commit(); });
+      box.append(el('label', { htmlFor: 'sel-fill', className: 'lab' }, fl, ' أيقونة مصمتة'));
+    }
+    const del = el('button', { type: 'button', className: 'btn', textContent: 'حذف الأيقونة' }); del.addEventListener('click', removePicked);
+    box.append(del);
+  } else {
+    const p = (e.pos && e.pos[picked]) || { dx: 0, dy: 0, s: 1 };
+    box.append(el('strong', { textContent: 'العنصر المحدد' }));
+    const sc = el('input', { type: 'range', min: 40, max: 250, step: 5, value: Math.round((p.s || 1) * 100), id: 'sel-scale' });
+    sc.addEventListener('input', () => { e.pos ||= {}; const q = e.pos[picked] || { dx: 0, dy: 0, s: 1 }; e.pos[picked] = { ...q, s: +sc.value / 100 }; renderStage(); commit(); });
+    box.append(el('div', { className: 'field' }, el('label', { htmlFor: 'sel-scale', textContent: 'الحجم %' }), sc));
+    const rs = el('button', { type: 'button', className: 'btn', textContent: 'إعادة لمكانه الأصلي' });
+    rs.addEventListener('click', () => { if (e.pos) delete e.pos[picked]; renderStage(); buildSel(); commit(); });
+    box.append(rs);
+  }
+}
+
+// ---------- export ----------
+let toastT = 0;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+const dlP = window.claude && typeof window.claude.use === 'function' ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+let busy = false;
+async function exportPNG(){
+  if (busy) return;
+  const dl = await dlP;
+  if (typeof html2canvas !== 'function') { toast('تعذّر تحميل أداة التصدير. أعيدي تحميل الصفحة.'); return; }
+  busy = true; document.querySelectorAll('.btn.primary').forEach(b => b.disabled = true);
+  try {
+    const tpl = TPLS[sel], H = FMT[fmt].h; const host = $('exportHost'); mount(host, tpl, fmt, false);
+    await document.fonts.ready;
+    const imgs = [...host.querySelectorAll('[style*="background-image"]')];
+    await Promise.all(imgs.map(n => new Promise(res => { const m = /url\('([^']+)'\)/.exec(n.style.backgroundImage.replace(/"/g, "'")); if (!m) return res(); const im = new Image(); im.onload = im.onerror = res; im.src = m[1]; })));
+    const canvas = await html2canvas(host.firstElementChild, { scale: 1, width: 1080, height: H, backgroundColor: null, logging: false, useCORS: true });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    host.innerHTML = '';
+    const name = `template-${tpl.num}-${fmt}.png`;
+    if (dl) await dl.save({ filename: name, data: blob });
+    else { // standalone file opened in a normal browser
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    }
+    toast('حُفظت الصورة');
+  } catch (err) {
+    const code = err && err.code;
+    if (code !== 'declined') toast(code === 'rate_limited' ? 'نافذة حفظ مفتوحة بالفعل، أكمليها أولًا.' : 'لم يكتمل التصدير. حاولي مرة أخرى.');
+  } finally { busy = false; document.querySelectorAll('.btn.primary').forEach(b => b.disabled = false); }
+}
+$('exportBtn').addEventListener('click', exportPNG);
+
+// ---------- wiring ----------
+function setFmt(f){
+  fmt = f; document.querySelectorAll('#fmtSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.fmt === f)));
+  buildGallery(); renderStage(); save();
+}
+document.querySelectorAll('#fmtSeg button').forEach(b => b.addEventListener('click', () => setFmt(b.dataset.fmt)));
+$('q').addEventListener('input', e => { query = e.target.value; buildGallery(); });
+
+Object.values(edits).forEach(e => ['head','body','latin'].forEach(k => e[k] && ensureFont(e[k])));
+if (!TPLS[sel]) sel = 0;
+setFmt(fmt); buildCats(); buildEditor();
+document.fonts.ready.then(() => { renderStage(); });
+})();
+</script>
+
+</body></html>

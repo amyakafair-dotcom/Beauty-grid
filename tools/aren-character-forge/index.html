@@ -1,0 +1,467 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>مصنع شخصيات آرين</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Aref+Ruqaa:wght@400;700&family=Amiri:wght@400;700&display=swap">
+<style>
+/* Layout: forge bench. Roster at the start side, editor in the middle, the live card at the end. One deliberate dark look. */
+:root {
+  --bg: #141213;
+  --panel: #1d1a1b;
+  --raise: #272325;
+  --line: #3a3436;
+  --fg: #efe6d5;
+  --muted: #a39a90;
+  --brass: #d9a64a;
+  --brass-ink: #1d1508;
+  --ui: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --display: "Aref Ruqaa", "Amiri", serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font-family: var(--ui); font-size: 14px; }
+.wrap { max-width: 1440px; margin: 0 auto; padding-block: 16px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+h1 { font-family: var(--display); color: var(--brass); font-size: clamp(1.7rem, 3.4vw, 2.3rem); margin: 0; }
+.sub { color: var(--muted); margin: 0; }
+.grow { flex: 1; }
+.main { display: grid; grid-template-columns: 230px minmax(0, 1fr) minmax(0, 420px); gap: 14px; align-items: start; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; min-width: 0; }
+.box h2 { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+.btn { height: 36px; padding: 0 12px; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); font-weight: 600; }
+.btn.danger { color: #e07a66; }
+label.btn input { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.roster { display: grid; gap: 6px; margin: 10px 0; max-height: 60vh; overflow-y: auto; }
+.rItem { display: grid; grid-template-columns: 44px 1fr; gap: 8px; align-items: center; text-align: start; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 6px; cursor: pointer; color: inherit; font: inherit; }
+.rItem[aria-current="true"] { border-color: var(--brass); }
+.rItem canvas { width: 44px; height: 55px; image-rendering: pixelated; background: #0f0d0e; border-radius: 4px; }
+.rItem b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.rItem span { color: var(--muted); font-size: 12px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: -4px -4px 14px; padding: 0 4px; }
+.tab { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); font: inherit; padding: 8px 12px; cursor: pointer; }
+.tab[aria-selected="true"] { color: var(--fg); border-color: var(--brass); }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px 14px; }
+.f { display: grid; gap: 4px; min-width: 0; }
+.f > span { color: var(--muted); font-size: 12px; }
+.f.wide { grid-column: 1 / -1; }
+input[type=text], input[type=number], select, textarea { width: 100%; min-height: 36px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; color: inherit; font: inherit; padding: 6px 10px; }
+textarea { min-height: 90px; resize: vertical; line-height: 1.7; }
+input[type=color] { width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 8px; background: none; padding: 0; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.stat { background: var(--raise); border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 4px; text-align: center; }
+.stat span { color: var(--muted); font-size: 12px; }
+.stat input { text-align: center; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat em { font-style: normal; color: var(--brass); font-variant-numeric: tabular-nums; }
+.derived { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pill { background: var(--raise); border: 1px solid var(--line); border-radius: 16px; padding: 4px 12px; font-variant-numeric: tabular-nums; }
+.cardBox { position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); display: grid; gap: 10px; }
+#card { width: 100%; height: auto; display: block; border-radius: 10px; }
+.toast { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; z-index: 5; }
+.note { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0; }
+@media (max-width: 1100px) { .main { grid-template-columns: 210px minmax(0, 1fr); } .cardBox { grid-column: 1 / -1; position: static; max-width: 460px; justify-self: center; width: 100%; } }
+@media (max-width: 720px) { .main { grid-template-columns: 1fr; } .cardBox { order: -1; } .roster { max-height: none; } }
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+  <header>
+    <h1>مصنع شخصيات آرين</h1>
+    <p class="sub">صمّم الشخصية، ولّد صفاتها، واحفظ بطاقتها.</p>
+    <span class="grow"></span>
+    <div class="btns">
+      <button class="btn primary" id="rollAll">🎲 شخصية عشوائية</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="box">
+      <h2>الشخصيات</h2>
+      <div class="btns"><button class="btn" id="newChar">+ جديدة</button><button class="btn" id="dupChar">نسخ</button><button class="btn danger" id="delChar">حذف</button></div>
+      <div class="roster" id="roster"></div>
+      <div class="btns">
+        <button class="btn" id="exportJson" hidden>تصدير JSON</button>
+        <label class="btn">استيراد<input type="file" id="importJson" accept=".json,application/json"></label>
+      </div>
+      <p class="note" style="margin-top:8px">تُحفظ الشخصيات في هذا المتصفح. صدّر ملف JSON لنقلها إلى لعبة آرين.</p>
+    </aside>
+
+    <section class="box">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-p="pId">الهوية</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="pLook">المظهر</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="pStats">الصفات</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="pStory">القصة</button>
+      </div>
+
+      <div id="pId" class="form">
+        <label class="f"><span>الاسم</span><input type="text" id="name"></label>
+        <label class="f"><span>اللقب</span><input type="text" id="title"></label>
+        <label class="f"><span>العرق</span><select id="race"></select></label>
+        <label class="f"><span>الفئة</span><select id="cls"></select></label>
+        <label class="f"><span>المستوى</span><input type="number" id="level" min="1" max="20"></label>
+        <label class="f"><span>الفصيل</span><select id="faction"></select></label>
+        <div class="f wide btns"><button class="btn" id="rollName">🎲 اسم ولقب</button></div>
+      </div>
+
+      <div id="pLook" class="form" hidden>
+        <label class="f"><span>لون البشرة</span><input type="color" id="skin"></label>
+        <label class="f"><span>الشعر</span><select id="hair"></select></label>
+        <label class="f"><span>لون الشعر</span><input type="color" id="hairC"></label>
+        <label class="f"><span>اللحية</span><select id="beard"></select></label>
+        <label class="f"><span>غطاء الرأس</span><select id="helm"></select></label>
+        <label class="f"><span>لون العينين</span><input type="color" id="eye"></label>
+        <label class="f"><span>اللباس الأساسي</span><input type="color" id="c1"></label>
+        <label class="f"><span>اللباس الثانوي</span><input type="color" id="c2"></label>
+        <label class="f"><span>السلاح</span><select id="weapon"></select></label>
+        <label class="f"><span>لون العباءة</span><input type="color" id="capeC"></label>
+        <label class="f"><span>خلفية البطاقة</span><input type="color" id="bgC"></label>
+        <div class="f"><span>إضافات</span>
+          <label><input type="checkbox" id="cape"> عباءة</label>
+          <label><input type="checkbox" id="shield"> درع يدوي</label>
+        </div>
+        <div class="f wide btns"><button class="btn" id="rollLook">🎲 مظهر عشوائي</button></div>
+      </div>
+
+      <div id="pStats" hidden>
+        <div class="stats" id="statBox"></div>
+        <div class="derived" id="derived"></div>
+        <div class="btns" style="margin-top:12px"><button class="btn" id="rollStats">🎲 رمي الصفات (4d6، يُحذف الأقل)</button></div>
+        <p class="note" style="margin-top:10px">مكافآت العرق تُضاف تلقائياً. الصحة والمانا والهجوم والدفاع تُحسب من الصفات والفئة والمستوى.</p>
+      </div>
+
+      <div id="pStory" class="form" hidden>
+        <label class="f wide"><span>القدرات (سطر لكل قدرة)</span><textarea id="abilities"></textarea></label>
+        <label class="f wide"><span>القصة</span><textarea id="story"></textarea></label>
+        <label class="f wide"><span>مقولة على البطاقة</span><input type="text" id="quote"></label>
+        <div class="f wide btns"><button class="btn" id="rollStory">🎲 قصة ومقولة</button></div>
+      </div>
+    </section>
+
+    <div class="cardBox">
+      <canvas id="card" width="600" height="900" aria-label="بطاقة الشخصية"></canvas>
+      <div class="btns">
+        <button class="btn primary" id="savePng" hidden>حفظ البطاقة PNG</button>
+        <button class="btn" id="saveSprite" hidden>حفظ الشخصية PNG</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const R = () => Math.random();
+const pick = a => a[Math.floor(R() * a.length)];
+
+/* ---------- rules ---------- */
+const STATS = [['STR', 'القوة'], ['DEX', 'الرشاقة'], ['CON', 'التحمل'], ['INT', 'الذكاء'], ['WIS', 'الحكمة'], ['CHA', 'الحضور']];
+const RACES = {
+  human: { n: 'بشري', b: { STR: 1, CHA: 1 }, skins: ['#e9c39f', '#c99872', '#9a6a45', '#6e4529'] },
+  djinn: { n: 'سليل الجان', b: { INT: 2, CHA: 1 }, skins: ['#7fa6c9', '#9f8fd1', '#6fb8b0'] },
+  dwarf: { n: 'قزم', b: { CON: 2, STR: 1 }, skins: ['#e2b08c', '#c48b66', '#9c6b4c'] },
+  dragon: { n: 'سليل التنين', b: { STR: 2, CHA: 1 }, skins: ['#a8433a', '#3f7d4f', '#b07a2f', '#4a5f9c'] },
+  orc: { n: 'أورك', b: { STR: 2, CON: 1 }, skins: ['#7d9a4f', '#6a8a5a', '#8c9a62'] },
+  elf: { n: 'إلف', b: { DEX: 2, INT: 1 }, skins: ['#f0d2b4', '#d9b391', '#b98b6a'] },
+};
+const CLASSES = {
+  warrior: { n: 'محارب', hd: 10, mp: 0, weapon: 'sword', shield: true, outfit: 'armor', c1: '#8c929a', c2: '#5a3b26', ab: ['ضربة ساحقة: ضرر مضاعف مرة كل معركة', 'صيحة الحرب: يرفع هجوم الفريق', 'ثبات: يقلل الضرر الواقع عليه'] },
+  mage: { n: 'ساحر', hd: 6, mp: 12, weapon: 'staff', shield: false, outfit: 'robe', c1: '#3c3f8f', c2: '#d9b25a', ab: ['كرة اللهب: ضرر ناري لكل الأعداء', 'درع أثيري: يمتص الضرر', 'انتقال: يتجنب هجوماً واحداً'] },
+  ranger: { n: 'رامي', hd: 8, mp: 4, weapon: 'bow', shield: false, outfit: 'tunic', c1: '#3f6a3a', c2: '#6b4a2c', ab: ['سهم ثاقب: يتجاهل الدفاع', 'عين الصقر: يكشف نقاط الضعف', 'رفيق بري: ذئب يقاتل معه'] },
+  rogue: { n: 'لص', hd: 8, mp: 2, weapon: 'daggers', shield: false, outfit: 'leather', c1: '#2f2c33', c2: '#7a2a2a', ab: ['طعنة غادرة: ضرر حرج من الخلف', 'اختفاء: يتجنب الاستهداف دورة', 'فتح الأقفال: يفتح الصناديق المغلقة'] },
+  cleric: { n: 'كاهن', hd: 8, mp: 10, weapon: 'mace', shield: true, outfit: 'robe', c1: '#e8e2d2', c2: '#c9993f', ab: ['شفاء: يعيد صحة حليف', 'نور مقدس: ضرر للموتى الأحياء', 'بركة: يرفع دفاع الفريق'] },
+  dragoon: { n: 'فارس التنين', hd: 10, mp: 4, weapon: 'spear', shield: false, outfit: 'armor', c1: '#8f2d26', c2: '#2b2422', ab: ['قفزة التنين: هجوم من الأعلى', 'نفَس اللهب: ضرر ناري مخروطي', 'رابطة التنين: يستدعي تنيناً صغيراً'] },
+};
+const FACTIONS = ['حرس الحارس', 'أخوية الظل', 'حكماء البرج', 'فرسان التنين', 'تجار الكثبان', 'بلا فصيل'];
+const HAIR = { short: 'قصير', long: 'طويل', tail: 'ذيل حصان', bald: 'أصلع', mohawk: 'عُرف', braids: 'ضفائر' };
+const BEARD = { none: 'بدون', short: 'قصيرة', long: 'طويلة' };
+const HELM = { none: 'بدون', knight: 'خوذة فارس', horned: 'خوذة بقرون', hood: 'قلنسوة', crown: 'تاج', turban: 'عمامة' };
+const WEAPONS = { sword: 'سيف', staff: 'عصا سحرية', bow: 'قوس', daggers: 'خنجر', mace: 'صولجان', spear: 'رمح', none: 'بدون' };
+const HAIRC = ['#1d1612', '#3b2617', '#6b4423', '#a8743a', '#d8c27a', '#e9e4dc', '#7a2a1c', '#2c3e6b'];
+
+const SYL1 = ['آر', 'زا', 'نو', 'كا', 'سي', 'ري', 'ما', 'تا', 'لي', 'دا', 'هو', 'فا', 'را', 'بي', 'سو', 'يا', 'غا', 'ثا'];
+const SYL2 = ['را', 'لي', 'نا', 'دو', 'مي', 'سا', 'ري', 'كو', 'فا', '', ''];
+const SYL3 = ['ن', 'س', 'ل', 'ر', 'د', 'يا', 'ان', 'ور', 'يم', 'ار', 'وك'];
+const TITLES = ['حامي البوابة', 'ظل الكثبان', 'حارس اللهب', 'ابن العاصفة', 'صائد التنانين', 'قارئ النجوم', 'نصل الشمال', 'ذو العين الذهبية', 'سيد الرماد', 'رفيق الريح', 'آخر الحراس', 'المنفي'];
+const PLACES = ['مدينة الحارس', 'قرية النهر', 'جزيرة الفجر', 'كثبان الذهب', 'جبال الرماد', 'غابة الهمس'];
+const HOOKS = ['يبحث عن بيضة تنين سُرقت من المفقس', 'أقسم أن يثأر لعائلته من أخوية الظل', 'يحمل خريطة ممزقة إلى كنز الحارس العظيم', 'هرب من سجن قلعة الظل ويطارده ماضيه', 'سمع صوتاً في المنام يدعوه إلى برج الحكماء', 'يريد أن يثبت أنه يستحق اسم أبيه'];
+const QUOTES = ['النار لا تخاف الظلام.', 'لكل باب مفتاح، ولكل حارس ثغرة.', 'سأعود حين يحتاجني الجميع.', 'الريح تعرف اسمي.', 'لا أخسر معركة مرتين.', 'الحكمة سلاح لا يصدأ.'];
+
+const mod = v => Math.floor((v - 10) / 2);
+const roll4d6 = () => { const d = [0, 0, 0, 0].map(() => 1 + Math.floor(R() * 6)).sort((a, b) => a - b); return d[1] + d[2] + d[3]; };
+function total(ch, k) { return (+ch.stats[k] || 0) + (RACES[ch.race].b[k] || 0); }
+function derived(ch) {
+  const c = CLASSES[ch.cls], L = +ch.level || 1;
+  return {
+    HP: c.hd + mod(total(ch, 'CON')) + (L - 1) * (Math.ceil(c.hd / 2) + 1 + mod(total(ch, 'CON'))),
+    MP: c.mp ? c.mp + Math.max(0, mod(total(ch, 'INT')) + mod(total(ch, 'WIS'))) * L + (L - 1) * 2 : 0,
+    ATK: 2 + Math.max(mod(total(ch, 'STR')), mod(total(ch, 'DEX'))) + Math.ceil(L / 4),
+    DEF: 10 + mod(total(ch, 'DEX')) + (c.outfit === 'armor' ? 4 : c.outfit === 'leather' ? 2 : 0) + (ch.shield ? 2 : 0),
+  };
+}
+
+/* ---------- character factory ---------- */
+const rollName = () => pick(SYL1) + pick(SYL2) + pick(SYL3);
+function rollLook(ch) {
+  const r = RACES[ch.race], c = CLASSES[ch.cls];
+  Object.assign(ch, {
+    skin: pick(r.skins), hair: pick(Object.keys(HAIR)), hairC: pick(HAIRC), eye: pick(['#2a6fb0', '#3b7a3b', '#6b3f1d', '#c9a227', '#7a2a9a']),
+    beard: ch.race === 'elf' ? 'none' : pick(['none', 'none', 'short', 'long']), helm: pick(['none', 'none', 'none', c.outfit === 'armor' ? pick(['knight', 'horned']) : pick(['hood', 'turban', 'crown'])]),
+    c1: c.c1, c2: c.c2, weapon: c.weapon, shield: c.shield, cape: R() < .6, capeC: pick(['#7a2a24', '#2b3f6b', '#3a5a2e', '#5b2d6b', '#1f1f24']),
+    bgC: pick(['#3a2a1e', '#1f2f3a', '#2c3a24', '#3a1f2a', '#2a2540']),
+  });
+}
+function rollStory(ch) {
+  ch.abilities = CLASSES[ch.cls].ab.join('\n');
+  ch.story = `${ch.name} ${RACES[ch.race].n} من ${pick(PLACES)}، ${CLASSES[ch.cls].n} في ${ch.faction}. ${pick(HOOKS)}.`;
+  ch.quote = pick(QUOTES);
+}
+function newChar(random) {
+  const ch = { id: Date.now().toString(36) + Math.floor(R() * 1e6).toString(36), race: random ? pick(Object.keys(RACES)) : 'human', cls: random ? pick(Object.keys(CLASSES)) : 'warrior', level: random ? 1 + Math.floor(R() * 10) : 1, faction: random ? pick(FACTIONS) : FACTIONS[0], stats: {} };
+  ch.name = random ? rollName() : 'آرين'; ch.title = random ? pick(TITLES) : 'سليل الحارس العظيم';
+  for (const [k] of STATS) ch.stats[k] = random ? roll4d6() : 10;
+  rollLook(ch); rollStory(ch);
+  return ch;
+}
+
+/* ---------- pixel figure (32x40 grid, auto shade + outline) ---------- */
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function shadeHex(h, f) { const [r, g, b] = hexRgb(h); const t = v => Math.max(0, Math.min(255, Math.round(f >= 1 ? v + (255 - v) * (f - 1) : v * f))); return `rgb(${t(r)},${t(g)},${t(b)})`; }
+const GW = 32, GH = 40;
+function figure(ch) {
+  const G = Array.from({ length: GH }, () => Array(GW).fill(null));
+  const P = (x, y, w, h, c) => { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (j >= 0 && j < GH && i >= 0 && i < GW) G[j][i] = c; };
+  const c = CLASSES[ch.cls], robe = c.outfit === 'robe', metal = '#b9bec4', wood = '#6b4423', boot = '#3a2a1c';
+  // cape behind
+  if (ch.cape) { P(9, 20, 14, 14, ch.capeC); P(8, 30, 16, 5, ch.capeC); }
+  // legs, boots
+  if (!robe) { P(12, 30, 3, 5, ch.c2); P(17, 30, 3, 5, ch.c2); }
+  P(11, 35, 4, 2, boot); P(17, 35, 4, 2, boot);
+  // torso
+  if (robe) { P(11, 20, 10, 10, ch.c1); P(10, 30, 12, 5, ch.c1); P(15, 21, 2, 14, ch.c2); P(10, 34, 12, 1, ch.c2); }
+  else { P(11, 20, 10, 10, ch.c1); P(11, 27, 10, 1, ch.c2); P(15, 27, 2, 1, '#d9b25a'); }
+  if (c.outfit === 'armor') { P(8, 19, 4, 3, ch.c1); P(20, 19, 4, 3, ch.c1); P(13, 22, 6, 1, shadeHex(ch.c1, 1.25)); }
+  if (c.outfit === 'leather') { P(11, 21, 1, 7, ch.c2); P(20, 21, 1, 7, ch.c2); }
+  // arms + hands
+  P(9, 21, 2, 7, ch.c1); P(21, 21, 2, 7, ch.c1); P(9, 28, 2, 2, ch.skin); P(21, 28, 2, 2, ch.skin);
+  // neck + head
+  P(14, 18, 4, 2, ch.skin); P(11, 8, 10, 10, ch.skin);
+  if (ch.race === 'elf') { P(10, 11, 1, 2, ch.skin); P(9, 10, 1, 1, ch.skin); P(21, 11, 1, 2, ch.skin); P(22, 10, 1, 1, ch.skin); }
+  // face
+  P(13, 12, 1, 2, '#15100c'); P(18, 12, 1, 2, '#15100c'); P(13, 12, 1, 1, ch.eye); P(18, 12, 1, 1, ch.eye);
+  P(15, 15, 2, 1, shadeHex(ch.skin, .7));
+  if (ch.race === 'orc') { P(13, 16, 1, 1, '#f1ead8'); P(18, 16, 1, 1, '#f1ead8'); }
+  // beard
+  if (ch.beard === 'short') { P(12, 15, 8, 3, ch.hairC); P(15, 15, 2, 1, shadeHex(ch.skin, .7)); }
+  if (ch.beard === 'long') { P(12, 15, 8, 3, ch.hairC); P(13, 18, 6, 3, ch.hairC); P(14, 21, 4, 2, ch.hairC); P(15, 15, 2, 1, shadeHex(ch.skin, .7)); }
+  // hair
+  const H = ch.hairC;
+  if (ch.hair === 'short') { P(11, 7, 10, 3, H); P(11, 10, 1, 3, H); P(20, 10, 1, 3, H); }
+  if (ch.hair === 'long') { P(11, 7, 10, 3, H); P(10, 9, 2, 12, H); P(20, 9, 2, 12, H); }
+  if (ch.hair === 'tail') { P(11, 7, 10, 3, H); P(11, 10, 1, 2, H); P(20, 10, 1, 2, H); P(21, 9, 2, 2, H); P(22, 11, 2, 8, H); }
+  if (ch.hair === 'mohawk') { P(15, 3, 2, 6, H); P(14, 5, 4, 3, H); }
+  if (ch.hair === 'braids') { P(11, 7, 10, 3, H); P(10, 10, 2, 10, H); P(20, 10, 2, 10, H); P(10, 20, 2, 1, '#d9b25a'); P(20, 20, 2, 1, '#d9b25a'); }
+  // dragon-blood horns
+  if (ch.race === 'dragon') { P(11, 6, 1, 2, '#e8dcc0'); P(10, 4, 1, 3, '#e8dcc0'); P(20, 6, 1, 2, '#e8dcc0'); P(21, 4, 1, 3, '#e8dcc0'); }
+  // headgear
+  if (ch.helm === 'knight') { P(10, 6, 12, 7, metal); P(10, 13, 2, 4, metal); P(20, 13, 2, 4, metal); P(12, 12, 8, 1, '#15100c'); P(15, 4, 2, 2, ch.c2); }
+  if (ch.helm === 'horned') { P(10, 6, 12, 5, metal); P(10, 11, 2, 4, metal); P(20, 11, 2, 4, metal); P(8, 4, 2, 3, '#e8dcc0'); P(7, 2, 2, 3, '#e8dcc0'); P(22, 4, 2, 3, '#e8dcc0'); P(23, 2, 2, 3, '#e8dcc0'); }
+  if (ch.helm === 'hood') { const hc = ch.cape ? ch.capeC : ch.c1; P(10, 6, 12, 4, hc); P(10, 10, 2, 9, hc); P(20, 10, 2, 9, hc); P(11, 5, 10, 1, hc); }
+  if (ch.helm === 'crown') { P(11, 6, 10, 2, '#d9b25a'); P(11, 4, 1, 2, '#d9b25a'); P(15, 3, 2, 3, '#d9b25a'); P(20, 4, 1, 2, '#d9b25a'); P(15, 6, 2, 1, '#b8392a'); }
+  if (ch.helm === 'turban') { P(10, 5, 12, 5, '#efe6cf'); P(11, 4, 10, 1, '#efe6cf'); P(14, 6, 4, 1, '#c9b48a'); P(15, 7, 2, 1, ch.c2); }
+  // shield (viewer's left)
+  if (ch.shield) { P(5, 21, 5, 8, ch.c2); P(6, 29, 3, 1, ch.c2); P(7, 23, 1, 4, '#d9b25a'); P(6, 24, 3, 1, '#d9b25a'); }
+  // weapon (viewer's right hand)
+  const w = ch.weapon;
+  if (w === 'sword') { P(23, 10, 1, 17, metal); P(21, 27, 5, 1, '#d9b25a'); P(23, 28, 1, 3, wood); }
+  if (w === 'staff') { P(23, 6, 1, 31, wood); P(22, 3, 3, 3, '#7fd6ff'); P(23, 2, 1, 1, '#d8f4ff'); }
+  if (w === 'bow') { P(24, 14, 1, 2, wood); P(25, 16, 1, 3, wood); P(26, 19, 1, 6, wood); P(25, 25, 1, 3, wood); P(24, 28, 1, 2, wood); P(24, 16, 1, 12, '#e8dcc0'); }
+  if (w === 'daggers') { P(23, 22, 1, 6, metal); P(22, 28, 3, 1, '#d9b25a'); P(23, 29, 1, 2, wood); }
+  if (w === 'mace') { P(23, 18, 1, 13, wood); P(22, 14, 3, 4, metal); P(21, 15, 1, 2, metal); P(25, 15, 1, 2, metal); }
+  if (w === 'spear') { P(23, 6, 1, 31, wood); P(23, 2, 1, 4, metal); P(22, 4, 3, 2, metal); P(22, 7, 3, 1, ch.c1); }
+  return G;
+}
+function drawFigure(ctx, G, ox, oy, s, ground) {
+  if (ground) { ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(ox + 16 * s, oy + 37.2 * s, 9 * s, 1.6 * s, 0, 0, Math.PI * 2); ctx.fill(); }
+  const filled = (x, y) => y >= 0 && y < GH && x >= 0 && x < GW && G[y][x];
+  for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
+    const c = G[y][x];
+    if (c) {
+      let f = 1;
+      if (!filled(x + 1, y) || !filled(x, y + 1)) f = .74; else if (!filled(x - 1, y) || !filled(x, y - 1)) f = 1.14;
+      ctx.fillStyle = c.startsWith('#') ? shadeHex(c, f) : c;
+    } else if (filled(x + 1, y) || filled(x - 1, y) || filled(x, y + 1) || filled(x, y - 1)) ctx.fillStyle = '#17110c';
+    else continue;
+    ctx.fillRect(Math.round(ox + x * s), Math.round(oy + y * s), Math.ceil(s), Math.ceil(s));
+  }
+}
+
+/* ---------- card ---------- */
+const card = $('card'), cx = card.getContext('2d');
+function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function wrapText(c, text, x, y, maxW, lh, maxLines) {
+  const words = text.split(/\s+/); let line = '', n = 0;
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (c.measureText(t).width > maxW && line) { c.fillText(line, x, y + n * lh); line = w; if (++n >= maxLines) return; } else line = t;
+  }
+  if (line) c.fillText(line, x, y + n * lh);
+}
+function drawCard(ch, c = cx) {
+  const W = 600, H = 900, gold = '#d9a64a';
+  c.save(); c.clearRect(0, 0, W, H); c.direction = 'rtl'; c.textAlign = 'center';
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#26201c'); g.addColorStop(1, '#14100e');
+  roundRect(c, 0, 0, W, H, 26); c.fillStyle = g; c.fill();
+  c.strokeStyle = gold; c.lineWidth = 4; roundRect(c, 12, 12, W - 24, H - 24, 18); c.stroke();
+  c.lineWidth = 1.2; roundRect(c, 22, 22, W - 44, H - 44, 12); c.stroke();
+  // name + title
+  c.fillStyle = '#f3e3b8'; c.font = '700 48px "Aref Ruqaa", "Amiri", serif'; c.fillText(ch.name || '—', W / 2, 84);
+  c.fillStyle = gold; c.font = '400 22px "Amiri", serif'; c.fillText(ch.title || '', W / 2, 118);
+  // portrait panel
+  const px = 50, py = 138, pw = 500, ph = 360;
+  const pg = c.createRadialGradient(W / 2, py + ph * .55, 20, W / 2, py + ph * .55, ph * .8);
+  pg.addColorStop(0, shadeHex(ch.bgC, 1.35)); pg.addColorStop(1, shadeHex(ch.bgC, .7));
+  roundRect(c, px, py, pw, ph, 12); c.fillStyle = pg; c.fill(); c.strokeStyle = 'rgba(217,166,74,.6)'; c.lineWidth = 2; c.stroke();
+  c.save(); roundRect(c, px, py, pw, ph, 12); c.clip(); drawFigure(c, figure(ch), W / 2 - 16 * 8.6, py + 8, 8.6, true); c.restore();
+  // ribbon
+  c.fillStyle = gold; c.beginPath(); c.moveTo(70, 512); c.lineTo(530, 512); c.lineTo(545, 532); c.lineTo(530, 552); c.lineTo(70, 552); c.lineTo(55, 532); c.closePath(); c.fill();
+  c.fillStyle = '#1d1508'; c.font = '600 22px "IBM Plex Sans Arabic", sans-serif';
+  c.fillText(`${RACES[ch.race].n} · ${CLASSES[ch.cls].n} · المستوى ${(+ch.level || 1).toLocaleString('ar')}`, W / 2, 540);
+  // radar (right side in RTL reading = x high)
+  const rx = 450, ry = 668, rr = 68;
+  c.strokeStyle = 'rgba(239,230,213,.18)'; c.lineWidth = 1;
+  for (const k of [.25, .5, .75, 1]) { c.beginPath(); for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3; c[i ? 'lineTo' : 'moveTo'](rx + Math.cos(a) * rr * k, ry + Math.sin(a) * rr * k); } c.closePath(); c.stroke(); }
+  c.beginPath();
+  STATS.forEach(([k], i) => { const v = Math.min(22, total(ch, k)) / 22, a = -Math.PI / 2 + i * Math.PI / 3; c[i ? 'lineTo' : 'moveTo'](rx + Math.cos(a) * rr * v, ry + Math.sin(a) * rr * v); });
+  c.closePath(); c.fillStyle = 'rgba(217,166,74,.35)'; c.fill(); c.strokeStyle = gold; c.lineWidth = 2.5; c.stroke();
+  c.font = '600 13px "IBM Plex Sans Arabic", sans-serif'; c.fillStyle = '#efe6d5';
+  STATS.forEach(([k, n], i) => { const a = -Math.PI / 2 + i * Math.PI / 3; c.fillText(`${n} ${total(ch, k)}`, rx + Math.cos(a) * (rr + 34), ry + Math.sin(a) * (rr + 16) + 5); });
+  // derived bars (left)
+  const d = derived(ch), bars = [['الصحة', d.HP, 200, '#c0483a'], ['المانا', d.MP, 160, '#3f7fc9'], ['الهجوم', d.ATK, 15, '#d98a3a'], ['الدفاع', d.DEF, 25, '#8aa35a']];
+  c.textAlign = 'right';
+  bars.forEach(([n, v, max, col], i) => {
+    const y = 600 + i * 40;
+    c.fillStyle = '#efe6d5'; c.font = '600 16px "IBM Plex Sans Arabic", sans-serif'; c.fillText(n, 300, y);
+    c.textAlign = 'left'; c.fillStyle = '#a39a90'; c.fillText(String(v), 50, y); c.textAlign = 'right';
+    roundRect(c, 50, y + 8, 250, 10, 5); c.fillStyle = 'rgba(255,255,255,.1)'; c.fill();
+    const fw = Math.max(10, 250 * Math.min(1, Math.max(0, v) / max)); roundRect(c, 300 - fw, y + 8, fw, 10, 5); c.fillStyle = col; c.fill();
+  });
+  // abilities
+  c.fillStyle = gold; c.font = '700 18px "IBM Plex Sans Arabic", sans-serif'; c.fillText('القدرات', 545, 784);
+  c.fillStyle = '#efe6d5'; c.font = '400 15px "IBM Plex Sans Arabic", sans-serif';
+  (ch.abilities || '').split('\n').filter(Boolean).slice(0, 3).forEach((a, i) => { c.fillText('◆ ' + (a.length > 56 ? a.slice(0, 55) + '…' : a), 545, 810 + i * 22); });
+  // quote + faction
+  c.textAlign = 'center'; c.fillStyle = '#a39a90'; c.font = 'italic 400 17px "Amiri", serif';
+  if (ch.quote) c.fillText(`«${ch.quote}»`, W / 2, 878);
+  c.fillStyle = gold; c.font = '600 13px "IBM Plex Sans Arabic", sans-serif'; c.textAlign = 'left'; c.fillText(ch.faction || '', 50, 784);
+  c.restore();
+}
+
+/* ---------- state ---------- */
+let roster = [], cur = null;
+try { roster = JSON.parse(localStorage.getItem('aren-roster') || '[]').filter(x => x && RACES[x.race] && CLASSES[x.cls]); } catch { roster = []; }
+const persist = () => { try { localStorage.setItem('aren-roster', JSON.stringify(roster)); } catch { /* storage blocked: keep in memory */ } };
+
+function fillSelect(id, obj) { const s = $(id); s.innerHTML = ''; for (const [k, v] of Object.entries(obj)) { const o = document.createElement('option'); o.value = k; o.textContent = typeof v === 'string' ? v : v.n; s.appendChild(o); } }
+fillSelect('race', RACES); fillSelect('cls', CLASSES); fillSelect('hair', HAIR); fillSelect('beard', BEARD); fillSelect('helm', HELM); fillSelect('weapon', WEAPONS);
+fillSelect('faction', Object.fromEntries(FACTIONS.map(f => [f, f])));
+
+const FIELDS = ['name', 'title', 'race', 'cls', 'level', 'faction', 'skin', 'hair', 'hairC', 'beard', 'helm', 'eye', 'c1', 'c2', 'weapon', 'capeC', 'bgC', 'abilities', 'story', 'quote'];
+const statBox = $('statBox');
+for (const [k, n] of STATS) statBox.insertAdjacentHTML('beforeend', `<label class="stat"><span>${n}</span><input type="number" id="s_${k}" min="3" max="20"><em id="t_${k}"></em></label>`);
+
+function load(ch) {
+  cur = ch;
+  for (const f of FIELDS) $(f).value = ch[f] ?? '';
+  $('cape').checked = !!ch.cape; $('shield').checked = !!ch.shield;
+  for (const [k] of STATS) $('s_' + k).value = ch.stats[k];
+  refresh(); renderRoster();
+}
+function refresh() {
+  if (!cur) return;
+  for (const [k] of STATS) { const b = RACES[cur.race].b[k] || 0; $('t_' + k).textContent = `المجموع ${total(cur, k)}${b ? ` · عرق +${b}` : ''}`; }
+  const d = derived(cur);
+  $('derived').innerHTML = `<span class="pill">الصحة ${d.HP}</span><span class="pill">المانا ${d.MP}</span><span class="pill">الهجوم ${d.ATK}</span><span class="pill">الدفاع ${d.DEF}</span>`;
+  drawCard(cur);
+}
+let saveT;
+function changed() { refresh(); clearTimeout(saveT); saveT = setTimeout(() => { persist(); renderRoster(); }, 300); }
+for (const f of FIELDS) $(f).addEventListener('input', () => {
+  cur[f] = f === 'level' ? Math.max(1, Math.min(20, +$(f).value || 1)) : $(f).value;
+  if (f === 'race') { cur.skin = RACES[cur.race].skins[0]; $('skin').value = cur.skin; }
+  if (f === 'cls') { const c = CLASSES[cur.cls]; Object.assign(cur, { c1: c.c1, c2: c.c2, weapon: c.weapon, shield: c.shield, abilities: c.ab.join('\n') }); for (const k of ['c1', 'c2', 'weapon', 'abilities']) $(k).value = cur[k]; $('shield').checked = cur.shield; }
+  changed();
+});
+$('cape').onchange = e => { cur.cape = e.target.checked; changed(); };
+$('shield').onchange = e => { cur.shield = e.target.checked; changed(); };
+for (const [k] of STATS) $('s_' + k).addEventListener('input', e => { cur.stats[k] = Math.max(3, Math.min(20, +e.target.value || 3)); changed(); });
+
+function renderRoster() {
+  const box = $('roster'); box.innerHTML = '';
+  for (const ch of roster) {
+    const b = document.createElement('button'); b.className = 'rItem'; b.setAttribute('aria-current', String(ch === cur));
+    const cv = document.createElement('canvas'); cv.width = 64; cv.height = 80; drawFigure(cv.getContext('2d'), figure(ch), 0, 0, 2, false);
+    const t = document.createElement('div'); const nb = document.createElement('b'); nb.textContent = ch.name || '—'; const sp = document.createElement('span'); sp.textContent = `${RACES[ch.race].n} · ${CLASSES[ch.cls].n} · ${ch.level}`;
+    t.append(nb, sp); b.append(cv, t); b.onclick = () => load(ch); box.appendChild(b);
+  }
+}
+
+/* ---------- actions ---------- */
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400); }
+$('newChar').onclick = () => { const ch = newChar(false); ch.name = 'شخصية جديدة'; roster.push(ch); persist(); load(ch); };
+$('rollAll').onclick = () => { const ch = newChar(true); roster.push(ch); persist(); load(ch); toast(`وُلدت: ${ch.name}`); };
+$('dupChar').onclick = () => { if (!cur) return; const ch = JSON.parse(JSON.stringify(cur)); ch.id += 'c'; ch.name += ' ٢'; roster.push(ch); persist(); load(ch); };
+let armDel = null;
+$('delChar').onclick = () => {
+  if (!cur) return;
+  if (!armDel) { $('delChar').textContent = 'تأكيد الحذف؟'; armDel = setTimeout(() => { armDel = null; $('delChar').textContent = 'حذف'; }, 3000); return; }
+  clearTimeout(armDel); armDel = null; $('delChar').textContent = 'حذف';
+  roster.splice(roster.indexOf(cur), 1); if (!roster.length) roster.push(newChar(false)); persist(); load(roster[0]);
+};
+$('rollName').onclick = () => { cur.name = rollName(); cur.title = pick(TITLES); $('name').value = cur.name; $('title').value = cur.title; changed(); };
+$('rollLook').onclick = () => { rollLook(cur); load(cur); persist(); };
+$('rollStats').onclick = () => { for (const [k] of STATS) cur.stats[k] = roll4d6(); load(cur); persist(); };
+$('rollStory').onclick = () => { rollStory(cur); for (const k of ['abilities', 'story', 'quote']) $(k).value = cur[k]; changed(); };
+for (const t of document.querySelectorAll('.tab')) t.onclick = () => {
+  for (const x of document.querySelectorAll('.tab')) { x.setAttribute('aria-selected', String(x === t)); $(x.dataset.p).hidden = x !== t; }
+};
+
+let downloads = null;
+(async () => {
+  try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch { downloads = null; }
+  if (downloads) for (const id of ['savePng', 'saveSprite', 'exportJson']) $(id).hidden = false;
+})();
+async function offer(filename, data) { try { await downloads.save({ filename, data }); toast('تم الحفظ'); } catch (e) { if (e?.code !== 'declined') toast('تعذر الحفظ: ' + (e?.code || 'خطأ')); } }
+const toBlob = c => new Promise(r => c.toBlob(r, 'image/png'));
+const slug = s => (s || 'character').replace(/[^\p{L}\p{N}]+/gu, '-');
+$('savePng').onclick = async () => { const c = document.createElement('canvas'); c.width = 1200; c.height = 1800; const x = c.getContext('2d'); x.scale(2, 2); drawCard(cur, x); offer(`${slug(cur.name)}-card.png`, await toBlob(c)); };
+$('saveSprite').onclick = async () => { const c = document.createElement('canvas'); c.width = 320; c.height = 400; drawFigure(c.getContext('2d'), figure(cur), 0, 0, 10, true); offer(`${slug(cur.name)}-sprite.png`, await toBlob(c)); };
+$('exportJson').onclick = () => offer('aren-characters.json', JSON.stringify({ game: 'آرين', characters: roster.map(ch => ({ ...ch, totals: Object.fromEntries(STATS.map(([k]) => [k, total(ch, k)])), derived: derived(ch), raceName: RACES[ch.race].n, className: CLASSES[ch.cls].n })) }, null, 1));
+$('importJson').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text()), list = (d.characters || []).filter(x => x && RACES[x.race] && CLASSES[x.cls] && x.stats);
+    if (!list.length) throw 0;
+    for (const ch of list) { delete ch.totals; delete ch.derived; delete ch.raceName; delete ch.className; ch.id = ch.id || Date.now().toString(36) + Math.random(); roster.push(ch); }
+    persist(); load(list[0]); toast(`استُوردت ${list.length} شخصية`);
+  } catch { toast('الملف لا يحوي شخصيات صالحة'); }
+};
+
+/* ---------- boot: example roster on first open ---------- */
+if (!roster.length) {
+  const hero = newChar(false); hero.stats = { STR: 15, DEX: 13, CON: 14, INT: 10, WIS: 12, CHA: 14 }; hero.level = 3; hero.cape = true; hero.capeC = '#7a2a24'; hero.hair = 'short'; hero.hairC = '#3b2617'; hero.helm = 'none'; hero.beard = 'none'; hero.bgC = '#3a2a1e';
+  hero.quote = 'سأحمي ما تركه الحارس العظيم.'; hero.story = 'آرين، آخر سلالة الحارس العظيم. نشأ في مدينة الحارس، ويبحث عن سر البيضة المفقودة في جبال الرماد.';
+  roster.push(hero, newChar(true), newChar(true), newChar(true)); persist();
+}
+load(roster[0]);
+document.fonts.ready.then(() => { if (cur) drawCard(cur); });
+Promise.all(['700 48px "Aref Ruqaa"', '400 22px "Amiri"', '600 16px "IBM Plex Sans Arabic"'].map(f => document.fonts.load(f).catch(() => {}))).then(() => cur && drawCard(cur));
+})();
+</script>
+
+</body></html>
