@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}{% load i18n %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Beauty-Grid ERP{% endblock %}
+{% block extrastyle %}{{ block.super }}<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ :root,html[data-theme=light]{--primary:#3b3aa8;--secondary:#22233f;--accent:#f5c451;--header-bg:#22233f;--header-link-color:#fff;--breadcrumbs-bg:#3b3aa8;--link-fg:#3b3aa8;--link-hover-color:#22233f;--button-bg:#3b3aa8;--button-hover-bg:#22233f;--default-button-bg:#22233f;--selected-row:#ecebfb}
+ html[data-theme=dark]{--primary:#8f8ef0;--secondary:#191a2e;--header-bg:#191a2e;--breadcrumbs-bg:#2c2b6e;--link-fg:#b3b2ff;--button-bg:#4b4ab8;--selected-row:#2a2a45}
+ @media(prefers-color-scheme:dark){html[data-theme=auto]{--primary:#8f8ef0;--secondary:#191a2e;--header-bg:#191a2e;--breadcrumbs-bg:#2c2b6e;--link-fg:#b3b2ff;--button-bg:#4b4ab8;--selected-row:#2a2a45}}
+ html[dir=rtl] body,html[dir=rtl] input,html[dir=rtl] select,html[dir=rtl] textarea,html[dir=rtl] button{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif}
+ #user-tools form{display:inline}#user-tools .langbtn{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font:inherit}
+</style>{% endblock %}
+{% block branding %}<div id="site-name"><a href="{% url 'dashboard' %}">Beauty-Grid ERP</a></div>{% endblock %}
+{% block userlinks %}<a href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a> / <a href="{% url 'pos' %}">{% trans "POS" %}</a> / <a href="{% url 'reports' %}">{% trans "Reports" %}</a> / <a href="{% url 'team' %}">{% trans "Team" %}</a> /
+{% get_current_language as LANG %}<form action="{% url 'set_language' %}" method="post">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button class="langbtn" name="language" value="{% if LANG == 'ar' %}en{% else %}ar{% endif %}">{% if LANG == 'ar' %}English{% else %}العربية{% endif %}</button></form> / {{ block.super }}{% endblock %}
+{% block nav-global %}{% endblock %}

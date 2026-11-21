@@ -1,0 +1,8 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<div class="card"><h2>{% trans "Open a POS session" %}</h2>
+{% if shops %}<form method="post">{% csrf_token %}
+<label>{% trans "Shop" %} <select name="shop">{% for s in shops %}<option value="{{ s.pk }}">{{ s }}</option>{% endfor %}</select></label><br>
+<label>{% trans "Opening cash" %} <input name="cash" type="number" step="0.01" min="0" value="0"></label><br>
+<button>{% trans "Open session" %}</button></form>
+{% else %}<p>{% trans "Ask a manager to create a POS shop first." %}</p>{% endif %}</div>
+{% endblock %}

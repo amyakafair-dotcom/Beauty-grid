@@ -1,0 +1,94 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<style>
+ .pos{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+ .grid button{height:80px}
+ #cart div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee}
+ #net{padding:6px 10px;border-radius:6px;background:#fde7e7;color:#900;display:none}
+ @media(max-width:700px){.pos{grid-template-columns:1fr}}
+</style>
+<p>{{ session }} — {% trans "opened with" %} {{ session.opening_cash }} <span id="net"></span></p>
+<div class="pos">
+ <div class="card grid" id="products"></div>
+ <div class="card">
+  <h3>{% trans "Order" %}</h3><div id="cart"></div>
+  <h2>{% trans "Total" %}: <span id="total">0.00</span></h2>
+  <select id="method"><option value="cash">{% trans "Cash" %}</option><option value="bank">{% trans "Bank transfer" %}</option></select>
+  <button onclick="pay()">{% trans "Pay" %}</button> <button onclick="clearCart()" style="background:#999">{% trans "Clear" %}</button>
+  <p id="msg"></p>
+  <form method="post" id="close">{% csrf_token %}<hr>
+   <label>{% trans "Counted cash" %} <input name="cash" type="number" step="0.01" min="0" required></label>
+   <button>{% trans "Close session" %}</button></form>
+ </div>
+</div>
+{{ products|json_script:"products-data" }}
+<script id="i18n" type="application/json">{"paid":"{% trans 'paid' %}","offline":"{% trans 'Offline: orders waiting to send' %}","saved":"{% trans 'No connection. Order saved and will be sent automatically.' %}","pending":"{% trans 'Send the waiting orders before closing.' %}","receipt":"{% trans 'Receipt' %}"}</script>
+<script>
+{
+const products = JSON.parse(document.getElementById('products-data').textContent);
+const T = JSON.parse(document.getElementById('i18n').textContent);
+const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const QKEY = 'bg-pos-queue-{{ session.pk }}';
+let cart = {};
+window.clearCart = () => { cart = {}; draw(); };
+const load = () => { try { return JSON.parse(localStorage.getItem(QKEY)) || []; } catch (e) { return []; } };
+const store = q => { try { localStorage.setItem(QKEY, JSON.stringify(q)); } catch (e) {} };
+const box = document.getElementById('products');
+for (const p of products) {
+  const b = document.createElement('button');
+  b.textContent = `${p.name} — ${p.price}`;
+  b.onclick = () => { cart[p.id] = (cart[p.id] || 0) + 1; draw(); };
+  box.appendChild(b);
+}
+window.draw = function () {
+  const el = document.getElementById('cart'); el.innerHTML = ''; let total = 0;
+  for (const [id, qty] of Object.entries(cart)) {
+    const p = products.find(x => x.id == id); total += qty * p.price;
+    const row = document.createElement('div');
+    row.textContent = `${p.name} × ${qty}`;
+    const rm = document.createElement('a'); rm.href = '#'; rm.textContent = '−';
+    rm.onclick = e => { e.preventDefault(); if (--cart[id] <= 0) delete cart[id]; draw(); };
+    row.appendChild(rm); el.appendChild(row);
+  }
+  document.getElementById('total').textContent = total.toFixed(2);
+  const n = load().length, net = document.getElementById('net');
+  net.style.display = n ? 'inline' : 'none'; net.textContent = `${T.offline}: ${n}`;
+};
+function say(text, err, link) {
+  const msg = document.getElementById('msg'); msg.className = err ? 'error' : ''; msg.textContent = text;
+  if (link) { const a = document.createElement('a'); a.href = link; a.textContent = ' ' + T.receipt; a.target = '_blank'; msg.appendChild(a); }
+}
+async function send(order) {  // returns response json, or throws on no connection
+  const r = await fetch('/pos/order/', {method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf}, body: JSON.stringify(order)});
+  return {ok: r.ok, data: await r.json()};
+}
+window.pay = async function () {
+  const items = Object.entries(cart).map(([id, qty]) => ({id: +id, qty}));
+  if (!items.length) return;
+  const order = {items, method: document.getElementById('method').value,
+                 ref: (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random())};
+  try {
+    const {ok, data} = await send(order);
+    if (ok) { say(`${data.order} ${T.paid}: ${data.total}`, false, `/receipt/${data.id}/`); cart = {}; }
+    else say(data.error, true);
+  } catch (e) {  // no connection: keep it and retry later
+    const q = load(); q.push(order); store(q); cart = {}; say(T.saved, true);
+  }
+  draw();
+};
+async function flush() {
+  const q = load(); if (!q.length) return;
+  const left = [];
+  for (const o of q) {
+    try { const {ok, data} = await send(o); if (!ok) say(data.error, true); }
+    catch (e) { left.push(o); }
+  }
+  store(left); draw();
+}
+addEventListener('online', flush); setInterval(flush, 15000); flush();
+document.getElementById('close').onsubmit = e => { if (load().length) { e.preventDefault(); say(T.pending, true); flush(); } };
+draw();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<div class="card"><h2>{% trans "Create your company" %}</h2>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button>{% trans "Create" %}</button></form>
+<p>{% trans "Already have an account?" %} <a href="{% url 'login' %}">{% trans "Log in" %}</a></p></div>
+{% endblock %}

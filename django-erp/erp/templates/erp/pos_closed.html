@@ -1,0 +1,6 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<div class="card"><h2>{% blocktrans %}{{ session }} closed{% endblocktrans %}</h2>
+<p>{% trans "Opening cash" %}: {{ session.opening_cash|floatformat:2 }}<br>{% trans "Expected cash" %}: {{ session.expected_cash|floatformat:2 }}<br>
+{% trans "Counted cash" %}: {{ session.closing_cash|floatformat:2 }}<br><b>{% trans "Difference" %}: {{ diff|floatformat:2 }}</b></p>
+<a href="{% url 'pos' %}">{% trans "Open a new session" %}</a></div>
+{% endblock %}

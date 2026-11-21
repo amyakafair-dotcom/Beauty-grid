@@ -1,0 +1,8 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<div class="card"><h2>{% trans "Team" %}</h2>
+<table><thead><tr><th>{% trans "Username" %}</th><th>{% trans "Role" %}</th></tr></thead><tbody>
+{% for m in members %}<tr><td>{{ m.user.username }}</td><td>{{ m.get_role_display }}</td></tr>{% endfor %}</tbody></table></div>
+<div class="card"><h2>{% trans "Add a team member" %}</h2>
+<p>{% trans "Managers use the back office. Cashiers only see the POS screen." %}</p>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button>{% trans "Add" %}</button></form></div>
+{% endblock %}

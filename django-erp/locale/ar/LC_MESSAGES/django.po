@@ -1,0 +1,1219 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-21 15:55+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: erp/admin.py:14
+msgid "The tech behind your beauty"
+msgstr "التقنية خلف جمالك"
+
+#: erp/admin.py:64
+#, python-format
+msgid "%(obj)s: %(action)s done."
+msgstr "%(obj)s: %(action)s ✓"
+
+#: erp/admin.py:85
+msgid "stock level"
+msgstr "مستوى المخزون"
+
+#: erp/admin.py:89
+msgid "Low (1–5)"
+msgstr "منخفض (1–5)"
+
+#: erp/admin.py:89
+msgid "Out (0)"
+msgstr "نفد (0)"
+
+#: erp/admin.py:103
+msgid "orders"
+msgstr "الطلبات"
+
+#: erp/admin.py:107
+msgid "spent"
+msgstr "إجمالي المشتريات"
+
+#: erp/admin.py:123
+msgid "Variant"
+msgstr "النوع الفرعي"
+
+#: erp/admin.py:124 erp/models.py:329 erp/templates/erp/base.html:29
+#: erp/templates/erp/owner.html:4
+msgid "Online store"
+msgstr "المتجر الإلكتروني"
+
+#: erp/admin.py:125
+msgid "Options"
+msgstr "خيارات"
+
+#: erp/admin.py:128 erp/admin.py:143
+msgid "on hand"
+msgstr "المتوفر"
+
+#: erp/admin.py:147
+msgid "Check now and create orders"
+msgstr "افحص الآن وأنشئ الطلبات"
+
+#: erp/admin.py:150
+#, python-format
+msgid "Orders created: %s"
+msgstr "الطلبات المُنشأة: %s"
+
+#: erp/admin.py:170 erp/models.py:103
+msgid "SKU"
+msgstr "رمز المنتج (SKU)"
+
+#: erp/admin.py:197
+msgid "Apply count"
+msgstr "اعتماد الجرد"
+
+#: erp/admin.py:214
+msgid "Produce"
+msgstr "تصنيع"
+
+#: erp/admin.py:216 erp/models.py:246
+msgid "components"
+msgstr "المكونات"
+
+#: erp/admin.py:219
+msgid "consumed"
+msgstr "مُستهلكة"
+
+#: erp/admin.py:221
+msgid "ready"
+msgstr "جاهز"
+
+#: erp/admin.py:221
+#, python-format
+msgid "missing: %s"
+msgstr "ناقص: %s"
+
+#: erp/admin.py:234
+msgid "Receive goods"
+msgstr "استلام البضاعة"
+
+#: erp/admin.py:251
+msgid "invoice"
+msgstr "الفاتورة"
+
+#: erp/admin.py:254 erp/admin.py:281 erp/templates/erp/invoice.html:7
+#: erp/templates/erp/reports.html:13
+msgid "Print"
+msgstr "طباعة"
+
+#: erp/admin.py:255
+msgid "Mark as processing"
+msgstr "تحويل إلى قيد المعالجة"
+
+#: erp/admin.py:256
+msgid "Confirm"
+msgstr "تأكيد"
+
+#: erp/admin.py:257
+msgid "Ship (stock leaves)"
+msgstr "شحن (يخرج من المخزون)"
+
+#: erp/admin.py:258
+msgid "Mark as delivered"
+msgstr "تحويل إلى تم التسليم"
+
+#: erp/admin.py:259
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: erp/admin.py:278
+msgid "receipt"
+msgstr "الإيصال"
+
+#: erp/admin.py:311
+msgid "online store"
+msgstr "المتجر الإلكتروني"
+
+#: erp/apps.py:7
+msgid "Operations"
+msgstr "العمليات"
+
+#: erp/extra_strings.py:4
+msgid "Run"
+msgstr "تنفيذ"
+
+#: erp/extra_strings.py:5
+msgid "- Select an option -"
+msgstr "- اختر -"
+
+#: erp/models.py:13 erp/models.py:71 erp/models.py:86 erp/models.py:102
+#: erp/models.py:141 erp/models.py:157 erp/models.py:393
+msgid "name"
+msgstr "الاسم"
+
+#: erp/models.py:14 erp/models.py:63 erp/models.py:260 erp/models.py:460
+msgid "currency"
+msgstr "العملة"
+
+#: erp/models.py:15
+msgid "store address"
+msgstr "عنوان المتجر"
+
+#: erp/models.py:17
+msgid "online store open"
+msgstr "المتجر الإلكتروني مفتوح"
+
+#: erp/models.py:18
+msgid "store phone"
+msgstr "هاتف المتجر"
+
+#: erp/models.py:19
+msgid "active"
+msgstr "نشطة"
+
+#: erp/models.py:20
+msgid "Inactive companies can't log in and their store is closed."
+msgstr "الشركة غير النشطة لا يستطيع موظفوها الدخول ومتجرها مغلق."
+
+#: erp/models.py:23 erp/models.py:36
+msgid "company"
+msgstr "الشركة"
+
+#: erp/models.py:24
+msgid "companies"
+msgstr "الشركات"
+
+#: erp/models.py:33
+msgid "Manager"
+msgstr "مدير"
+
+#: erp/models.py:33
+msgid "Cashier"
+msgstr "كاشير"
+
+#: erp/models.py:35
+msgid "user"
+msgstr "المستخدم"
+
+#: erp/models.py:37
+msgid "role"
+msgstr "الدور"
+
+#: erp/models.py:40
+msgid "team member"
+msgstr "عضو فريق"
+
+#: erp/models.py:41
+msgid "team members"
+msgstr "أعضاء الفريق"
+
+#: erp/models.py:58
+msgid "code"
+msgstr "الرمز"
+
+#: erp/models.py:59
+msgid "rate to company currency"
+msgstr "السعر مقابل عملة الشركة"
+
+#: erp/models.py:64
+msgid "currencies"
+msgstr "العملات"
+
+#: erp/models.py:72
+msgid "phone"
+msgstr "الهاتف"
+
+#: erp/models.py:73
+msgid "email"
+msgstr "البريد الإلكتروني"
+
+#: erp/models.py:74 erp/models.py:437
+msgid "customer"
+msgstr "عميل"
+
+#: erp/models.py:75 erp/models.py:357
+msgid "vendor"
+msgstr "مورد"
+
+#: erp/models.py:78
+msgid "customer / vendor"
+msgstr "عميل / مورد"
+
+#: erp/models.py:79
+msgid "customers and vendors"
+msgstr "العملاء والموردون"
+
+#: erp/models.py:89 erp/models.py:106
+msgid "category"
+msgstr "التصنيف"
+
+#: erp/models.py:90
+msgid "categories"
+msgstr "التصنيفات"
+
+#: erp/models.py:99
+msgid "Storable"
+msgstr "مخزّن"
+
+#: erp/models.py:99
+msgid "Consumable"
+msgstr "مستهلك"
+
+#: erp/models.py:99
+msgid "Service"
+msgstr "خدمة"
+
+#: erp/models.py:100
+msgid "unit"
+msgstr "وحدة"
+
+#: erp/models.py:100
+msgid "g"
+msgstr "جم"
+
+#: erp/models.py:100
+msgid "kg"
+msgstr "كجم"
+
+#: erp/models.py:100
+msgid "ml"
+msgstr "مل"
+
+#: erp/models.py:100
+msgid "L"
+msgstr "لتر"
+
+#: erp/models.py:104
+msgid "Your own short code. Left empty, one is made for you."
+msgstr "رمز قصير من اختيارك. إذا تُرك فارغاً يُنشأ تلقائياً."
+
+#: erp/models.py:108
+msgid "variant of"
+msgstr "نوع فرعي من"
+
+#: erp/models.py:109
+msgid "e.g. Aura 100 ml is a variant of Aura."
+msgstr "مثال: Aura 100 مل نوع فرعي من Aura."
+
+#: erp/models.py:110
+msgid "variant name"
+msgstr "اسم النوع الفرعي"
+
+#: erp/models.py:111
+msgid "e.g. 100 ml, Rose"
+msgstr "مثال: 100 مل، ورد"
+
+#: erp/models.py:112
+msgid "type"
+msgstr "النوع"
+
+#: erp/models.py:113
+msgid "unit of measure"
+msgstr "وحدة القياس"
+
+#: erp/models.py:114
+msgid "sale price"
+msgstr "سعر البيع"
+
+#: erp/models.py:115
+msgid "cost"
+msgstr "التكلفة"
+
+#: erp/models.py:116
+msgid "can be sold"
+msgstr "قابل للبيع"
+
+#: erp/models.py:117
+msgid "can be purchased"
+msgstr "قابل للشراء"
+
+#: erp/models.py:118
+msgid "show in online store"
+msgstr "يظهر في المتجر الإلكتروني"
+
+#: erp/models.py:119
+msgid "description"
+msgstr "الوصف"
+
+#: erp/models.py:120
+msgid "image"
+msgstr "الصورة"
+
+#: erp/models.py:123 erp/models.py:172 erp/models.py:184 erp/models.py:218
+#: erp/models.py:228 erp/models.py:289 erp/models.py:351
+msgid "product"
+msgstr "منتج"
+
+#: erp/models.py:124
+msgid "products"
+msgstr "المنتجات"
+
+#: erp/models.py:144 erp/models.py:160 erp/models.py:256 erp/models.py:353
+#: erp/models.py:379 erp/models.py:394
+msgid "warehouse"
+msgstr "المستودع"
+
+#: erp/models.py:145
+msgid "warehouses"
+msgstr "المستودعات"
+
+#: erp/models.py:154
+msgid "Internal"
+msgstr "داخلي"
+
+#: erp/models.py:154
+msgid "Vendor"
+msgstr "مورد"
+
+#: erp/models.py:154 erp/templates/erp/invoice.html:3
+msgid "Customer"
+msgstr "عميل"
+
+#: erp/models.py:155
+msgid "Production"
+msgstr "الإنتاج"
+
+#: erp/models.py:155
+msgid "Adjustment"
+msgstr "التسوية"
+
+#: erp/models.py:158
+msgid "kind"
+msgstr "النوع"
+
+#: erp/models.py:163 erp/models.py:173 erp/models.py:202
+msgid "location"
+msgstr "الموقع"
+
+#: erp/models.py:164
+msgid "locations"
+msgstr "المواقع"
+
+#: erp/models.py:174 erp/models.py:185 erp/models.py:242 erp/models.py:290
+#: erp/models.py:378
+msgid "quantity"
+msgstr "الكمية"
+
+#: erp/models.py:178 erp/models.py:179
+msgid "stock on hand"
+msgstr "المخزون المتوفر"
+
+#: erp/models.py:187
+msgid "from"
+msgstr "من"
+
+#: erp/models.py:189
+msgid "to"
+msgstr "إلى"
+
+#: erp/models.py:190
+msgid "reference"
+msgstr "المرجع"
+
+#: erp/models.py:191 erp/models.py:206 erp/models.py:264 erp/models.py:382
+#: erp/models.py:441
+msgid "date"
+msgstr "التاريخ"
+
+#: erp/models.py:195
+msgid "stock move"
+msgstr "حركة مخزون"
+
+#: erp/models.py:196
+msgid "stock moves"
+msgstr "حركات المخزون"
+
+#: erp/models.py:201 erp/models.py:252 erp/models.py:376
+msgid "draft"
+msgstr "مسودة"
+
+#: erp/models.py:201
+msgid "applied"
+msgstr "معتمد"
+
+#: erp/models.py:204 erp/models.py:257 erp/models.py:380 erp/models.py:410
+msgid "state"
+msgstr "الحالة"
+
+#: erp/models.py:209
+msgid "stock count"
+msgstr "جرد"
+
+#: erp/models.py:210
+msgid "stock counts"
+msgstr "عمليات الجرد"
+
+#: erp/models.py:219
+msgid "counted"
+msgstr "المعدود"
+
+#: erp/models.py:222 erp/models.py:295
+msgid "line"
+msgstr "سطر"
+
+#: erp/models.py:223 erp/models.py:296
+msgid "lines"
+msgstr "الأسطر"
+
+#: erp/models.py:229
+msgid "batch size"
+msgstr "حجم الدفعة"
+
+#: erp/models.py:232 erp/models.py:377
+msgid "recipe"
+msgstr "وصفة"
+
+#: erp/models.py:233
+msgid "recipes"
+msgstr "الوصفات"
+
+#: erp/models.py:241 erp/models.py:245
+msgid "component"
+msgstr "مكوّن"
+
+#: erp/models.py:252
+msgid "confirmed"
+msgstr "مؤكد"
+
+#: erp/models.py:252 erp/models.py:376
+msgid "done"
+msgstr "منجز"
+
+#: erp/models.py:253
+msgid "cancelled"
+msgstr "ملغي"
+
+#: erp/models.py:255
+msgid "partner"
+msgstr "الطرف"
+
+#: erp/models.py:261
+msgid "Empty = company currency."
+msgstr "فارغ = عملة الشركة."
+
+#: erp/models.py:262
+msgid "exchange rate"
+msgstr "سعر الصرف"
+
+#: erp/models.py:263
+msgid "Filled from the currency if left empty."
+msgstr "يُؤخذ من العملة إذا تُرك فارغاً."
+
+#: erp/models.py:291
+msgid "unit price"
+msgstr "سعر الوحدة"
+
+#: erp/models.py:305
+msgid "purchase order"
+msgstr "أمر شراء"
+
+#: erp/models.py:306
+msgid "purchase orders"
+msgstr "أوامر الشراء"
+
+#: erp/models.py:319
+msgid "New"
+msgstr "جديد"
+
+#: erp/models.py:319
+msgid "Processing"
+msgstr "قيد المعالجة"
+
+#: erp/models.py:319
+msgid "Confirmed"
+msgstr "تم التأكيد"
+
+#: erp/models.py:320
+msgid "Shipped"
+msgstr "تم الشحن"
+
+#: erp/models.py:320
+msgid "Delivered"
+msgstr "تم التسليم"
+
+#: erp/models.py:320
+msgid "Cancelled"
+msgstr "ملغي"
+
+#: erp/models.py:324
+msgid "stage"
+msgstr "المرحلة"
+
+#: erp/models.py:326
+msgid "invoice number"
+msgstr "رقم الفاتورة"
+
+#: erp/models.py:329 erp/templates/erp/base.html:29
+msgid "Back office"
+msgstr "لوحة التحكم"
+
+#: erp/models.py:330
+msgid "source"
+msgstr "المصدر"
+
+#: erp/models.py:332
+msgid "delivery address"
+msgstr "عنوان التوصيل"
+
+#: erp/models.py:333
+msgid "customer note"
+msgstr "ملاحظة العميل"
+
+#: erp/models.py:334
+msgid "payment"
+msgstr "الدفع"
+
+#: erp/models.py:337
+msgid "sale order"
+msgstr "أمر بيع"
+
+#: erp/models.py:338
+msgid "sale orders"
+msgstr "أوامر البيع"
+
+#: erp/models.py:354
+msgid "minimum"
+msgstr "الحد الأدنى"
+
+#: erp/models.py:355
+msgid "maximum"
+msgstr "الحد الأعلى"
+
+#: erp/models.py:358
+msgid "Empty = manufacture with the product's recipe."
+msgstr "فارغ = يُصنَّع بوصفة المنتج."
+
+#: erp/models.py:362
+msgid "minimum stock rule"
+msgstr "قاعدة حد أدنى"
+
+#: erp/models.py:363
+msgid "minimum stock rules"
+msgstr "قواعد الحد الأدنى للمخزون"
+
+#: erp/models.py:371
+msgid "Maximum must be at least the minimum."
+msgstr "يجب أن يكون الحد الأعلى أكبر من أو يساوي الأدنى."
+
+#: erp/models.py:385
+msgid "manufacturing order"
+msgstr "أمر تصنيع"
+
+#: erp/models.py:386
+msgid "manufacturing orders"
+msgstr "أوامر التصنيع"
+
+#: erp/models.py:397
+msgid "POS shop"
+msgstr "محل نقطة البيع"
+
+#: erp/models.py:398
+msgid "POS shops"
+msgstr "محلات نقطة البيع"
+
+#: erp/models.py:406
+msgid "open"
+msgstr "مفتوحة"
+
+#: erp/models.py:406
+msgid "closed"
+msgstr "مغلقة"
+
+#: erp/models.py:407
+msgid "shop"
+msgstr "المحل"
+
+#: erp/models.py:409
+msgid "cashier"
+msgstr "الكاشير"
+
+#: erp/models.py:411
+msgid "opening cash"
+msgstr "النقد عند الفتح"
+
+#: erp/models.py:412
+msgid "counted cash"
+msgstr "النقد المعدود"
+
+#: erp/models.py:413
+msgid "opened at"
+msgstr "فُتحت في"
+
+#: erp/models.py:414
+msgid "closed at"
+msgstr "أُغلقت في"
+
+#: erp/models.py:417
+msgid "POS session"
+msgstr "جلسة نقطة بيع"
+
+#: erp/models.py:418
+msgid "POS sessions"
+msgstr "جلسات نقطة البيع"
+
+#: erp/models.py:433 erp/templates/erp/pos.html:16
+msgid "Cash"
+msgstr "نقداً"
+
+#: erp/models.py:433 erp/store.py:107 erp/templates/erp/pos.html:16
+msgid "Bank transfer"
+msgstr "تحويل بنكي"
+
+#: erp/models.py:435
+msgid "session"
+msgstr "الجلسة"
+
+#: erp/models.py:438
+msgid "payment method"
+msgstr "طريقة الدفع"
+
+#: erp/models.py:444
+msgid "POS order"
+msgstr "طلب نقطة بيع"
+
+#: erp/models.py:445
+msgid "POS orders"
+msgstr "طلبات نقطة البيع"
+
+#: erp/models.py:460
+msgid "total"
+msgstr "الإجمالي"
+
+#: erp/models.py:460
+msgid "total in company currency"
+msgstr "الإجمالي بعملة الشركة"
+
+#: erp/models.py:461
+msgid "expected cash"
+msgstr "النقد المتوقع"
+
+#: erp/services.py:58
+msgid "Quantity cannot be negative."
+msgstr "لا يمكن أن تكون الكمية سالبة."
+
+#: erp/services.py:62
+#, python-format
+msgid ""
+"Not enough %(product)s in %(location)s: %(have)s available, %(need)s needed."
+msgstr ""
+"الكمية غير كافية من %(product)s في %(location)s: المتوفر %(have)s، والمطلوب "
+"%(need)s."
+
+#: erp/services.py:110
+#, python-format
+msgid "%(obj)s is already %(state)s."
+msgstr "%(obj)s حالته الآن: %(state)s."
+
+#: erp/services.py:128
+#, python-format
+msgid "%s is cancelled."
+msgstr "%s ملغي."
+
+#: erp/services.py:142
+#, python-format
+msgid "%(order)s can't go from %(a)s to %(b)s."
+msgstr "لا يمكن نقل %(order)s من \"%(a)s\" إلى \"%(b)s\"."
+
+#: erp/services.py:169
+#, python-format
+msgid "Missing components: %s"
+msgstr "مكونات ناقصة: %s"
+
+#: erp/services.py:203
+msgid "Session is closed."
+msgstr "الجلسة مغلقة."
+
+#: erp/services.py:205
+msgid "Unknown payment method."
+msgstr "طريقة دفع غير معروفة."
+
+#: erp/store.py:103
+msgid "Your name"
+msgstr "اسمك"
+
+#: erp/store.py:104
+msgid "Phone"
+msgstr "الهاتف"
+
+#: erp/store.py:105 erp/templates/erp/invoice.html:3
+msgid "Delivery address"
+msgstr "عنوان التوصيل"
+
+#: erp/store.py:106 erp/templates/erp/invoice.html:3
+msgid "Payment"
+msgstr "الدفع"
+
+#: erp/store.py:107
+msgid "Cash on delivery"
+msgstr "الدفع عند الاستلام"
+
+#: erp/store.py:108
+msgid "Note"
+msgstr "ملاحظة"
+
+#: erp/store.py:125
+#, python-format
+msgid "Not enough stock for: %s"
+msgstr "الكمية غير كافية من: %s"
+
+#: erp/templates/admin/base_site.html:12 erp/templates/erp/base.html:29
+msgid "Dashboard"
+msgstr "لوحة المؤشرات"
+
+#: erp/templates/admin/base_site.html:12 erp/templates/erp/base.html:30
+msgid "POS"
+msgstr "نقطة البيع"
+
+#: erp/templates/admin/base_site.html:12 erp/templates/erp/base.html:29
+msgid "Reports"
+msgstr "التقارير"
+
+#: erp/templates/admin/base_site.html:12 erp/templates/erp/base.html:29
+#: erp/templates/erp/team.html:2
+msgid "Team"
+msgstr "الفريق"
+
+#: erp/templates/erp/base.html:28 erp/templates/erp/dashboard.html:2
+#: erp/templates/erp/owner.html:2
+msgid "All companies"
+msgstr "كل الشركات"
+
+#: erp/templates/erp/base.html:31
+msgid "Log out"
+msgstr "تسجيل الخروج"
+
+#: erp/templates/erp/base.html:32
+msgid "Light / dark"
+msgstr "فاتح / داكن"
+
+#: erp/templates/erp/dashboard.html:2
+#, python-format
+msgid "Amounts in %(cur)s."
+msgstr "المبالغ بـ %(cur)s."
+
+#: erp/templates/erp/dashboard.html:4
+msgid "Total orders"
+msgstr "إجمالي الطلبات"
+
+#: erp/templates/erp/dashboard.html:5
+msgid "Total revenue"
+msgstr "إجمالي الإيرادات"
+
+#: erp/templates/erp/dashboard.html:6 erp/templates/erp/owner.html:4
+msgid "Customers"
+msgstr "العملاء"
+
+#: erp/templates/erp/dashboard.html:7
+msgid "Products"
+msgstr "المنتجات"
+
+#: erp/templates/erp/dashboard.html:8
+msgid "Stock rows at 5 or less"
+msgstr "أصناف مخزونها 5 أو أقل"
+
+#: erp/templates/erp/dashboard.html:11
+msgid "Orders, last 30 days"
+msgstr "طلبات آخر 30 يوماً"
+
+#: erp/templates/erp/dashboard.html:12
+msgid "Revenue, last 30 days"
+msgstr "إيرادات آخر 30 يوماً"
+
+#: erp/templates/erp/dashboard.html:13
+msgid "Manufacturing orders waiting"
+msgstr "أوامر تصنيع منتظرة"
+
+#: erp/templates/erp/dashboard.html:14
+msgid "Purchase orders to review"
+msgstr "طلبات شراء للمراجعة"
+
+#: erp/templates/erp/dashboard.html:16
+msgid "Sale orders by stage"
+msgstr "أوامر البيع حسب المرحلة"
+
+#: erp/templates/erp/dashboard.html:18
+msgid "Latest online orders"
+msgstr "أحدث طلبات المتجر"
+
+#: erp/templates/erp/dashboard.html:19
+msgid "No online orders yet."
+msgstr "لا توجد طلبات من المتجر بعد."
+
+#: erp/templates/erp/dashboard.html:20
+msgid "Running low"
+msgstr "قارب على النفاد"
+
+#: erp/templates/erp/dashboard.html:21
+msgid "Nothing low."
+msgstr "لا شيء قارب على النفاد."
+
+#: erp/templates/erp/dashboard.html:22
+msgid "See all stock"
+msgstr "عرض كل المخزون"
+
+#: erp/templates/erp/invoice.html:3
+msgid "Date"
+msgstr "التاريخ"
+
+#: erp/templates/erp/invoice.html:4 erp/templates/erp/reports.html:5
+#: erp/templates/erp/reports.html:11
+msgid "Product"
+msgstr "المنتج"
+
+#: erp/templates/erp/invoice.html:4 erp/templates/erp/reports.html:5
+#: erp/templates/store/cart.html:5
+msgid "Quantity"
+msgstr "الكمية"
+
+#: erp/templates/erp/invoice.html:4
+msgid "Price"
+msgstr "السعر"
+
+#: erp/templates/erp/invoice.html:4
+msgid "Subtotal"
+msgstr "المجموع الفرعي"
+
+#: erp/templates/erp/invoice.html:6 erp/templates/erp/pos.html:15
+#: erp/templates/store/cart.html:6
+msgid "Total"
+msgstr "الإجمالي"
+
+#: erp/templates/erp/login.html:2 erp/templates/erp/login.html:4
+#: erp/templates/erp/signup.html:4
+msgid "Log in"
+msgstr "تسجيل الدخول"
+
+#: erp/templates/erp/login.html:3
+msgid "This company is switched off. Contact Beauty-Grid."
+msgstr "هذه الشركة موقوفة. تواصل مع Beauty-Grid."
+
+#: erp/templates/erp/login.html:5
+msgid "New company?"
+msgstr "شركة جديدة؟"
+
+#: erp/templates/erp/login.html:5
+msgid "Create an account"
+msgstr "أنشئ حساباً"
+
+#: erp/templates/erp/owner.html:2
+msgid "Search, open or switch off a company."
+msgstr "ابحث عن شركة، افتحها، أو أوقفها."
+
+#: erp/templates/erp/owner.html:3 erp/views.py:84
+msgid "Company name"
+msgstr "اسم الشركة"
+
+#: erp/templates/erp/owner.html:3
+msgid "Search"
+msgstr "بحث"
+
+#: erp/templates/erp/owner.html:4
+msgid "Company"
+msgstr "الشركة"
+
+#: erp/templates/erp/owner.html:4
+msgid "Status"
+msgstr "الحالة"
+
+#: erp/templates/erp/owner.html:4
+msgid "Orders"
+msgstr "الطلبات"
+
+#: erp/templates/erp/owner.html:4
+msgid "Revenue"
+msgstr "الإيرادات"
+
+#: erp/templates/erp/owner.html:4
+msgid "Users"
+msgstr "المستخدمون"
+
+#: erp/templates/erp/owner.html:6
+msgid "Active"
+msgstr "نشطة"
+
+#: erp/templates/erp/owner.html:6
+msgid "Switched off"
+msgstr "موقوفة"
+
+#: erp/templates/erp/owner.html:8
+msgid "Open"
+msgstr "فتح"
+
+#: erp/templates/erp/owner.html:9
+msgid "Switch off"
+msgstr "إيقاف"
+
+#: erp/templates/erp/owner.html:9
+msgid "Switch on"
+msgstr "تشغيل"
+
+#: erp/templates/erp/owner.html:10
+msgid "No companies yet."
+msgstr "لا توجد شركات بعد."
+
+#: erp/templates/erp/pos.html:10
+msgid "opened with"
+msgstr "فُتحت بمبلغ"
+
+#: erp/templates/erp/pos.html:14
+msgid "Order"
+msgstr "الطلب"
+
+#: erp/templates/erp/pos.html:17
+msgid "Pay"
+msgstr "دفع"
+
+#: erp/templates/erp/pos.html:17
+msgid "Clear"
+msgstr "مسح"
+
+#: erp/templates/erp/pos.html:20 erp/templates/erp/pos_closed.html:4
+msgid "Counted cash"
+msgstr "النقد المعدود"
+
+#: erp/templates/erp/pos.html:21
+msgid "Close session"
+msgstr "إغلاق الجلسة"
+
+#: erp/templates/erp/pos.html:25
+msgid "paid"
+msgstr "تم الدفع"
+
+#: erp/templates/erp/pos.html:25
+msgid "Offline: orders waiting to send"
+msgstr "بدون اتصال: طلبات بانتظار الإرسال"
+
+#: erp/templates/erp/pos.html:25
+msgid "No connection. Order saved and will be sent automatically."
+msgstr "لا يوجد اتصال. حُفظ الطلب وسيُرسل تلقائياً."
+
+#: erp/templates/erp/pos.html:25
+msgid "Send the waiting orders before closing."
+msgstr "أرسل الطلبات المنتظرة قبل الإغلاق."
+
+#: erp/templates/erp/pos.html:25 erp/views.py:175
+msgid "Receipt"
+msgstr "إيصال"
+
+#: erp/templates/erp/pos_closed.html:2
+#, python-format
+msgid "%(session)s closed"
+msgstr "أُغلقت الجلسة %(session)s"
+
+#: erp/templates/erp/pos_closed.html:3 erp/templates/erp/pos_open.html:5
+msgid "Opening cash"
+msgstr "النقد عند الفتح"
+
+#: erp/templates/erp/pos_closed.html:3
+msgid "Expected cash"
+msgstr "النقد المتوقع"
+
+#: erp/templates/erp/pos_closed.html:4
+msgid "Difference"
+msgstr "الفرق"
+
+#: erp/templates/erp/pos_closed.html:5
+msgid "Open a new session"
+msgstr "افتح جلسة جديدة"
+
+#: erp/templates/erp/pos_open.html:2
+msgid "Open a POS session"
+msgstr "فتح جلسة نقطة بيع"
+
+#: erp/templates/erp/pos_open.html:4 erp/views.py:97
+msgid "Shop"
+msgstr "المحل"
+
+#: erp/templates/erp/pos_open.html:6
+msgid "Open session"
+msgstr "فتح الجلسة"
+
+#: erp/templates/erp/pos_open.html:7
+msgid "Ask a manager to create a POS shop first."
+msgstr "اطلب من المدير إنشاء محل نقطة بيع أولاً."
+
+#: erp/templates/erp/reports.html:2
+msgid "From"
+msgstr "من"
+
+#: erp/templates/erp/reports.html:2
+msgid "To"
+msgstr "إلى"
+
+#: erp/templates/erp/reports.html:2
+msgid "Show"
+msgstr "عرض"
+
+#: erp/templates/erp/reports.html:3
+#, python-format
+msgid "All amounts in %(cur)s."
+msgstr "كل المبالغ بـ %(cur)s."
+
+#: erp/templates/erp/reports.html:4
+msgid "Sales"
+msgstr "المبيعات"
+
+#: erp/templates/erp/reports.html:5
+msgid "Amount"
+msgstr "المبلغ"
+
+#: erp/templates/erp/reports.html:6
+msgid "No sales in this period."
+msgstr "لا مبيعات في هذه الفترة."
+
+#: erp/templates/erp/reports.html:7
+msgid "Purchases received"
+msgstr "المشتريات المستلمة"
+
+#: erp/templates/erp/reports.html:8
+msgid "Produced"
+msgstr "المُصنَّع"
+
+#: erp/templates/erp/reports.html:9
+msgid "Nothing produced in this period."
+msgstr "لم يُصنَّع شيء في هذه الفترة."
+
+#: erp/templates/erp/reports.html:10
+msgid "Stock value at cost"
+msgstr "قيمة المخزون بسعر التكلفة"
+
+#: erp/templates/erp/reports.html:11
+msgid "Location"
+msgstr "الموقع"
+
+#: erp/templates/erp/reports.html:11
+msgid "On hand"
+msgstr "المتوفر"
+
+#: erp/templates/erp/reports.html:11
+msgid "Value"
+msgstr "القيمة"
+
+#: erp/templates/erp/signup.html:2
+msgid "Create your company"
+msgstr "أنشئ شركتك"
+
+#: erp/templates/erp/signup.html:3
+msgid "Create"
+msgstr "إنشاء"
+
+#: erp/templates/erp/signup.html:4
+msgid "Already have an account?"
+msgstr "لديك حساب؟"
+
+#: erp/templates/erp/team.html:3 erp/views.py:69
+msgid "Username"
+msgstr "اسم المستخدم"
+
+#: erp/templates/erp/team.html:3 erp/views.py:89
+msgid "Role"
+msgstr "الدور"
+
+#: erp/templates/erp/team.html:5
+msgid "Add a team member"
+msgstr "إضافة عضو للفريق"
+
+#: erp/templates/erp/team.html:6
+msgid "Managers use the back office. Cashiers only see the POS screen."
+msgstr "المدير يستخدم لوحة التحكم، والكاشير يرى شاشة نقطة البيع فقط."
+
+#: erp/templates/erp/team.html:7
+msgid "Add"
+msgstr "إضافة"
+
+#: erp/templates/store/base.html:28
+msgid "Cart"
+msgstr "السلة"
+
+#: erp/templates/store/cart.html:2
+msgid "Your cart"
+msgstr "سلتك"
+
+#: erp/templates/store/cart.html:5
+msgid "Update"
+msgstr "تحديث"
+
+#: erp/templates/store/cart.html:7
+msgid "Set a quantity to 0 to remove it."
+msgstr "اجعل الكمية 0 لحذف المنتج."
+
+#: erp/templates/store/cart.html:8
+msgid "Delivery details"
+msgstr "بيانات التوصيل"
+
+#: erp/templates/store/cart.html:9
+msgid "Place order"
+msgstr "تأكيد الطلب"
+
+#: erp/templates/store/cart.html:10
+msgid "Your cart is empty."
+msgstr "سلتك فارغة."
+
+#: erp/templates/store/cart.html:10 erp/templates/store/done.html:4
+msgid "Back to products"
+msgstr "العودة للمنتجات"
+
+#: erp/templates/store/done.html:2
+msgid "Thank you!"
+msgstr "شكراً لك!"
+
+#: erp/templates/store/done.html:3
+#, python-format
+msgid ""
+"Your order %(ref)s was received. Total: %(total)s %(cur)s. We will call you "
+"to confirm delivery."
+msgstr ""
+"وصلنا طلبك %(ref)s. الإجمالي: %(total)s %(cur)s. سنتصل بك لتأكيد التوصيل."
+
+#: erp/templates/store/shop.html:2
+msgid "Our products"
+msgstr "منتجاتنا"
+
+#: erp/templates/store/shop.html:2
+msgid "Order online, pay on delivery or by bank transfer."
+msgstr "اطلب أونلاين وادفع عند الاستلام أو بتحويل بنكي."
+
+#: erp/templates/store/shop.html:3
+msgid "All"
+msgstr "الكل"
+
+#: erp/templates/store/shop.html:8
+msgid "Choose"
+msgstr "اختر"
+
+#: erp/templates/store/shop.html:8 erp/templates/store/shop.html:11
+msgid "Out of stock"
+msgstr "نفد من المخزون"
+
+#: erp/templates/store/shop.html:9 erp/templates/store/shop.html:11
+msgid "Add to cart"
+msgstr "أضف للسلة"
+
+#: erp/templates/store/shop.html:13
+msgid "No products yet."
+msgstr "لا توجد منتجات بعد."
+
+#: erp/views.py:70
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: erp/views.py:75
+msgid "Username taken."
+msgstr "اسم المستخدم مستخدم."
+
+#: erp/views.py:156
+msgid "Add at least one product."
+msgstr "أضف منتجاً واحداً على الأقل."
+
+#: erp/views.py:168
+msgid "Invoice"
+msgstr "فاتورة"

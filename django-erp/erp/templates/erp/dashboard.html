@@ -1,0 +1,23 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<h1 style="margin:0 0 4px">{{ company.name }}</h1><p class="mute">{% blocktrans with cur=company.currency %}Amounts in {{ cur }}.{% endblocktrans %}{% if user.is_superuser and not user.profile %} · <a href="{% url 'owner' %}">{% trans "All companies" %}</a>{% endif %}</p>
+<div class="kpis">
+ <div class="kpi"><b>{{ all.orders }}</b><span>{% trans "Total orders" %}</span></div>
+ <div class="kpi"><b>{{ all.revenue|floatformat:"2g" }}</b><span>{% trans "Total revenue" %}</span></div>
+ <div class="kpi"><b>{{ customers }}</b><span>{% trans "Customers" %}</span></div>
+ <div class="kpi"><b>{{ products }}</b><span>{% trans "Products" %}</span></div>
+ <div class="kpi"><b class="{% if low_count %}bad{% endif %}">{{ low_count }}</b><span>{% trans "Stock rows at 5 or less" %}</span></div>
+</div>
+<div class="kpis">
+ <div class="kpi"><b>{{ month.orders }}</b><span>{% trans "Orders, last 30 days" %}</span></div>
+ <div class="kpi"><b>{{ month.revenue|floatformat:"2g" }}</b><span>{% trans "Revenue, last 30 days" %}</span></div>
+ <div class="kpi"><b>{{ waiting_mo }}</b><span>{% trans "Manufacturing orders waiting" %}</span></div>
+ <div class="kpi"><b>{{ draft_po }}</b><span>{% trans "Purchase orders to review" %}</span></div>
+</div>
+<div class="card"><h2 style="margin-top:0">{% trans "Sale orders by stage" %}</h2>
+{% for label, n, key in stages %}<a class="pill" href="/admin/erp/saleorder/?stage__exact={{ key }}">{{ label }}: <b>{{ n }}</b></a>{% endfor %}</div>
+<div class="card"><h2 style="margin-top:0">{% trans "Latest online orders" %}</h2>
+<table><tbody>{% for o in online %}<tr><td><a href="/admin/erp/saleorder/{{ o.pk }}/change/">{{ o }}</a></td><td>{{ o.partner.name }}</td><td>{{ o.get_stage_display }}</td><td class="n">{{ o.total|floatformat:"2g" }}</td></tr>{% empty %}<tr><td class="mute">{% trans "No online orders yet." %}</td></tr>{% endfor %}</tbody></table></div>
+<div class="card"><h2 style="margin-top:0">{% trans "Running low" %}</h2>
+<table><tbody>{% for q in low %}<tr><td>{{ q.product }}</td><td class="mute">{{ q.product.sku }}</td><td class="n {% if q.quantity <= 0 %}bad{% endif %}">{{ q.quantity|floatformat:"-3" }}</td></tr>{% empty %}<tr><td class="mute">{% trans "Nothing low." %}</td></tr>{% endfor %}</tbody></table>
+<p><a href="/admin/erp/stockquant/?level=low">{% trans "See all stock" %}</a></p></div>
+{% endblock %}

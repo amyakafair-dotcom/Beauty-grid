@@ -1,0 +1,11 @@
+{% extends "erp/base.html" %}{% load i18n %}{% block content %}
+<h1 style="margin:0 0 4px">{% trans "All companies" %}</h1><p class="mute">{% trans "Search, open or switch off a company." %}</p>
+<div class="card"><form><input name="q" value="{{ q }}" placeholder="{% trans 'Company name' %}" aria-label="{% trans 'Company name' %}"> <button>{% trans "Search" %}</button></form>
+<table><thead><tr><th>{% trans "Company" %}</th><th>{% trans "Online store" %}</th><th>{% trans "Status" %}</th><th class="n">{% trans "Orders" %}</th><th class="n">{% trans "Revenue" %}</th><th class="n">{% trans "Customers" %}</th><th class="n">{% trans "Users" %}</th><th></th></tr></thead><tbody>
+{% for c, stats, customers, users in rows %}<tr><td>{{ c.name }}</td><td>{% if c.slug %}<a href="{% url 'shop' c.slug %}" target="_blank">{{ c.slug }}</a>{% endif %}</td>
+<td class="{% if c.active %}ok{% else %}bad{% endif %}">{% if c.active %}{% trans "Active" %}{% else %}{% trans "Switched off" %}{% endif %}</td>
+<td class="n">{{ stats.orders }}</td><td class="n">{{ stats.revenue|floatformat:"2g" }} {{ c.currency }}</td><td class="n">{{ customers }}</td><td class="n">{{ users }}</td>
+<td class="n"><a href="{% url 'dashboard' %}?company={{ c.pk }}">{% trans "Open" %}</a>
+<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="company" value="{{ c.pk }}"><button style="min-height:32px;padding:4px 10px">{% if c.active %}{% trans "Switch off" %}{% else %}{% trans "Switch on" %}{% endif %}</button></form></td></tr>
+{% empty %}<tr><td class="mute">{% trans "No companies yet." %}</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "store/base.html" %}{% load i18n %}{% block content %}
+<h1>{% trans "Your cart" %}</h1>
+{% if lines %}<div class="two"><div>
+<table><tbody>{% for p, q in lines %}<tr><td>{{ p }}<br><span class="mute">{{ p.sale_price|floatformat:2 }} {{ company.currency }}</span></td>
+<td class="n"><form method="post" action="{% url 'cart_update' company.slug %}" style="display:flex;gap:6px;justify-content:flex-end">{% csrf_token %}<input type="hidden" name="product" value="{{ p.pk }}"><input type="number" name="qty" value="{{ q }}" min="0" style="width:80px" aria-label="{% trans 'Quantity' %}"><button class="ghost">{% trans "Update" %}</button></form></td></tr>{% endfor %}</tbody>
+<tfoot><tr><th>{% trans "Total" %}</th><th class="n">{{ total|floatformat:2 }} {{ company.currency }}</th></tr></tfoot></table>
+<p class="mute">{% trans "Set a quantity to 0 to remove it." %}</p></div>
+<div class="card"><div class="body"><h3>{% trans "Delivery details" %}</h3>
+<form method="post" onsubmit="this.querySelector('button').disabled=true">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}">{{ form.non_field_errors }}{{ form.as_p }}<button style="width:100%">{% trans "Place order" %}</button></form></div></div></div>
+{% else %}<p class="mute">{% trans "Your cart is empty." %}</p><a class="btn" href="{% url 'shop' company.slug %}">{% trans "Back to products" %}</a>{% endif %}
+{% endblock %}
