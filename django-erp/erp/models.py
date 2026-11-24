@@ -456,6 +456,50 @@ class PosLine(OrderLine):
     order = models.ForeignKey(PosOrder, on_delete=models.CASCADE, related_name="lines")
 
 
+class Channel(CompanyOwned):
+    """A WhatsApp number, Instagram account or Facebook page that the assistant answers on."""
+    WHATSAPP, INSTAGRAM, FACEBOOK = "whatsapp", "instagram", "facebook"
+    KINDS = [(WHATSAPP, "WhatsApp"), (INSTAGRAM, "Instagram"), (FACEBOOK, "Facebook")]
+    kind = models.CharField(_("channel"), max_length=10, choices=KINDS)
+    external_id = models.CharField(_("Meta ID"), max_length=64, unique=True,
+                                   help_text=_("WhatsApp phone number ID, or the Instagram / Page ID."))
+
+    class Meta:
+        verbose_name = _("channel")
+        verbose_name_plural = _("channels")
+
+    def __str__(self):
+        return f"{self.get_kind_display()} {self.external_id}"
+
+
+class Chat(CompanyOwned):
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name="chats")
+    contact = models.CharField(_("contact"), max_length=64)
+    human = models.BooleanField(_("handed to a person"), default=False,
+                                help_text=_("While ticked the assistant stays silent."))
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("chat")
+        verbose_name_plural = _("chats")
+        unique_together = [("channel", "contact")]
+        ordering = ["-updated"]
+
+    def __str__(self):
+        return f"{self.channel} / {self.contact}"
+
+
+class ChatMessage(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="messages")
+    role = models.CharField(max_length=10)  # "user" or "assistant"
+    text = models.TextField()
+    mid = models.CharField(max_length=128, blank=True, db_index=True)  # Meta's id, stops retries doubling
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["pk"]
+
+
 # column titles in the back office
 for _prop, _label in ((Order.total, _("total")), (Order.total_base, _("total in company currency")), (Order.currency_code, _("currency")), (PosOrder.total, _("total")),
                       (PosSession.expected_cash, _("expected cash"))):

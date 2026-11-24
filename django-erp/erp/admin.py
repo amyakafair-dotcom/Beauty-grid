@@ -7,7 +7,7 @@ from . import services
 from .models import (BoM, BoMLine, Category, Company, Currency, InventoryCount, ReorderRule, InventoryCountLine, Location,
                      ManufacturingOrder, Partner, PosLine, PosOrder, PosSession, PosShop,
                      Product, Profile, PurchaseLine, PurchaseOrder, SaleLine, SaleOrder,
-                     StockMove, StockQuant, Warehouse)
+                     StockMove, StockQuant, Warehouse, Channel, Chat, ChatMessage)
 
 admin.site.site_header = "Beauty-Grid ERP"
 admin.site.site_title = "Beauty-Grid ERP"
@@ -322,3 +322,31 @@ class ProfileAdmin(admin.ModelAdmin):
         return request.user.is_superuser
 
     list_display = ("user", "company", "role")
+
+
+@admin.register(Channel)
+class ChannelAdmin(ScopedAdmin):
+    list_display = ("kind", "external_id")
+
+
+class ChatMessageInline(admin.TabularInline):
+    model = ChatMessage
+    extra = 0
+    can_delete = False
+    fields = readonly_fields = ("created", "role", "text")
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Chat)
+class ChatAdmin(ScopedAdmin):
+    """Read the conversations; tick 'handed to a person' to silence the assistant, untick to wake it."""
+    list_display = ("contact", "channel", "human", "updated")
+    list_filter = ("human", "channel__kind")
+    fields = ("channel", "contact", "human")
+    readonly_fields = ("channel", "contact")
+    inlines = [ChatMessageInline]
+
+    def has_add_permission(self, request):
+        return False

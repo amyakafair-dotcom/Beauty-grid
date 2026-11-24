@@ -4,7 +4,7 @@ from django.conf import settings
 from django.urls import include, path, re_path
 from django.views.static import serve
 
-from erp import store, views
+from erp import assistant, store, views
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -21,6 +21,7 @@ urlpatterns = [
     path("reports/", views.reports, name="reports"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("owner/", views.owner, name="owner"),
+    path("webhooks/meta/", assistant.webhook, name="meta_webhook"),
     path("shop/<str:slug>/", store.shop, name="shop"),
     path("shop/<str:slug>/cart/", store.cart, name="cart"),
     path("shop/<str:slug>/cart/update/", store.cart_update, name="cart_update"),

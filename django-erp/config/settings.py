@@ -157,3 +157,11 @@ FORMAT_MODULE_PATH = ["config.formats"]
 # Stores on subdomains: STORE_DOMAIN=beauty-grid.com makes indigo.beauty-grid.com open Indigo's store.
 # Add ".beauty-grid.com" to ALLOWED_HOSTS and a wildcard DNS record (*.beauty-grid.com).
 STORE_DOMAIN = os.environ.get("STORE_DOMAIN", "")
+
+
+# Customer-chat assistant (WhatsApp / Instagram / Facebook). Secrets come from the environment only.
+META_VERIFY_TOKEN = os.environ.get("META_VERIFY_TOKEN", "")
+META_APP_SECRET = os.environ.get("META_APP_SECRET", "")
+META_ACCESS_TOKEN = os.environ.get("META_ACCESS_TOKEN", "")
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+ASSISTANT_MODEL = os.environ.get("ASSISTANT_MODEL", "claude-haiku-5-5")
